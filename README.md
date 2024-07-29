@@ -12,9 +12,10 @@ Lucy (24.08.01 ~)
 |docs|README와 같은 문서 수정|
 |merge|merge|
 |rename|파일, 폴더명 수정 혹은 이동|
+```
 ex) feat(파일명)
     시작 이벤트 구현
-
+```
 ## contributor
 
 <table>
