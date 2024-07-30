@@ -5,19 +5,19 @@ using UnityEngine;
 public class CharacterMove : MonoBehaviour
 {
     private Rigidbody2D playerRb;
-    private Animator myAnim;
-    public float playerMoveSpeed = 0.1f;
+    private Animator Anim;
+    public float playerMoveSpeed = 150f;
     private void Awake()
     {
         playerRb = GetComponent<Rigidbody2D>();
-        myAnim = GetComponent<Animator>();
+        Anim = GetComponent<Animator>();
     }
 
     private void FixedUpdate()
     {
-        playerRb.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")) * playerMoveSpeed * Time.deltaTime;
+        playerRb.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized * playerMoveSpeed * Time.deltaTime;
 
-        myAnim.SetFloat("MoveX", playerRb.velocity.x);
-        myAnim.SetFloat("MoveY", playerRb.velocity.y);
+        Anim.SetFloat("MoveX", playerRb.velocity.x);
+        Anim.SetFloat("MoveY", playerRb.velocity.y);
     }
 }
