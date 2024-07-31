@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +18,7 @@ public class CharacterMove : MonoBehaviour
     {
         playerRb.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized * playerMoveSpeed * Time.deltaTime;
 
-        if(Input.GetAxisRaw("Horizontal") == 1 || Input.GetAxisRaw("Horizontal") == -1 || Input.GetAxisRaw("Vertical") == 1 || Input.GetAxisRaw("Vertical") == -1)
+        if(Math.Abs(Input.GetAxisRaw("Horizontal")) == 1 || Math.Abs(Input.GetAxisRaw("Vertical")) == 1)
         {
             Anim.SetFloat("LastMoveX", Input.GetAxisRaw("Horizontal"));
             Anim.SetFloat("LastMoveY", Input.GetAxisRaw("Vertical"));
@@ -25,5 +26,16 @@ public class CharacterMove : MonoBehaviour
         
         Anim.SetFloat("MoveX", playerRb.velocity.x);
         Anim.SetFloat("MoveY", playerRb.velocity.y);
+    }
+
+    void Update()
+    {
+        CameraMove();
+    }
+
+    private void CameraMove()
+    {
+        Camera.main.transform.position = this.transform.position + new Vector3(0,0,-10);
+        Camera.main.transform.LookAt(this.transform);
     }
 }
