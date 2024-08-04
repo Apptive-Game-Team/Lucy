@@ -50,6 +50,10 @@ public class PriorityQueue<TElement, TPriority>
 
     private void HeapifyDown(int index)
     {
+        if (index <= 0)
+        {
+            return;
+        }
         var item = _elements[index];
         var lastIndex = _elements.Count - 1;
 
@@ -73,5 +77,10 @@ public class PriorityQueue<TElement, TPriority>
             index = leftChildIndex;
         }
         _elements[index] = item;
+    }
+
+    public bool Contains(TElement element)
+    {
+        return _elements.Exists(e => EqualityComparer<TElement>.Default.Equals(e.Element, element));
     }
 }
