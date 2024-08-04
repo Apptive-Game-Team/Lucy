@@ -26,6 +26,8 @@ public class CharacterMove : MonoBehaviour
         }
         
         Anim.SetFloat("MoveX", playerRb.velocity.x);
+        Anim.SetFloat("MoveY", playerRb.velocity.y);
     }
-
 }
+
+
