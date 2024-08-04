@@ -10,15 +10,19 @@ using UnityEngine.UIElements;
 
 public class Node : IComparable<Node>
 {
-    public int X { get; }
-    public int Y { get; }
-    public bool IsWalkable { get; }
     public int X;
+    public int Y;
+    public bool IsWalkable;
     public int GCost;
     public int HCost;
     public Node Parent;
 
     public int FCost => GCost + HCost;
+
+    public void SetPosition(float x, float y)
+    {
+        X = (int)Math.Round(x); Y = (int)Math.Round(y);
+    }
 
     public Node(int x, int y, bool isWalkable)
     {
@@ -26,6 +30,12 @@ public class Node : IComparable<Node>
         Y = y;
         IsWalkable = isWalkable;
     }
+
+    public Node(bool isWalkable)
+    {
+        IsWalkable = isWalkable;
+    }
+
     public int CompareTo(Node other)
     {
         int compare = FCost.CompareTo(other.FCost);
@@ -53,36 +63,35 @@ public class Node : IComparable<Node>
 
 public class PathFinder
 {
-    private readonly int[,] grid;
+    private readonly int[,] map;
     private readonly int width;
     private readonly int height;
     private Node[,] nodes;
-    public PathFinder(int[,] grid)
+    public PathFinder(int[,] map)
     {
-        this.grid = grid;
+        this.map = map;
         
-        width = grid.GetLength(0);
-        height = grid.GetLength(1);
+        width = map.GetLength(0);
+        height = map.GetLength(1);
         nodes = new Node[width, height];
     }
 
     public List<Node> FindPath(Node startNode, Node endNode)
     {
-        PriorityQueue<Node, int> openQueue = new PriorityQueue<Node, int>();
+        SortedSet<Node> openSet = new SortedSet<Node>() { startNode};
         HashSet<Node> closedSet = new HashSet<Node>();
 
         startNode.GCost = 0;
         startNode.HCost = GetDistance(startNode, endNode);
-        openQueue.Enqueue(startNode, startNode.FCost);
 
-        while (openQueue.Count > 0)
+        while (openSet.Count > 0)
         {
-            Node currentNode = openQueue.Dequeue();
+            Node currentNode = openSet.Min;
+            openSet.Remove(currentNode);
             closedSet.Add(currentNode);
 
             if (currentNode.Equals(endNode)) // path found
             {
-                Debug.Log("Path Found");
                 return RetracePath(startNode, currentNode);
             }
 
@@ -94,15 +103,15 @@ public class PathFinder
                 }
 
                 int newMovementCostToNeighbor = currentNode.GCost + GetDistance(currentNode, neighbor);
-                if (newMovementCostToNeighbor < neighbor.GCost || !openQueue.Contains(neighbor))
+                if (newMovementCostToNeighbor < neighbor.GCost || !openSet.Contains(neighbor))
                 {
                     neighbor.GCost = newMovementCostToNeighbor;
                     neighbor.HCost = GetDistance(neighbor, endNode);
                     neighbor.Parent = currentNode;
 
-                    if (!openQueue.Contains(neighbor))
+                    if (!openSet.Contains(neighbor))
                     {
-                        openQueue.Enqueue(neighbor, neighbor.FCost);
+                        openSet.Add(neighbor);
                     }
                 }
             }
@@ -132,7 +141,7 @@ public class PathFinder
                     Node tempNode;
                     if (this.nodes[checkX, checkY] == null)
                     {
-                        tempNode = new Node(checkX, checkY, grid[checkX, checkY] == 0);
+                        tempNode = new Node(checkX, checkY, map[checkX, checkY] == 0);
                         
                         this.nodes[checkX, checkY] = tempNode;
                     }
@@ -172,22 +181,22 @@ public class PathFinder
 
     public void MarkPosition(int x, int y)
     {
-        int[,] markedGrid = (int[,])grid.Clone();
-        markedGrid[x, y] = 2;
+        int[,] markedmap = (int[,])map.Clone();
+        markedmap[x, y] = 2;
 
-        PrintGrid(markedGrid);
+        Printmap(markedmap);
     }
 
-    private void PrintGrid(int[,] grid)
+    private void Printmap(int[,] map)
     {
-        for (int i = 0; i < grid.GetLength(0); i++)
+        for (int i = 0; i < map.GetLength(0); i++)
         {
-            StringBuilder gridString = new StringBuilder();
-            for (int j = 0; j < grid.GetLength(1); j++)
+            StringBuilder mapString = new StringBuilder();
+            for (int j = 0; j < map.GetLength(1); j++)
             {
-                gridString.Append(grid[i, j] + " ");
+                mapString.Append(map[i, j] + " ");
             }
-            Debug.Log(gridString.ToString());
+            Debug.Log(mapString.ToString());
         }
     }
 }
