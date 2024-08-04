@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Actor: MonoBehaviour
 {
-    
+    protected float speed = 2;
 
     void Start()
     {
