@@ -1,59 +1,59 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Creature : Actor
 {
-    [SerializeField] Player player;
-    int[,] grid = new int[,]
-    {
-        {1, 1, 1, 1, 1, 1, 1, 1, 1},
-        {1, 0, 1, 0, 0, 0, 0, 0 ,1},
-        {1, 0, 1, 0, 1, 1, 1, 0 ,1},
-        {1, 0, 1, 0, 0, 0, 0, 0 ,1},
-        {1, 0, 0, 0, 1, 0, 1, 0 ,1},
-        {1, 0, 1, 0, 1, 0, 1, 0 ,1},
-        {1, 0, 1, 0, 0, 0, 0, 0 ,1},
-        {1, 0, 1, 0, 1, 1, 1, 0 ,1},
-        {1, 0, 0, 0, 0, 0, 0, 0 ,1},
-        {1, 1, 1, 1, 1, 1, 1, 1, 1}
-    };
-
-    Node startNode = new Node(1, 1, true);
-    Node endNode = new Node(7, 7, true);
+    PathLineRenderer pathLineRenderer;
+    Player player;
+    int[,] map;
+    Vector3 deltaPosition = new Vector3();
+    Node startNode = new Node(true);
+    Node endNode = new Node(true);
+    float moveFrame = 0.05f;
 
     void Start()
     {
-        StartCoroutine(MoveToP());
+        player = CreatureManager.Instance.GetPlayer();
+        map = CreatureManager.Instance.GetMap();
+        pathLineRenderer = GetComponent<PathLineRenderer>();
+        StartCoroutine(Schedule());
     }
 
-    IEnumerator MoveToP()
+    IEnumerator Schedule()
     {
         yield return new WaitForSeconds(5);
         temp();  
     }
+
     void temp()
     {
         StopAllCoroutines();
-        MoveToPlayer();
-        StartCoroutine(MoveToP());
+        List<Node> path = FindPath(player.transform.position.x, player.transform.position.y);
+        if (path != null)
+        {
+            StartCoroutine(MoveOnPath(path));
+        }
+        StartCoroutine(Schedule());
     }
     
-
-    void MoveToPlayer()
+    private List<Node> FindPath(float x, float y)
     {
-        startNode = new Node((int)transform.position.x+8, (int)transform.position.y+4, true);
-        endNode = new Node((int)player.transform.position.x + 8, (int)player.transform.position.y+4, true);
-        PathFinder pathFinder = new PathFinder(grid);
+        startNode.SetPosition(transform.position.x, transform.position.y);
+        endNode.SetPosition(x, y);
+        PathFinder pathFinder = new PathFinder(map);
         try
         {
             List<Node> path = pathFinder.FindPath(startNode, endNode);
-            StartCoroutine(MoveOnPath(path));
+            pathLineRenderer.SetPoints(path);
+            return path;
         }
         catch (Exception e)
         {
             print(e.Message);
+            return null;
         }
     }
 
@@ -62,8 +62,16 @@ public class Creature : Actor
     {
         foreach(Node node in path)
         {
-            yield return new WaitForSeconds(1f);
-            transform.position = new Vector3(node.X - 8, node.Y-4);
+            float deltaX = node.X - transform.position.x;
+            float deltaY = node.Y - transform.position.y;
+            deltaPosition.Set(deltaX, deltaY, 0);
+            deltaPosition.Normalize();
+            
+            while (Math.Abs(deltaX) > 0.1 && Math.Abs(deltaY) > 0.1){
+                transform.position += (deltaPosition * speed * moveFrame);
+                yield return new WaitForSeconds(moveFrame);
+            }
+            transform.position = new Vector3(node.X, node.Y);
         }
     }
 }
