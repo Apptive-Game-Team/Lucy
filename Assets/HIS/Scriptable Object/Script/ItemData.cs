@@ -7,7 +7,8 @@ public class ItemData : MonoBehaviour
     public enum ItemType
     {
         Equipable,
-        Consumable
+        Consumable,
+        JustObject
     }
 
     public enum ConsumableType
@@ -25,7 +26,6 @@ public class ItemData : MonoBehaviour
         public string description;
         public ItemType type;
         public Sprite icon;
-        public GameObject dropPerfab;
 
         [Header("Stacking")]
         public bool canStack;

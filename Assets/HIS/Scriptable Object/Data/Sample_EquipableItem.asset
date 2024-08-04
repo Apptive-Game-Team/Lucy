@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: Sample_EquipableItem
   m_EditorClassIdentifier: Assembly-CSharp::ItemData/itemData
-  displayName: 
-  description: 
+  displayName: "\uC7A5\uCC29\uAC00\uB2A5\uD55C\uC608\uC2DC\uC544\uC774\uD15C"
+  description: "\uC7A5\uCC29\uAC00\uB2A5\uD55C\uC608\uC2DC\uC544\uC774\uD15C\uC5D0
+    \uB300\uD55C \uC124\uBA85\uC785\uB2C8\uB2E4."
   type: 0
   icon: {fileID: 0}
   dropPerfab: {fileID: 0}
-  canStack: 0
-  maxStackAmount: 0
+  canStack: 1
+  maxStackAmount: 50
