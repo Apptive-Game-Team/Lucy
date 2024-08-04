@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Text;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,9 +13,9 @@ public class Node : IComparable<Node>
     public int X { get; }
     public int Y { get; }
     public bool IsWalkable { get; }
-    public int GCost { get; set; }
-    public int HCost { get; set; }
-    public Node Parent { get; set; }
+    public int GCost;
+    public int HCost;
+    public Node Parent;
 
     public int FCost => GCost + HCost;
 
@@ -54,12 +55,14 @@ public class PathFinder
     private readonly int[,] grid;
     private readonly int width;
     private readonly int height;
-
+    private Node[,] nodes;
     public PathFinder(int[,] grid)
     {
         this.grid = grid;
+        
         width = grid.GetLength(0);
         height = grid.GetLength(1);
+        nodes = new Node[width, height];
     }
 
     public List<Node> FindPath(Node startNode, Node endNode)
@@ -76,9 +79,10 @@ public class PathFinder
             Node currentNode = openQueue.Dequeue();
             closedSet.Add(currentNode);
 
-            if (currentNode == endNode) // path found
+            if (currentNode.Equals(endNode)) // path found
             {
-                return RetracePath(startNode, endNode);
+                Debug.Log("Path Found");
+                return RetracePath(startNode, currentNode);
             }
 
             foreach (Node neighbor in GetNeighbors(currentNode))
@@ -124,7 +128,15 @@ public class PathFinder
 
                 if (checkX >= 0 && checkX < width && checkY >= 0 && checkY < height)
                 {
-                    neighbors.Add(new Node(checkX, checkY, grid[checkX, checkY] == 0));
+                    Node tempNode;
+                    if (this.nodes[checkX, checkY] == null)
+                    {
+                        tempNode = new Node(checkX, checkY, grid[checkX, checkY] == 0);
+                        
+                        this.nodes[checkX, checkY] = tempNode;
+                    }
+                    neighbors.Add(this.nodes[checkX, checkY]);
+
                 }
             }
         }
@@ -155,5 +167,26 @@ public class PathFinder
             return 14 * dstY + 10 * (dstX - dstY);
         }
         return 14 * dstX + 10 * (dstY - dstX);
+    }
+
+    public void MarkPosition(int x, int y)
+    {
+        int[,] markedGrid = (int[,])grid.Clone();
+        markedGrid[x, y] = 2;
+
+        PrintGrid(markedGrid);
+    }
+
+    private void PrintGrid(int[,] grid)
+    {
+        for (int i = 0; i < grid.GetLength(0); i++)
+        {
+            StringBuilder gridString = new StringBuilder();
+            for (int j = 0; j < grid.GetLength(1); j++)
+            {
+                gridString.Append(grid[i, j] + " ");
+            }
+            Debug.Log(gridString.ToString());
+        }
     }
 }
