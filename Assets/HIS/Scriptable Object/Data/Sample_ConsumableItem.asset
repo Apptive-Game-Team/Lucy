@@ -16,7 +16,6 @@ MonoBehaviour:
   description: "\uC18C\uBAA8\uAC00\uB2A5\uD55C\uC544\uC774\uD15C\uC608\uC2DC\uC5D0
     \uB300\uD55C \uC124\uBA85\uC785\uB2C8\uB2E4."
   type: 1
-  icon: {fileID: 0}
-  dropPerfab: {fileID: 0}
+  icon: {fileID: 21300000, guid: db005d11213e5da47b9769c2e6c56eee, type: 3}
   canStack: 1
   maxStackAmount: 50

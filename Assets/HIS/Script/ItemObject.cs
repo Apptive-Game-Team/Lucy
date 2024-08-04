@@ -13,15 +13,18 @@ public class ItemObject : MonoBehaviour
     {
         Text.gameObject.SetActive(false);
     }
-    private void OnTriggerEnter2d(Collider other)
+    private void OnTriggerEnter2d(Collider2D other)
     {
         if (other.gameObject.tag.Equals("Player"))
         {
-            SetPromptText();
+            Text.gameObject.SetActive(true);
         }
     }
-    private void SetPromptText()
+    private void OnTriggerExit2d(Collider2D other)
     {
-        Text.gameObject.SetActive(true);
+        if (other.gameObject.tag.Equals("Player"))
+        {
+            Text.gameObject.SetActive(false);
+        }
     }
 }
