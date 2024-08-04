@@ -122,6 +122,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &1055808860
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1055808861}
+  - component: {fileID: 1055808862}
+  m_Layer: 0
+  m_Name: CreatureManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1055808861
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1055808860}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1055808862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1055808860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed47f5e0efe8447a39b7bcc9c1b8c932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1137240881
 GameObject:
   m_ObjectHideFlags: 0
@@ -132,7 +176,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1137240884}
   - component: {fileID: 1137240883}
-  - component: {fileID: 1137240882}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -140,14 +183,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1137240882
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1137240881}
-  m_Enabled: 1
 --- !u!20 &1137240883
 Camera:
   m_ObjectHideFlags: 0
@@ -208,7 +243,7 @@ Transform:
   m_GameObject: {fileID: 1137240881}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 6.45, y: 4.14, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -274,7 +309,7 @@ GameObject:
   - component: {fileID: 2016732736}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -340,7 +375,7 @@ Transform:
   m_GameObject: {fileID: 2016732731}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.3921773, y: 3.5325072, z: 0}
+  m_LocalPosition: {x: 0.92, y: 3.5325072, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -432,17 +467,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Creature
       objectReference: {fileID: 0}
+    - target: {fileID: 455895877376984673, guid: 0f1a372bc1e7042ec89b1a304bda3f5c, type: 3}
+      propertyPath: m_TagString
+      value: Creature
+      objectReference: {fileID: 0}
     - target: {fileID: 4953609617221097117, guid: 0f1a372bc1e7042ec89b1a304bda3f5c, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 2016732735}
     - target: {fileID: 8086393103184555878, guid: 0f1a372bc1e7042ec89b1a304bda3f5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8086393103184555878, guid: 0f1a372bc1e7042ec89b1a304bda3f5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8086393103184555878, guid: 0f1a372bc1e7042ec89b1a304bda3f5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -489,3 +528,4 @@ SceneRoots:
   - {fileID: 5694195129143786530}
   - {fileID: 1190484517}
   - {fileID: 2016732733}
+  - {fileID: 1055808861}
