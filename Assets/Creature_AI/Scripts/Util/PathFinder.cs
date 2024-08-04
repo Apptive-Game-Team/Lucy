@@ -13,6 +13,7 @@ public class Node : IComparable<Node>
     public int X { get; }
     public int Y { get; }
     public bool IsWalkable { get; }
+    public int X;
     public int GCost;
     public int HCost;
     public Node Parent;
