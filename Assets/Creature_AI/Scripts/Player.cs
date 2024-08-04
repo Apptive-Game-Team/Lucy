@@ -5,12 +5,18 @@ using UnityEngine;
 public class Player : Actor
 {
     Rigidbody2D rigidbody2D;
+    
     void Start()
     {
         rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
     void Update()
+    {
+        Move();
+    }
+
+    private void Move()
     {
         Vector3 moveVector = new Vector3();
         if (Input.GetKey(KeyCode.W))
@@ -29,7 +35,7 @@ public class Player : Actor
         {
             moveVector.x += 1;
         }
-
-        rigidbody2D.velocity = moveVector * 2;
+        moveVector.Normalize();
+        rigidbody2D.velocity = moveVector * speed;
     }
 }
