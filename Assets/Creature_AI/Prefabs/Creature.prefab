@@ -10,12 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 8086393103184555878}
   - component: {fileID: 1613503152113201650}
+  - component: {fileID: 4487756712048951882}
   - component: {fileID: 6531007328155673411}
   - component: {fileID: 4953609617221097117}
   - component: {fileID: 3881585536916860576}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Creature
-  m_TagString: Untagged
+  m_TagString: Creature
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -87,6 +88,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4487756712048951882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455895877376984673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc67f8b1ea08044d4ba016a9bb46456b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugMode: 1
+  viewAngle: 0
+  viewDistance: 5
+  lookingAngle: 3
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 0
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &6531007328155673411
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 086039b4d8f954c2785cf09e2df23c38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  debugMode: 1
 --- !u!120 &3881585536916860576
 LineRenderer:
   serializedVersion: 2
