@@ -101,7 +101,6 @@ public class PathFinder
                 {
                     continue;
                 }
-
                 int newMovementCostToNeighbor = currentNode.GCost + GetDistance(currentNode, neighbor);
                 if (newMovementCostToNeighbor < neighbor.GCost || !openSet.Contains(neighbor))
                 {
@@ -146,11 +145,9 @@ public class PathFinder
                         this.nodes[checkX, checkY] = tempNode;
                     }
                     neighbors.Add(this.nodes[checkX, checkY]);
-
                 }
             }
         }
-
         return neighbors;
     }
 
