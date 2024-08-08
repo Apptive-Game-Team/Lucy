@@ -307,7 +307,7 @@ GameObject:
   - component: {fileID: 2016732735}
   - component: {fileID: 2016732734}
   - component: {fileID: 2016732736}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -468,8 +468,16 @@ PrefabInstance:
       value: Creature
       objectReference: {fileID: 0}
     - target: {fileID: 455895877376984673, guid: 0f1a372bc1e7042ec89b1a304bda3f5c, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 455895877376984673, guid: 0f1a372bc1e7042ec89b1a304bda3f5c, type: 3}
       propertyPath: m_TagString
       value: Creature
+      objectReference: {fileID: 0}
+    - target: {fileID: 4487756712048951882, guid: 0f1a372bc1e7042ec89b1a304bda3f5c, type: 3}
+      propertyPath: viewAngle
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 4953609617221097117, guid: 0f1a372bc1e7042ec89b1a304bda3f5c, type: 3}
       propertyPath: player
