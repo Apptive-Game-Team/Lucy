@@ -8,6 +8,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+[Serializable]
 public class Node : IComparable<Node>
 {
     public int X;
@@ -66,11 +67,14 @@ public class PathFinder
     private readonly int[,] map;
     private readonly int width;
     private readonly int height;
+    private Vector3Int mapOffset;
+    public int maxComputing = 10000;
+
     private Node[,] nodes;
-    public PathFinder(int[,] map)
+    public PathFinder(int[,] map, Vector3Int mapOffset)
     {
         this.map = map;
-        
+        this.mapOffset = mapOffset;
         width = map.GetLength(0);
         height = map.GetLength(1);
         nodes = new Node[width, height];
@@ -78,16 +82,24 @@ public class PathFinder
 
     public List<Node> FindPath(Node startNode, Node endNode)
     {
+        int computeCount = 0;
+
         SortedSet<Node> openSet = new SortedSet<Node>() { startNode};
         HashSet<Node> closedSet = new HashSet<Node>();
 
         startNode.GCost = 0;
         startNode.HCost = GetDistance(startNode, endNode);
 
-        while (openSet.Count > 0)
+        while (openSet.Count > 0 && computeCount < maxComputing)
         {
+            computeCount++;
             Node currentNode = openSet.Min;
-            openSet.Remove(currentNode);
+            if (!currentNode.IsWalkable)
+            {
+                throw new Exception("creature not available");
+            }
+
+            openSet.Remove(openSet.Min);
             closedSet.Add(currentNode);
 
             if (currentNode.Equals(endNode)) // path found
@@ -97,7 +109,7 @@ public class PathFinder
 
             foreach (Node neighbor in GetNeighbors(currentNode))
             {
-                if (!neighbor.IsWalkable || closedSet.Contains(neighbor))
+                if (neighbor == null || !neighbor.IsWalkable || closedSet.Contains(neighbor))
                 {
                     continue;
                 }
@@ -135,16 +147,16 @@ public class PathFinder
                 int checkX = node.X + x;
                 int checkY = node.Y + y;
 
-                if (checkX >= 0 && checkX < width && checkY >= 0 && checkY < height)
+                if (checkX - mapOffset.x >= 0 && checkX - mapOffset.x < width && checkY - mapOffset.y >= 0 && checkY - mapOffset.y < height)
                 {
                     Node tempNode;
-                    if (this.nodes[checkX, checkY] == null)
+                    if (this.nodes[checkX - mapOffset.x, checkY - mapOffset.y] == null)
                     {
-                        tempNode = new Node(checkX, checkY, map[checkX, checkY] == 0);
+                        tempNode = new Node(checkX, checkY, map[checkX - mapOffset.x, checkY - mapOffset.y] == 0);
                         
-                        this.nodes[checkX, checkY] = tempNode;
+                        this.nodes[checkX - mapOffset.x, checkY - mapOffset.y] = tempNode;
                     }
-                    neighbors.Add(this.nodes[checkX, checkY]);
+                    neighbors.Add(this.nodes[checkX - mapOffset.x, checkY - mapOffset.y]);
                 }
             }
         }
@@ -174,26 +186,5 @@ public class PathFinder
             return 14 * dstY + 10 * (dstX - dstY);
         }
         return 14 * dstX + 10 * (dstY - dstX);
-    }
-
-    public void MarkPosition(int x, int y)
-    {
-        int[,] markedmap = (int[,])map.Clone();
-        markedmap[x, y] = 2;
-
-        Printmap(markedmap);
-    }
-
-    private void Printmap(int[,] map)
-    {
-        for (int i = 0; i < map.GetLength(0); i++)
-        {
-            StringBuilder mapString = new StringBuilder();
-            for (int j = 0; j < map.GetLength(1); j++)
-            {
-                mapString.Append(map[i, j] + " ");
-            }
-            Debug.Log(mapString.ToString());
-        }
     }
 }
