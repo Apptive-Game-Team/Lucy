@@ -189,7 +189,6 @@ namespace Creature{
         {
             while(true)
             {
-
                 yield return new WaitForSeconds(0.5f);
 
                 Node node;
@@ -198,7 +197,6 @@ namespace Creature{
                     node = path[0];
                     if (node.X == transform.position.x && node.Y == transform.position.y)
                     {
-                        
                         node = path[1];
                         path.RemoveAt(1);
                     }
@@ -227,7 +225,6 @@ namespace Creature{
                 yield return new WaitForSeconds(0.5f);
                 transform.position = new Vector3(node.X, node.Y);
             }
-            
         }
     }
 }
