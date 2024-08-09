@@ -12,13 +12,14 @@ public class MapBuilder : MonoBehaviour
     void Start()
     {
         int[,] map = CreatureManager.Instance.GetMap();
+        Vector3Int mapOffset = CreatureManager.Instance.GetMapOffset();
         for (int i = 0; i< map.GetLength(0); i++)
         {
             for (int j = 0; j< map.GetLength(1); j++)
             {
                 if (map[i, j] == 1)
                 {
-                    MakeWall(i, j);
+                    MakeWall(i+mapOffset.x, j+mapOffset.y);
                 }
                     
             }
