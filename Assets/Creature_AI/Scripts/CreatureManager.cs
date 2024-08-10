@@ -21,7 +21,7 @@ public class CreatureManager : MonoBehaviour
         if (_instance == null)
         {
             _instance = this;
-            mapBuilder = GameObject.Find("Event").GetComponent<MapBuilder>();
+            mapBuilder = gameObject.GetComponent<MapBuilder>();
             player = GameObject.FindWithTag("Player").GetComponent<Player>();
             tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
             DontDestroyOnLoad(gameObject);
