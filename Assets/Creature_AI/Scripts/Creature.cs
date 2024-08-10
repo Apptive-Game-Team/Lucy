@@ -189,7 +189,7 @@ namespace Creature{
         {
             while(true)
             {
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.01f);
 
                 Node node;
                 try
@@ -213,17 +213,29 @@ namespace Creature{
                 float deltaX = node.X - transform.position.x;
                 float deltaY = node.Y - transform.position.y;
                 deltaPosition.Set(deltaX, deltaY, 0);
+                deltaX = Math.Abs(deltaX);
+                deltaY = Math.Abs(deltaY);
 
                 detector.SetLookingDirection(deltaPosition);
 
                 deltaPosition.Normalize();
 
-                //while (Math.Abs(deltaX) > 0.1 && Math.Abs(deltaY) > 0.1){
-                //    transform.position += (deltaPosition * speed * moveFrame);
-                //    yield return new WaitForSeconds(moveFrame);
-                //}
-                yield return new WaitForSeconds(0.5f);
+                while (deltaX > 0 || deltaY > 0)
+                {
+                    deltaX -= Math.Abs(deltaPosition.x * speed * moveFrame);
+                    deltaY -= Math.Abs(deltaPosition.y * speed * moveFrame);
+                    transform.position += (deltaPosition * speed * moveFrame);
+                    yield return new WaitForSeconds(moveFrame);
+                }
                 transform.position = new Vector3(node.X, node.Y);
+            }
+        }
+
+        protected virtual void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (collision.CompareTag("Player"))
+            {
+                Destroy(collision.gameObject);
             }
         }
     }
