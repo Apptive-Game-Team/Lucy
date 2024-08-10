@@ -7,7 +7,7 @@ public class PathLineRenderer : MonoBehaviour
 {
     private LineRenderer _lineRenderer;
 
-    public Vector3[] points;
+    private Vector3[] points;
 
     public void SetPoints(List<Node> path)
     {
