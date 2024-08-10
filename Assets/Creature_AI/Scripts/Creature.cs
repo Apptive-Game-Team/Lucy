@@ -62,25 +62,25 @@ namespace Creature{
     {
         [SerializeField] bool debugMode = true;
 
-        Detector detector;
+        private Detector detector;
 
-        PathLineRenderer pathLineRenderer;
-        int[,] map;
-        Vector3Int mapOffset;
-        Vector3 deltaPosition = new Vector3();
-        Node startNode = new Node(true);
-        Node endNode = new Node(true);
-        float moveFrame = 0.05f;
+        private PathLineRenderer pathLineRenderer;
+        private int[,] map;
+        private Vector3Int mapOffset;
+        private Vector3 deltaPosition = new Vector3();
+        private Node startNode = new Node(true);
+        private Node endNode = new Node(true);
+        private float moveFrame = 0.05f;
 
         protected Vector3 targetPosition;
-        List<Node> path;
+        private List<Node> path;
 
-        bool isChasing = false;
+        private bool isChasing = false;
 
         protected List<CreatureAction> actions;
 
         protected CreatureStatus status;
-        Coroutine alertedCounterCoroutine;
+        private Coroutine alertedCounterCoroutine;
             
         private void InitActions()
         {
