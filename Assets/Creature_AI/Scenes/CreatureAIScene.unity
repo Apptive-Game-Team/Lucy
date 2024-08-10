@@ -2164,6 +2164,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Guard
       objectReference: {fileID: 0}
+    - target: {fileID: 1613503152113201650, guid: 57e8ec7b68e9e45ddbd5cc73c25364f2, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4487756712048951882, guid: 57e8ec7b68e9e45ddbd5cc73c25364f2, type: 3}
       propertyPath: viewAngle
       value: 90
@@ -2222,7 +2226,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8086393103184555878, guid: 57e8ec7b68e9e45ddbd5cc73c25364f2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.19
+      value: 7.16
       objectReference: {fileID: 0}
     - target: {fileID: 8086393103184555878, guid: 57e8ec7b68e9e45ddbd5cc73c25364f2, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2474,7 +2478,7 @@ Transform:
   m_GameObject: {fileID: 2016732731}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.28, y: 7.71, z: 0}
+  m_LocalPosition: {x: 6.48, y: 5.47, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
