@@ -13,10 +13,13 @@ namespace Creature
         void Start()
         {
             base.Start();
+            minSpeed = 1;
+            maxSpeed = 2;
         }
 
         public override IEnumerator PatrolAction()
         {
+            speed = minSpeed;
             if (transform.position.x == MoveNodes[patrolMoveFlag].X && transform.position.y == MoveNodes[patrolMoveFlag].Y){
                 patrolMoveFlag++;
                 if (patrolMoveFlag >= MoveNodes.Count)

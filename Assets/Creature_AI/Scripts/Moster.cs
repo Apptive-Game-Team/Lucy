@@ -9,10 +9,13 @@ namespace Creature
         void Start()
         {
             base.Start();
+            minSpeed = 1;
+            maxSpeed = 2;
         }
 
         public override IEnumerator PatrolAction()
         {
+            speed = minSpeed;
             SetRandomPath();
             DetectPlayer();
             yield return new WaitForSeconds(0.1f);

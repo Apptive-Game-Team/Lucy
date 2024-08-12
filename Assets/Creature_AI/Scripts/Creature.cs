@@ -83,7 +83,9 @@ namespace Creature{
 
         protected CreatureStatus status;
         private Coroutine alertedCounterCoroutine;
-            
+
+        protected int maxSpeed;
+        protected int minSpeed;
         private void InitActions()
         {
             actions = new List<CreatureAction>()
@@ -111,6 +113,7 @@ namespace Creature{
 
         public virtual IEnumerator PatrolAction()
         {
+            speed = minSpeed;
             DetectPlayer();
             yield return new WaitForSeconds(0.1f);
             actions[(int)status].Play();
@@ -118,6 +121,7 @@ namespace Creature{
 
         public virtual IEnumerator PursuitAction()
         {
+            speed = maxSpeed;
             DetectPlayer();
             yield return new WaitForSeconds(0.1f);
             GetPathToPosition(targetPosition);
@@ -126,6 +130,7 @@ namespace Creature{
 
         public virtual IEnumerator AlertedAction()
         {
+            speed = minSpeed;
             DetectPlayer();
             SetRandomPath();
             detector.setLookingAngle(detector.getLookingAngle() + 10f);
