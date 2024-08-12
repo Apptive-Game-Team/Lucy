@@ -68,6 +68,7 @@ public class PathFinder
     private readonly int width;
     private readonly int height;
     private Vector3Int mapOffset;
+    private List<Tuple<int, int>> directions;
     public int maxComputing = 10000;
 
     private Node[,] nodes;
@@ -78,6 +79,7 @@ public class PathFinder
         width = map.GetLength(0);
         height = map.GetLength(1);
         nodes = new Node[width, height];
+        InitDirections();
     }
 
     public List<Node> FindPath(Node startNode, Node endNode)
@@ -149,18 +151,71 @@ public class PathFinder
 
                 if (checkX - mapOffset.x >= 0 && checkX - mapOffset.x < width && checkY - mapOffset.y >= 0 && checkY - mapOffset.y < height)
                 {
-                    Node tempNode;
-                    if (this.nodes[checkX - mapOffset.x, checkY - mapOffset.y] == null)
-                    {
-                        tempNode = new Node(checkX, checkY, map[checkX - mapOffset.x, checkY - mapOffset.y] == 0);
-                        
-                        this.nodes[checkX - mapOffset.x, checkY - mapOffset.y] = tempNode;
-                    }
-                    neighbors.Add(this.nodes[checkX - mapOffset.x, checkY - mapOffset.y]);
+                    neighbors.Add(GetNode(checkX, checkY));
                 }
             }
         }
         return neighbors;
+    }
+
+    private Node GetNode(int x, int y)
+    {
+        Node tempNode;
+        if (this.nodes[x - mapOffset.x, y - mapOffset.y] == null)
+        {
+            tempNode = new Node(x, y, map[x - mapOffset.x, y - mapOffset.y] == 0);
+
+            this.nodes[x - mapOffset.x, y - mapOffset.y] = tempNode;
+        }
+        tempNode = this.nodes[x - mapOffset.x, y - mapOffset.y];
+
+        return tempNode;
+    }
+
+    public List<Node> GetRandomPath(int nodeNum, Vector3 direction, Vector3Int position)
+    {
+        Node lastNode = new Node(true);
+        List<Node> path = new List<Node>();
+
+        lastNode.SetPosition(position.x, position.y);
+
+        List<Node> neighbors = GetNeighbors(new Node(
+                position.x,
+                position.y,
+                true
+            ));
+        System.Random random = new System.Random();
+        int currentDirection = this.directions.FindIndex(t => t.Item1 == Mathf.Sign(direction.x) && t.Item2 == Mathf.Sign(direction.y));
+        for (int i = 0; i<nodeNum; i++)
+        {
+            int tempRandomNum = random.Next(0, 5);
+            
+            if (tempRandomNum == 1)
+            {
+                currentDirection++;
+                if (currentDirection == 8)
+                    currentDirection = 0;
+            }
+            else if (tempRandomNum == 2)
+            {
+                currentDirection--;
+                if (currentDirection == -1)
+                    currentDirection = 7;
+            }
+            Node node = GetNode(
+                directions[currentDirection].Item1 + lastNode.X,
+                directions[currentDirection].Item2 + lastNode.Y
+                );
+            if (!node.IsWalkable)
+            {
+                i--;
+                continue;
+            }
+            lastNode = node;
+            path.Add(node);
+        }
+
+        return path;
     }
 
     private List<Node> RetracePath(Node startNode, Node endNode)
@@ -186,5 +241,20 @@ public class PathFinder
             return 14 * dstY + 10 * (dstX - dstY);
         }
         return 14 * dstX + 10 * (dstY - dstX);
+    }
+
+    private void InitDirections()
+    {
+        directions = new List<Tuple<int, int>>{
+            Tuple.Create(1, 1),
+            Tuple.Create(1, 0),
+            Tuple.Create(1, -1),
+            Tuple.Create(0, -1),
+            Tuple.Create(-1, -1),
+            Tuple.Create(-1, 0),
+            Tuple.Create(-1, 1),
+            Tuple.Create(0, 1)
+        };
+
     }
 }
