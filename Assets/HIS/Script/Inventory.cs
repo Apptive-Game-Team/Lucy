@@ -135,18 +135,24 @@ public class Inventory : MonoBehaviour
         if(selectedItem.item.type == ItemType.Consumable)
         {
             useButton.SetActive(true);
+            equipButton.SetActive(false);
+            unEquipButton.SetActive(false);
         }
         if(selectedItem.item.type == ItemType.Equipable && !uidSlot[index].equipped)
         {
+            useButton.SetActive(false);
             equipButton.SetActive(true);
+            unEquipButton.SetActive(false);
         }
         if(selectedItem.item.type == ItemType.Equipable && uidSlot[index].equipped)
         {
+            useButton.SetActive(false);
+            equipButton.SetActive(false);
             unEquipButton.SetActive(true);
         }
     }
 
-    private void ClearSelectItemWindow()
+    public void ClearSelectItemWindow()
     {
         // 아이템 초기화
         selectedItem = null;
