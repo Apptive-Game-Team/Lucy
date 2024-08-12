@@ -23,7 +23,7 @@ public class CreatureManager : MonoBehaviour
             _instance = this;
             mapBuilder = gameObject.GetComponent<MapBuilder>();
             player = GameObject.FindWithTag("Player").GetComponent<Player>();
-            tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
+            tilemap = GameObject.Find("Floor").GetComponent<Tilemap>();
             DontDestroyOnLoad(gameObject);
         }
         else if (_instance != this)
@@ -93,14 +93,14 @@ public class CreatureManager : MonoBehaviour
             {
                 map[position.x - mapOffset.x, position.y - mapOffset.y] = 1;
             }
-            else if (tileBase.name == "8")
+            else //if (tileBase.name == "8")
             {
                 map[position.x - mapOffset.x, position.y - mapOffset.y] = 0;
             }
-            else
-            {
-                map[position.x - mapOffset.x, position.y - mapOffset.y] = 1;
-            }
+            //else
+            //{
+            //    map[position.x - mapOffset.x, position.y - mapOffset.y] = 1;
+            //}
         }
     }
 }
