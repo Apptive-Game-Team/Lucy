@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -20,8 +21,8 @@ public class Inventory : MonoBehaviour
     private int selectedItemIndex;
     public TextMeshProUGUI selectedItemName;
     public TextMeshProUGUI selectedItemDescription;
-    public TextMeshProUGUI selectedItemStatName;
-    public TextMeshProUGUI selectedItemStatValue;
+    //public TextMeshProUGUI selectedItemStatName;
+    //public TextMeshProUGUI selectedItemStatValue;
     public GameObject useButton;
     public GameObject equipButton;
     public GameObject unEquipButton;
@@ -48,6 +49,9 @@ public class Inventory : MonoBehaviour
             uidSlot[i].Clear();
         }
 
+        useButton.SetActive(false);
+        equipButton.SetActive(false);
+        unEquipButton.SetActive(false);
         ClearSelectItemWindow();
     }
 
@@ -117,20 +121,29 @@ public class Inventory : MonoBehaviour
 
         selectedItemName.text = selectedItem.item.displayName;
         selectedItemDescription.text = selectedItem.item.description;
-        selectedItemStatName.text = string.Empty;
-        selectedItemStatValue.text = string.Empty;
+        //selectedItemStatName.text = string.Empty;
+        //selectedItemStatValue.text = string.Empty;
 
-        for (int i = 0; i < selectedItem.item.consumables.Length; i++)
+        /*for (int i = 0; i < selectedItem.item.consumables.Length; i++)
         {
             // 먹을 수 있는 아이템일 경우 채워주는 체력과 배고픔을 UI 상에 표시해주기 위한 코드
             selectedItemStatName.text += selectedItem.item.consumables[i].type.ToString() + "\n";
             selectedItemStatValue.text += selectedItem.item.consumables[i].value.ToString() + "\n";
-        }
+        }*/
 
         // 아이템 타입을 체크하여 버튼들 활성화
-        useButton.SetActive(selectedItem.item.type == ItemType.Consumable);
-        equipButton.SetActive(selectedItem.item.type == ItemType.Equipable && !uidSlot[index].equipped);    // 아이템 타입이 Equipable이면서 착용중이 아닐 경우
-        unEquipButton.SetActive(selectedItem.item.type == ItemType.Equipable && uidSlot[index].equipped);   // 아이템 타입이 Equipable이면서 착용중일 경우
+        if(selectedItem.item.type == ItemType.Consumable)
+        {
+            useButton.SetActive(true);
+        }
+        if(selectedItem.item.type == ItemType.Equipable && !uidSlot[index].equipped)
+        {
+            equipButton.SetActive(true);
+        }
+        if(selectedItem.item.type == ItemType.Equipable && uidSlot[index].equipped)
+        {
+            unEquipButton.SetActive(true);
+        }
     }
 
     private void ClearSelectItemWindow()
@@ -139,12 +152,8 @@ public class Inventory : MonoBehaviour
         selectedItem = null;
         selectedItemName.text = string.Empty;
         selectedItemDescription.text = string.Empty;
-        selectedItemStatName.text = string.Empty;
-        selectedItemStatValue.text = string.Empty;
-
-        useButton.SetActive(false);
-        equipButton.SetActive(false);
-        unEquipButton.SetActive(false);
+        //selectedItemStatName.text = string.Empty;
+        //selectedItemStatValue.text = string.Empty;
     }
 
     public void OnUseButton()
@@ -188,8 +197,6 @@ public class Inventory : MonoBehaviour
 
         equipButton.SetActive(false);
         unEquipButton.SetActive(true);
-
-        Debug.Log($"{slots[index].item.displayName} equipped.");
     }
 
     public void OnUnEquipButton()

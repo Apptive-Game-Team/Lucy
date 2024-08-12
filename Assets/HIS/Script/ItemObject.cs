@@ -10,31 +10,32 @@ public class ItemObject : MonoBehaviour
 
     private void Start()
     {
-        Text.gameObject.SetActive(false);
+        Text.SetActive(false);
     }
-    private void OnTriggerEnter2d(Collider2D other)
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag.Equals("Player"))
         {
-            Text.gameObject.SetActive(true);
+            Text.SetActive(true);
         }
     }
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.gameObject.tag.Equals("Player"))
         {
-            if(Input.GetKeyDown(KeyCode.W))
+            if(Input.GetKey(KeyCode.Z))
             {
                 Inventory.instance.AddItem(item);
                 Destroy(gameObject);
             }
         }
     }
-    private void OnTriggerExit2d(Collider2D other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject.tag.Equals("Player"))
         {
-            Text.gameObject.SetActive(false);
+            Text.SetActive(false);
         }
     }
 }
