@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 11400000, guid: fa5ad07cb4ca1f6448855d6237910c77, type: 2}
-  Text: {fileID: 0}
+  Text: {fileID: 7629667783649319900}
 --- !u!1 &7629667783649319900
 GameObject:
   m_ObjectHideFlags: 0
