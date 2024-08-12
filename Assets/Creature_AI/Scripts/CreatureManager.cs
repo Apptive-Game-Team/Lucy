@@ -97,14 +97,10 @@ public class CreatureManager : MonoBehaviour
             {
                 map[position.x - mapOffset.x, position.y - mapOffset.y] = 0;
             }
-            else //if (tileBase.name == "8")
+            else
             {
                 map[position.x - mapOffset.x, position.y - mapOffset.y] = 1;
             }
-            //else
-            //{
-            //    map[position.x - mapOffset.x, position.y - mapOffset.y] = 1;
-            //}
         }
     }
 }
