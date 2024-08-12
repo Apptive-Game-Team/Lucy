@@ -1,21 +1,19 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
-using static ItemData;
 
 public class ItemSlot
 {
-    public itemData item;
+    public ItemData item;
     public int quantity;
 }
 
 public class Inventory : MonoBehaviour
 {
-    public ItemSlotUI[] uidSlot;    
+    public ItemSlotUI[] uidSlot;     
     public ItemSlot[] slots;            
 
-    public GameObject inventoryWindow;      
+    public GameObject inventoryWindow;     
 
     [Header("Selected Item")]
     private ItemSlot selectedItem;
@@ -26,8 +24,10 @@ public class Inventory : MonoBehaviour
     public TextMeshProUGUI selectedItemStatValue;
     public GameObject useButton;
     public GameObject equipButton;
+    public GameObject unEquipButton;
 
     private int curEquipIndex;
+
 
     [Header("Events")]
     public UnityEvent onOpenInventory;
@@ -40,6 +40,7 @@ public class Inventory : MonoBehaviour
         instance = this;
     }
 
+    // Start is called before the first frame update
     void Start()
     {
         inventoryWindow.SetActive(false);
@@ -55,47 +56,53 @@ public class Inventory : MonoBehaviour
         ClearSelectItemWindow();
     }
 
-    public void OnInventoryButton(InputAction.CallbackContext context)
+    void Update()
     {
-        if (context.phase == InputActionPhase.Started) Toggle();
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            ToggleInventory();
+        }
     }
 
-    public void Toggle()
+    public void ToggleInventory()
     {
-        if (inventoryWindow.activeInHierarchy)  
+        bool isActive = inventoryWindow.activeSelf;
+
+        if (isActive)
         {
-            inventoryWindow.SetActive(false);      
-            onCloseInventory?.Invoke();     
-            controller.ToggleCursor(false);   
+            CloseInventory();
         }
         else
         {
-            inventoryWindow.SetActive(true);
-            onOpenInventory?.Invoke();
-            controller.ToggleCursor(true);
+            OpenInventory();
         }
     }
 
-    public bool IsOpen()
+    public void OpenInventory()
     {
-        return inventoryWindow.activeInHierarchy;
+        inventoryWindow.SetActive(true);
+        onOpenInventory?.Invoke();
     }
 
-    public void AddItem(itemData item)
+    public void CloseInventory()
     {
-        if (item.canStack)  
+        inventoryWindow.SetActive(false);
+        onCloseInventory?.Invoke();
+    }
+
+    public bool AddItem(ItemData item)
+    {
+        if (item.canStack)
         {
-         
             ItemSlot slotToStackTo = GetItemStack(item);
             if (slotToStackTo != null)
             {
                 slotToStackTo.quantity++;
                 UpdateUI();
-                return;
+                return true;  
             }
         }
 
-        
         ItemSlot emptySlot = GetEmptySlot();
 
         if (emptySlot != null)
@@ -103,22 +110,13 @@ public class Inventory : MonoBehaviour
             emptySlot.item = item;
             emptySlot.quantity = 1;
             UpdateUI();
-            return;
+            return true;  
         }
-
-        
-        ThrowItem(item);
-    }
-
-    private void ThrowItem(itemData item)
-    {
-        
-        Instantiate(item.dropPerfab, dropPosition.position, Quaternion.Euler(Vector3.one * Random.value * 360f));
+        return false;
     }
 
     void UpdateUI()
     {
-        
         for (int i = 0; i < slots.Length; i++)
         {
             if (slots[i].item != null)
@@ -128,14 +126,13 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    ItemSlot GetItemStack(itemData item)
+    ItemSlot GetItemStack(ItemData item)
     {
         for (int i = 0; i < slots.Length; i++)
         {
             if (slots[i].item == item && slots[i].quantity < item.maxStackAmount)
                 return slots[i];
         }
-
         return null;
     }
 
@@ -146,7 +143,6 @@ public class Inventory : MonoBehaviour
             if (slots[i].item == null)
                 return slots[i];
         }
-
         return null;
     }
 
@@ -154,6 +150,7 @@ public class Inventory : MonoBehaviour
     {
         if (slots[index].item == null) return;
 
+        // 선택한 아이템 정보 가져오기
         selectedItem = slots[index];
         selectedItemIndex = index;
 
@@ -164,20 +161,20 @@ public class Inventory : MonoBehaviour
 
         for (int i = 0; i < selectedItem.item.consumables.Length; i++)
         {
+            // 먹을 수 있는 아이템일 경우 채워주는 체력과 배고픔을 UI 상에 표시해주기 위한 코드
             selectedItemStatName.text += selectedItem.item.consumables[i].type.ToString() + "\n";
             selectedItemStatValue.text += selectedItem.item.consumables[i].value.ToString() + "\n";
         }
 
+        // 아이템 타입을 체크하여 버튼들 활성화
         useButton.SetActive(selectedItem.item.type == ItemType.Consumable);
         equipButton.SetActive(selectedItem.item.type == ItemType.Equipable && !uidSlot[index].equipped);    // 아이템 타입이 Equipable이면서 착용중이 아닐 경우
         unEquipButton.SetActive(selectedItem.item.type == ItemType.Equipable && uidSlot[index].equipped);   // 아이템 타입이 Equipable이면서 착용중일 경우
-        dropButton.SetActive(true);
-
-
     }
 
     private void ClearSelectItemWindow()
     {
+        // 아이템 초기화
         selectedItem = null;
         selectedItemName.text = string.Empty;
         selectedItemDescription.text = string.Empty;
@@ -187,18 +184,19 @@ public class Inventory : MonoBehaviour
         useButton.SetActive(false);
         equipButton.SetActive(false);
         unEquipButton.SetActive(false);
-        dropButton.SetActive(false);
     }
 
     public void OnUseButton()
     {
-        if (selectedItem.item.type == ItemType.Consumable)
+        // 아이템 타입이 사용 가능할 경우
+        /*if (selectedItem.item.type == ItemType.Consumable)
         {
             for (int i = 0; i < selectedItem.item.consumables.Length; i++)
             {
                 switch (selectedItem.item.consumables[i].type)
                 {
-                    case ConsumableType.Health:
+                    // consumables 타입에 따라 Heal과 Eat
+                    case ConsumableType.Battery:
                         conditions.Heal(selectedItem.item.consumables[i].value);
                         break;
                     case ConsumableType.Hunger:
@@ -206,49 +204,85 @@ public class Inventory : MonoBehaviour
                         break;
                 }
             }
-        }
+        }*/
         RemoveSelectedItem();
     }
     public void OnEquipButton()
     {
-
+        if (selectedItem != null && selectedItem.item.type == ItemType.Equipable)
+        {
+            Equip(selectedItemIndex);
+        }
     }
 
-    void UnEquip(int index)
+    void Equip(int index)
     {
+        if (curEquipIndex >= 0 && curEquipIndex < slots.Length && uidSlot[curEquipIndex].equipped)
+        {
+            UnEquip(curEquipIndex);
+        }
 
+        curEquipIndex = index;
+        uidSlot[curEquipIndex].equipped = true;
+
+        equipButton.SetActive(false);
+        unEquipButton.SetActive(true);
+
+        Debug.Log($"{slots[index].item.displayName} equipped.");
     }
 
     public void OnUnEquipButton()
     {
-
+        if (selectedItem != null && selectedItem.item.type == ItemType.Equipable)
+        {
+            UnEquip(selectedItemIndex);
+        }
     }
-    public void OnDropButton()
+
+    void UnEquip(int index)
     {
-        ThrowItem(selectedItem.item);
-        RemoveSelectedItem();
+        if (index >= 0 && index < slots.Length && uidSlot[index].equipped)
+        {
+            uidSlot[index].equipped = false;
+
+            equipButton.SetActive(true);
+            unEquipButton.SetActive(false);
+
+            Debug.Log($"{slots[index].item.displayName} unequipped.");
+        }
     }
 
     private void RemoveSelectedItem()
     {
-        selectedItem.quantity--;    
+        selectedItem.quantity--;    // 수량 깎기.
+
+        // 아이템의 남은 수량이 0이 되면
         if (selectedItem.quantity <= 0)
         {
+            // 만약 버린 아이템이 장착 중인 아이템일 경우 해제 시키기
             if (uidSlot[selectedItemIndex].equipped) UnEquip(selectedItemIndex);
+
+            // 아이템 제거 및 UI에서도 아이템 정보 지우기
             selectedItem.item = null;
             ClearSelectItemWindow();
         }
 
         UpdateUI();
     }
-
-    public void RemoveItem(itemData item)
+    public bool HasItems(ItemData item, int quantity)
     {
+        int totalQuantity = 0;
 
-    }
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i].item == item)
+            {
+                totalQuantity += slots[i].quantity;
 
-    public bool HasItems(itemData item, int quantity)
-    {
+                if (totalQuantity >= quantity)
+                    return true;
+            }
+        }
         return false;
     }
 }

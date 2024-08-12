@@ -2,11 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using static ItemData;
 
 public class ItemObject : MonoBehaviour
 {
-    public itemData item;
+    public ItemData item;
     public GameObject Text;
 
     private void Start()
@@ -18,6 +17,17 @@ public class ItemObject : MonoBehaviour
         if (other.gameObject.tag.Equals("Player"))
         {
             Text.gameObject.SetActive(true);
+        }
+    }
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.gameObject.tag.Equals("Player"))
+        {
+            if(Input.GetKeyDown(KeyCode.W))
+            {
+                Inventory.instance.AddItem(item);
+                Destroy(gameObject);
+            }
         }
     }
     private void OnTriggerExit2d(Collider2D other)
