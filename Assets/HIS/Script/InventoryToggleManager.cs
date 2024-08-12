@@ -48,6 +48,7 @@ public class InventoryToggleManager : MonoBehaviour
 
     public void CloseInventory()
     {
+        Inventory.instance.ClearSelectItemWindow();
         inventoryWindow.SetActive(false);
         onCloseInventory?.Invoke();
     }
