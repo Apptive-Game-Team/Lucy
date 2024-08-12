@@ -82,24 +82,20 @@ public class CreatureManager : MonoBehaviour
             minX = Mathf.Min(position.x, minX);
             minY = Mathf.Min(position.y, minY);
         }
-        minX -= 10;
-        minY -= 10;
-        maxX += 10;
-        maxY += 10;
-        Debug.Log(maxY);
 
-        map = new int[maxX - minX, maxY - minY];
+        map = new int[maxX - minX + 1, maxY - minY + 1];
         mapOffset = new Vector3Int(minX, minY);
+
         foreach (Vector3Int position in bounds.allPositionsWithin)
         {
             TileBase tileBase = tilemap.GetTile(position);
             if (tileBase == null)
             {
-                map[position.x - mapOffset.x, position.y - mapOffset.y] = 0;
+                map[position.x - mapOffset.x, position.y - mapOffset.y] = 1;
             }
             else
             {
-                map[position.x - mapOffset.x, position.y - mapOffset.y] = 1;
+                map[position.x - mapOffset.x, position.y - mapOffset.y] = 0;
             }
         }
     }

@@ -163,7 +163,7 @@ public class PathFinder
         Node tempNode;
         if (this.nodes[x - mapOffset.x, y - mapOffset.y] == null)
         {
-            tempNode = new Node(x, y, map[x - mapOffset.x, y - mapOffset.y] == 1);
+            tempNode = new Node(x, y, map[x - mapOffset.x, y - mapOffset.y] == 0);
 
             this.nodes[x - mapOffset.x, y - mapOffset.y] = tempNode;
         }
