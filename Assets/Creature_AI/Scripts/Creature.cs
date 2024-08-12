@@ -72,8 +72,10 @@ namespace Creature{
         private Node endNode = new Node(true);
         private float moveFrame = 0.05f;
 
+        protected PathFinder pathFinder;
+
         protected Vector3 targetPosition;
-        private List<Node> path;
+        protected List<Node> path;
 
         private bool isChasing = false;
 
@@ -101,6 +103,7 @@ namespace Creature{
             pathLineRenderer = GetComponent<PathLineRenderer>();
             detector = GetComponent<Detector>();
             detector.SetTargetMask(LayerMask.GetMask("Player"));
+            pathFinder = new PathFinder(map, mapOffset);
             InitActions();
             actions[(int)status].Play();
             StartCoroutine(MoveOnPath()); 
@@ -124,6 +127,7 @@ namespace Creature{
         public virtual IEnumerator AlertedAction()
         {
             DetectPlayer();
+            SetRandomPath();
             detector.setLookingAngle(detector.getLookingAngle() + 10f);
             yield return new WaitForSeconds(0.1f);
             actions[(int)status].Play();
@@ -167,7 +171,7 @@ namespace Creature{
         {
             startNode.SetPosition(transform.position.x, transform.position.y);
             endNode.SetPosition(x, y);
-            PathFinder pathFinder = new PathFinder(map, mapOffset);
+            
             try
             {
                 List<Node> path = pathFinder.FindPath(startNode, endNode);
@@ -184,6 +188,10 @@ namespace Creature{
             }
         }
 
+        protected void SetRandomPath()
+        {
+            path = pathFinder.GetRandomPath(10, deltaPosition, Vector3ToVector3Int(transform.position));
+        }
 
         IEnumerator MoveOnPath()
         {
@@ -237,6 +245,15 @@ namespace Creature{
             {
                 Destroy(collision.gameObject);
             }
+        }
+
+        Vector3Int Vector3ToVector3Int(Vector3 vector)
+        {
+            return new Vector3Int(
+                Mathf.RoundToInt(vector.x),
+                Mathf.RoundToInt(vector.y),
+                Mathf.RoundToInt(vector.z)
+            );
         }
     }
 }
