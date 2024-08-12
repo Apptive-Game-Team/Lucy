@@ -7,6 +7,7 @@ namespace CharacterCamera
     public abstract class Character
     {
         protected Animator animator;
+        protected float CharacterMoveSpeed = 5f;
 
         public void Initialize(Animator anim)
         {
@@ -29,9 +30,10 @@ namespace CharacterCamera
     {
         public override void Move()
         {
-            animator.transform.Translate(Vector2.up * Time.deltaTime);
+            animator.transform.Translate(Vector2.up * CharacterMoveSpeed * Time.deltaTime);
             animator.SetFloat("MoveY", 1f);
             animator.SetFloat("LastMoveY",1f);
+            animator.SetFloat("LastMoveX",0);
         }
     }
 
@@ -39,9 +41,10 @@ namespace CharacterCamera
     {
         public override void Move()
         {
-            animator.transform.Translate(Vector2.down * Time.deltaTime);
+            animator.transform.Translate(Vector2.down * CharacterMoveSpeed *  Time.deltaTime);
             animator.SetFloat("MoveY", -1f);
             animator.SetFloat("LastMoveY",-1f);
+            animator.SetFloat("LastMoveX",0);
         }
     }
 
@@ -49,9 +52,10 @@ namespace CharacterCamera
     {
         public override void Move()
         {
-            animator.transform.Translate(Vector2.right * Time.deltaTime);
+            animator.transform.Translate(Vector2.right * CharacterMoveSpeed *  Time.deltaTime);
             animator.SetFloat("MoveX", 1f);
             animator.SetFloat("LastMoveX",1f);
+            animator.SetFloat("LastMoveY",0);
         }
     }
 
@@ -59,16 +63,20 @@ namespace CharacterCamera
     {
         public override void Move()
         {
-            animator.transform.Translate(Vector2.left * Time.deltaTime);
+            animator.transform.Translate(Vector2.left * CharacterMoveSpeed *  Time.deltaTime);
             animator.SetFloat("MoveX", -1f);
             animator.SetFloat("LastMoveX",-1f);
+            animator.SetFloat("LastMoveY",0);
         }
     }
+
+
 
     public class CharacterMove2 : MonoBehaviour
     {
         private Character characterMovement;
         private Animator animator;
+        
 
         void Start()
         {
