@@ -34,8 +34,8 @@ namespace CharacterCamera
             transform.position = Vector3.Lerp(transform.position,Character.transform.position + new Vector3(0,0,-10),Time.deltaTime * CameraMoveSpeed);
             //transform.LookAt(Character.transform);
 
-            float ClampX = Mathf.Clamp(transform.position.x,-diffX,diffX);
-            float ClampY = Mathf.Clamp(transform.position.y,-diffY,diffY);
+            float ClampX = Mathf.Clamp(transform.position.x,-diffX - 5,diffX-5);
+            float ClampY = Mathf.Clamp(transform.position.y,-diffY +14,diffY +14);
             transform.position = new Vector3(ClampX,ClampY,-10);
         }
     }
