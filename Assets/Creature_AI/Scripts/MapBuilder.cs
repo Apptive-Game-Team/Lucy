@@ -17,7 +17,7 @@ public class MapBuilder : MonoBehaviour
         {
             for (int j = 0; j< map.GetLength(1); j++)
             {
-                if (map[i, j] == 0)
+                if (map[i, j] == 1)
                 {
                     MakeWall(i+mapOffset.x, j+mapOffset.y);
                 }
