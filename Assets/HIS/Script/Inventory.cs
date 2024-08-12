@@ -28,11 +28,6 @@ public class Inventory : MonoBehaviour
 
     private int curEquipIndex;
 
-
-    [Header("Events")]
-    public UnityEvent onOpenInventory;
-    public UnityEvent onCloseInventory;
-
     public static Inventory instance;
 
     private void Awake()
@@ -54,40 +49,6 @@ public class Inventory : MonoBehaviour
         }
 
         ClearSelectItemWindow();
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            ToggleInventory();
-        }
-    }
-
-    public void ToggleInventory()
-    {
-        bool isActive = inventoryWindow.activeSelf;
-
-        if (isActive)
-        {
-            CloseInventory();
-        }
-        else
-        {
-            OpenInventory();
-        }
-    }
-
-    public void OpenInventory()
-    {
-        inventoryWindow.SetActive(true);
-        onOpenInventory?.Invoke();
-    }
-
-    public void CloseInventory()
-    {
-        inventoryWindow.SetActive(false);
-        onCloseInventory?.Invoke();
     }
 
     public bool AddItem(ItemData item)
