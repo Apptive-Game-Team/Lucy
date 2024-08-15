@@ -65,8 +65,8 @@ namespace Creature{
         private Detector detector;
 
         private PathLineRenderer pathLineRenderer;
-        private int[,] map;
-        private Vector3Int mapOffset;
+        protected int[,] map;
+        protected Vector3Int mapOffset;
         private Vector3 deltaPosition = new Vector3();
         private Node startNode = new Node(true);
         private Node endNode = new Node(true);
@@ -105,10 +105,7 @@ namespace Creature{
             pathLineRenderer = GetComponent<PathLineRenderer>();
             detector = GetComponent<Detector>();
             detector.SetTargetMask(LayerMask.GetMask("Player"));
-            pathFinder = new PathFinder(map, mapOffset);
             InitActions();
-            actions[(int)status].Play();
-            StartCoroutine(MoveOnPath()); 
         }
 
         public virtual IEnumerator PatrolAction()
@@ -198,7 +195,7 @@ namespace Creature{
             path = pathFinder.GetRandomPath(10, deltaPosition, Vector3ToVector3Int(transform.position));
         }
 
-        IEnumerator MoveOnPath()
+        protected IEnumerator MoveOnPath()
         {
             while(true)
             {
