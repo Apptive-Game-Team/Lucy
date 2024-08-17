@@ -48,9 +48,9 @@ namespace Creature
             //tempVelocity *= maxSpeed;
             //rigidbody.velocity = tempVelocity;
             speed = 4;
-            path = pathFinder.GetRandomPath(2, tempVelocity, Vector3ToVector3Int(transform.position));
+            path = pathFinder.GetRandomPath(20, tempVelocity, Vector3ToVector3Int(transform.position));
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(4);
             status = CreatureStatus.PATROL;
             actions[(int)status].Play();
         }
