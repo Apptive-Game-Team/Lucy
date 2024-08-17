@@ -6,18 +6,53 @@ using UnityEngine.Rendering.Universal;
 
 namespace Creature
 {
+
+    public class CreatureAvoidingAction : CreatureAction
+    {
+        Avoider avoider;
+        public CreatureAvoidingAction(Avoider avoider)
+        {
+            this.avoider = avoider;
+        }
+
+        public override void Play()
+        {
+            avoider.StartCoroutine(avoider.AvoidingAction());
+        }
+    }
+
     public class Avoider : Creature
     {
+
+        Vector3 tempVelocity = new Vector2();
+        Vector3 handLightPosition;
         void Start()
         {
             base.Start();
             minSpeed = 1;
             maxSpeed = 2;
 
+            actions.Add(new CreatureAvoidingAction(this));
+
             AddLightOnMap();
             pathFinder = new PathFinder(map, mapOffset);
             actions[(int)status].Play();
             StartCoroutine(MoveOnPath());
+        }
+
+        public IEnumerator AvoidingAction()
+        {
+            //Rigidbody2D rigidbody = gameObject.GetComponent<Rigidbody2D>();
+            tempVelocity.Set(transform.position.x - handLightPosition.x, transform.position.y - handLightPosition.y, 0);
+            tempVelocity.Normalize();
+            //tempVelocity *= maxSpeed;
+            //rigidbody.velocity = tempVelocity;
+            speed = 4;
+            path = pathFinder.GetRandomPath(2, tempVelocity, Vector3ToVector3Int(transform.position));
+
+            yield return new WaitForSeconds(0.1f);
+            status = CreatureStatus.PATROL;
+            actions[(int)status].Play();
         }
 
         private void AddLightOnMap()
@@ -79,6 +114,12 @@ namespace Creature
             }
 
             return points;
+        }
+
+        public void OnDetectedByHandLight(Vector3 handLightPosition)
+        {
+            status = CreatureStatus.AVOIDING;
+            this.handLightPosition = handLightPosition;
         }
     }
 }
