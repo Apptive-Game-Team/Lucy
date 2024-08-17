@@ -11,6 +11,7 @@ namespace Creature{
         PATROL = 0, // 기본
         PURSUIT = 1, // 추적
         ALERTED = 2, // 의심
+        AVOIDING = 3,
     }
 
     public class CreatureAction
@@ -249,7 +250,7 @@ namespace Creature{
             }
         }
 
-        Vector3Int Vector3ToVector3Int(Vector3 vector)
+        protected Vector3Int Vector3ToVector3Int(Vector3 vector)
         {
             return new Vector3Int(
                 Mathf.RoundToInt(vector.x),
