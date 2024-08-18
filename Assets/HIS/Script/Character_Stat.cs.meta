@@ -3,7 +3,9 @@ guid: bf89eb763392b67448840be5f0794184
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - mentalSlider: {fileID: 6082115540736696829, guid: f21eb07419708d94991d646990faa662, type: 3}
+  - staminaSlider: {fileID: 7270133323059010296, guid: 784a1c6fd7944394db667cc4c15834b5, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
