@@ -203,21 +203,29 @@ namespace Creature{
                 yield return new WaitForSeconds(0.01f);
 
                 Node node;
-                try
-                {
-                    node = path[0];
-                    if (node.X == transform.position.x && node.Y == transform.position.y)
-                    {
-                        node = path[1];
-                        path.RemoveAt(1);
-                    }
-                    path.RemoveAt(0);
-                }
-                catch
+
+                if (path == null ||path.Count == 0)
                 {
                     isChasing = false;
+                    yield return new WaitForSeconds(1f);
                     continue;
                 }
+
+                node = path[0];
+                if (node.X == transform.position.x && node.Y == transform.position.y)
+                {
+                    if (path.Count == 1)
+                    {
+                        isChasing = false;
+                        yield return new WaitForSeconds(1f);
+                        continue;
+                    }
+                        
+                    node = path[1];
+                    path.RemoveAt(1);
+                }
+                path.RemoveAt(0);
+                
 
                 isChasing = true;
 
