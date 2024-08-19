@@ -170,7 +170,7 @@ namespace Creature{
         }
 
 
-        protected List<Node> FindPath(float x, float y)
+        protected virtual List<Node> FindPath(float x, float y)
         {
             startNode.SetPosition(transform.position.x, transform.position.y);
             endNode.SetPosition(x, y);
@@ -191,7 +191,7 @@ namespace Creature{
             }
         }
 
-        protected void SetRandomPath()
+        protected virtual void SetRandomPath()
         {
             path = pathFinder.GetRandomPath(10, deltaPosition, Vector3ToVector3Int(transform.position));
         }
