@@ -6,10 +6,29 @@ namespace Dialogue
 {
     public class DialogueController2 : MonoBehaviour
     {
-        public Boolean GetOutFirstRoom = false;
-        public Boolean GetInRightDownRoom = false;
-        public Boolean GetInRightUpRoom = false;
-        public Boolean CheckStairRoom = false;
+        public int GetOutFirstRoom = 0;
+        public int GetInRightDownRoom = 0;
+        public int GetInRightUpRoom = 0;
+        public int CheckStairRoom = 0;
+
+        public void SetDialogueFlag(int num)
+        {
+            switch (num)
+            {
+                case 0:
+                    GetOutFirstRoom++;
+                    break;
+                case 1:
+                    GetInRightDownRoom++;
+                    break;
+                case 2:
+                    GetInRightUpRoom++;
+                    break;
+                case 3:
+                    CheckStairRoom++;
+                    break;
+            }
+        }
 
         void Start()
         {
@@ -23,24 +42,28 @@ namespace Dialogue
                 DialogueSystem2.Instance.ShowDialogue(DialogueDatas2.Instance.GetDialogue("Chapter1","FirstRoom")[1]);
             }
 
-            if (GetOutFirstRoom || Input.GetKeyDown(KeyCode.Alpha1)) // 문열고 복도로 나갈때 
+            if (GetOutFirstRoom == 1 || Input.GetKeyDown(KeyCode.Alpha1)) // 문열고 복도로 나갈때 
             {
                 DialogueSystem2.Instance.ShowDialogue(DialogueDatas2.Instance.GetDialogue("Chapter1","Corrider")[0]);
+                GetOutFirstRoom++;
             }
 
-            if (GetInRightDownRoom || Input.GetKeyDown(KeyCode.Alpha2)) // 오른쪽 방 들어갔을때
+            if (GetInRightDownRoom == 1 || Input.GetKeyDown(KeyCode.Alpha2)) // 오른쪽 방 들어갔을때
             {
                 DialogueSystem2.Instance.ShowDialogue(DialogueDatas2.Instance.GetDialogue("Chapter1","RightRoom")[0]);
+                GetInRightDownRoom++;
             }
 
-            if (GetInRightUpRoom || Input.GetKeyDown(KeyCode.Alpha3)) // 오른쪽 방 위에 들어갈때
+            if (GetInRightUpRoom == 1 || Input.GetKeyDown(KeyCode.Alpha3)) // 오른쪽 방 위에 들어갈때
             {
                 DialogueSystem2.Instance.ShowDialogue(DialogueDatas2.Instance.GetDialogue("Chapter1","RightRoom")[1]);
+                GetInRightUpRoom++;
             } 
 
-            if (CheckStairRoom || Input.GetKeyDown(KeyCode.Alpha4)) // 나와서 복도에 계단방을 확인할때
+            if (CheckStairRoom == 1 || Input.GetKeyDown(KeyCode.Alpha4)) // 나와서 복도에 계단방을 확인할때
             {
                 DialogueSystem2.Instance.ShowDialogue(DialogueDatas2.Instance.GetDialogue("Chapter1","Corrider")[1]);
+                CheckStairRoom++;
             }
         }
 
