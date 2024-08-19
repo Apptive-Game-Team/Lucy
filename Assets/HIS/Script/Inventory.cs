@@ -195,6 +195,7 @@ public class Inventory : MonoBehaviour
 
         if (slots[index].item.displayName == "손전등")
         {
+            HandLightSwitch.instance.TurnOnHandLight();
             FlashLight.instance.SetUi();
             FlashLight.instance.StartCoroutine(FlashLight.instance.ConsumeBattery());
         }
@@ -226,6 +227,7 @@ public class Inventory : MonoBehaviour
     {
         if (slots[index].item.displayName == "손전등")
         {
+            HandLightSwitch.instance.TurnOffHandLight();
             FlashLight.instance.TurnOffUi();
             FlashLight.instance.StopCoroutine(FlashLight.instance.ConsumeBattery());
         }
