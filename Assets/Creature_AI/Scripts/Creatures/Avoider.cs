@@ -27,6 +27,7 @@ namespace Creature
         protected Vector3 tempVelocity = new Vector2();
         protected Vector3 handLightPosition;
         protected int[,] lightAppliedMap;
+
         protected void Start()
         {
             base.Start();
