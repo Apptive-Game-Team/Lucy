@@ -22,12 +22,12 @@ namespace Creature
                 try
                 {
                     avoider = target.GetComponent<Avoider>();
+                    avoider.OnDetectedByHandLight(transform.position);
                 }
                 catch
                 {
                     continue;
                 }
-                avoider.OnDetectedByHandLight(transform.position);
             }
         }
     }
