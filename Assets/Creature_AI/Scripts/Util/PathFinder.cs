@@ -63,7 +63,7 @@ public class PathFinder
     private readonly int height;
     private Vector3Int mapOffset;
     private List<Tuple<int, int>> directions;
-    public int maxComputing = 10000;
+    public int maxComputing = 1000;
 
     private Node[,] nodes;
     public PathFinder(int[,] map, Vector3Int mapOffset)
@@ -176,6 +176,8 @@ public class PathFinder
         Node lastNode = new Node(true);
         List<Node> path = new List<Node>();
 
+        int computingCounter = 0;
+
         lastNode.SetPosition(position.x, position.y);
 
         List<Node> neighbors = GetNeighbors(new Node(
@@ -187,6 +189,11 @@ public class PathFinder
         int currentDirection = this.directions.FindIndex(t => t.Item1 == Mathf.Sign(direction.x) && t.Item2 == Mathf.Sign(direction.y));
         for (int i = 0; i<nodeNum; i++)
         {
+            computingCounter++;
+            if (computingCounter < maxComputing)
+            {
+                return null;
+            }
             int tempRandomNum = random.Next(0, 5);
             
             if (tempRandomNum == 1)
