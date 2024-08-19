@@ -175,6 +175,7 @@ public class Inventory : MonoBehaviour
                 {
                     case ConsumableType.Battery:
                         FlashLight.battery += 2;
+                        FlashLight.instance.UpdateUi();
                         break;
                 }
             }
