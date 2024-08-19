@@ -26,6 +26,7 @@ namespace Creature
 
         Vector3 tempVelocity = new Vector2();
         Vector3 handLightPosition;
+        int[,] lightAppliedMap;
         void Start()
         {
             base.Start();
@@ -35,18 +36,31 @@ namespace Creature
             actions.Add(new CreatureAvoidingAction(this));
 
             AddLightOnMap();
-            pathFinder = new PathFinder(map, mapOffset);
+            pathFinder = new PathFinder(lightAppliedMap, mapOffset);
             actions[(int)status].Play();
             StartCoroutine(MoveOnPath());
         }
 
+
+        protected override List<Node> FindPath(float x, float y)
+        {
+            AddLightOnMap();
+            pathFinder.SetMap(lightAppliedMap);
+            return base.FindPath(x, y);
+        }
+
+        protected override void SetRandomPath()
+        {
+            AddLightOnMap();
+            pathFinder.SetMap(lightAppliedMap);
+            base.SetRandomPath();
+        }
+
+
         public IEnumerator AvoidingAction()
         {
-            //Rigidbody2D rigidbody = gameObject.GetComponent<Rigidbody2D>();
             tempVelocity.Set(transform.position.x - handLightPosition.x, transform.position.y - handLightPosition.y, 0);
             tempVelocity.Normalize();
-            //tempVelocity *= maxSpeed;
-            //rigidbody.velocity = tempVelocity;
             speed = 4;
             path = pathFinder.GetRandomPath(20, tempVelocity, Vector3ToVector3Int(transform.position));
 
@@ -57,6 +71,7 @@ namespace Creature
 
         private void AddLightOnMap()
         {
+            lightAppliedMap = DeepCopy(map);
             GameObject[] spotLights = GameObject.FindGameObjectsWithTag("Light");
 
             foreach (GameObject spotLight in spotLights)
@@ -71,7 +86,7 @@ namespace Creature
                 {
                     try
                     {
-                        map[point.Item1 - mapOffset.x, point.Item2 - mapOffset.y] = 0;
+                        lightAppliedMap[point.Item1 - mapOffset.x, point.Item2 - mapOffset.y] = 0;
                     }
                     catch { }
                     
@@ -120,6 +135,24 @@ namespace Creature
         {
             status = CreatureStatus.AVOIDING;
             this.handLightPosition = handLightPosition;
+        }
+
+        int[,] DeepCopy(int[,] originalArray)
+        {
+            int rows = originalArray.GetLength(0);
+            int cols = originalArray.GetLength(1);
+
+            int[,] newArray = new int[rows, cols];
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    newArray[i, j] = originalArray[i, j];
+                }
+            }
+
+            return newArray;
         }
     }
 }
