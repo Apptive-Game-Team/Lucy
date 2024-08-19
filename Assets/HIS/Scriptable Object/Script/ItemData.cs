@@ -31,6 +31,7 @@ public class ItemData : ScriptableObject
     public string description;
     public ItemType type;
     public Sprite icon;
+    public int itemId;
 
     [Header("Stacking")]
     public bool canStack;

@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
+[System.Serializable]
 public class ItemSlot
 {
     public ItemData item;
@@ -27,7 +28,7 @@ public class Inventory : MonoBehaviour
     public GameObject equipButton;
     public GameObject unEquipButton;
 
-    private int curEquipIndex;
+    public ItemSlot[] curEquipped;
 
     public static Inventory instance;
 
@@ -41,6 +42,8 @@ public class Inventory : MonoBehaviour
     {
         inventoryWindow.SetActive(false);
         slots = new ItemSlot[uidSlot.Length];
+
+        curEquipped = new ItemSlot[100];
 
         for (int i = 0; i < slots.Length; i++)
         {
@@ -187,22 +190,32 @@ public class Inventory : MonoBehaviour
     {
         if (selectedItem != null && selectedItem.item.type == ItemType.Equipable)
         {
-            Equip(selectedItemIndex);
+            Equip(selectedItemIndex); 
         }
     }
 
     void Equip(int index)
     {
-        if (curEquipIndex >= 0 && curEquipIndex < slots.Length && uidSlot[curEquipIndex].equipped)
+
+        if (slots[index].item.displayName == "손전등")
         {
-            UnEquip(curEquipIndex);
+            FlashLight.instance.SetUi();
+            FlashLight.instance.StartCoroutine(FlashLight.instance.ConsumeBattery());
         }
 
-        curEquipIndex = index;
-        uidSlot[curEquipIndex].equipped = true;
+        for (int i = 0; i < curEquipped.Length; i++)
+        {
+            if (curEquipped[i] == null)
+            {
+                curEquipped[i] = slots[index];
+                uidSlot[index].equipped = true;
+                equipButton.SetActive(false);
+                unEquipButton.SetActive(true);
+                return;
+            }
+        }
 
-        equipButton.SetActive(false);
-        unEquipButton.SetActive(true);
+        
     }
 
     public void OnUnEquipButton()
@@ -215,15 +228,34 @@ public class Inventory : MonoBehaviour
 
     void UnEquip(int index)
     {
-        if (index >= 0 && index < slots.Length && uidSlot[index].equipped)
+        for (int i = 0; i < curEquipped.Length; i++)
         {
-            uidSlot[index].equipped = false;
+            if (curEquipped[i] == slots[index])
+            {
+                curEquipped[i] = null;
+                uidSlot[index].equipped = false;
 
-            equipButton.SetActive(true);
-            unEquipButton.SetActive(false);
-
-            Debug.Log($"{slots[index].item.displayName} unequipped.");
+                equipButton.SetActive(true);
+                unEquipButton.SetActive(false); 
+                return;
+            }
         }
+        if (slots[index].item.displayName == "손전등")
+        {
+            FlashLight.instance.TurnOffUi();
+            FlashLight.instance.StopCoroutine(FlashLight.instance.ConsumeBattery());
+        }
+    }
+    public bool IsItemEquipped(ItemData item)
+    {
+        for (int i = 0; i < curEquipped.Length; i++)
+        {
+            if (curEquipped[i].item == item)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void RemoveSelectedItem()

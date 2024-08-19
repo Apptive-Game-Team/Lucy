@@ -1,0 +1,29 @@
+fileFormatVersion: 2
+guid: 7cf61e8ebe70a3446b32597be1e2fb9d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - battery1: {fileID: 5100515905702854524, guid: eb5a757ed24e7c04e961e90a1673d32e, type: 3}
+  - battery2: {fileID: 2717951521686028895, guid: e324f5cf335ad02439f6f8eaf41a77d2, type: 3}
+  - battery3: {fileID: 3839458179493975367, guid: 57319382b857f2c4abeb8ef2a839ab8b, type: 3}
+  - battery4: {fileID: 5048343909530400790, guid: 9e15bc0aa4c410447bff1be58cf7ccd4, type: 3}
+  - battery5: {fileID: 1988796844201895963, guid: a566be52f32a9ec48898e2b03d4c4de6, type: 3}
+  - battery6: {fileID: 6832883377848249373, guid: 224679a25a2084f4493d78b9a5d45106, type: 3}
+  - battery7: {fileID: 6332295785078949114, guid: bf9663d922d3f9d45b6cc197605e11df, type: 3}
+  - battery8: {fileID: 3736125356046266637, guid: c2f57e13ea0c4df439b2d44bbe2fc0e8, type: 3}
+  - battery9: {fileID: 152776653995546798, guid: 6383456b537f62a4ca5d7ca58fd50d56, type: 3}
+  - unActivaedBattery1: {fileID: 8510533824311591998, guid: 8786a780237ab2543abe660dfda9dd41, type: 3}
+  - unActivaedBattery2: {fileID: 784220847272730136, guid: 46d2e3b8a1cc2c44a8d2c97f54a6450a, type: 3}
+  - unActivaedBattery3: {fileID: 63642813789707130, guid: 954528150db2d384799e6dd4f7e35269, type: 3}
+  - unActivaedBattery4: {fileID: 5393660958918154646, guid: 1c003aaebd4c752418646bba7cc991af, type: 3}
+  - unActivaedBattery5: {fileID: 9180744282976311752, guid: d50ade174c4a2a7459943d31fddfd685, type: 3}
+  - unActivaedBattery6: {fileID: 773004114024069556, guid: 577823a45247b074bbc3ad5169e76b70, type: 3}
+  - unActivaedBattery7: {fileID: 7213895374875705113, guid: fca5f7c2f6ccec048a3de215f22b28de, type: 3}
+  - unActivaedBattery8: {fileID: 7457429819491618854, guid: 7595978dec0722e4b95230aa10edb66e, type: 3}
+  - unActivaedBattery9: {fileID: 956017479346064727, guid: 543eb2d5cc6086b48b9ddb9ed3b94ef9, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
