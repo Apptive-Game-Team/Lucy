@@ -27,12 +27,6 @@ namespace Creature
                 }
                 catch
                 {
-                    try
-                    {
-                        stunnee = target.GetComponent<Stunnee>();
-                        stunnee.OnDetectedByHandLight(transform.position);
-                    }
-                    catch { }
                     continue;
                 }
             }
