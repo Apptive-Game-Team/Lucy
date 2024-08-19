@@ -4,74 +4,78 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class DialogueManager : MonoBehaviour
+namespace dialogue_2
 {
-    public TMP_Text dialogueText;
-    public Image dialogueBox;
-    public Image dialogueCharacter;
-
-    private Queue<string> sentences;
-
-    void Start()
+    public class DialogueManager : MonoBehaviour
     {
-        sentences = new Queue<string>();
-        dialogueBox.gameObject.SetActive(false);
-    }
+        public TMP_Text dialogueText;
+        public Image dialogueBox;
+        public Image dialogueCharacter;
 
-    public void StartDialogue(Dialogue dialogue)
-    {
-        dialogueBox.gameObject.SetActive(true);
+        private Queue<string> sentences;
 
-        sentences.Clear();
-
-        foreach (string sentence in dialogue.sentences)
+        void Start()
         {
-            sentences.Enqueue(sentence);
+            sentences = new Queue<string>();
+            dialogueBox.gameObject.SetActive(false);
         }
 
-        DisplayNextSentence();
-
-    }
-
-    public void DisplayNextSentence()
-    {
-        if (sentences.Count == 0)
+        public void StartDialogue(Dialogue dialogue)
         {
-            EndDialogue();
-            return;
+            dialogueBox.gameObject.SetActive(true);
+
+            sentences.Clear();
+
+            foreach (string sentence in dialogue.sentences)
+            {
+                sentences.Enqueue(sentence);
+            }
+
+            DisplayNextSentence();
+
         }
 
-        string sentence = sentences.Dequeue();
-        dialogueText.text = sentence;
+        public void DisplayNextSentence()
+        {
+            if (sentences.Count == 0)
+            {
+                EndDialogue();
+                return;
+            }
+
+            string sentence = sentences.Dequeue();
+            dialogueText.text = sentence;
+        }
+
+        void EndDialogue()
+        {
+            dialogueBox.gameObject.SetActive(false);
+        }
+
     }
 
-    void EndDialogue()
+    [System.Serializable]
+    public class Dialogue
     {
-        dialogueBox.gameObject.SetActive(false);
+        public string name;
+        [TextArea(3, 10)]
+        public string[] sentences;
     }
 
+    public class DialogueTrigger : MonoBehaviour
+    {
+        public Dialogue dialogue;
+        private DialogueManager dialogueManager;
+
+        void Start()
+        {
+            dialogueManager = FindObjectOfType<DialogueManager>();
+        }
+
+        public void TriggerDialogue()
+        {
+            dialogueManager.StartDialogue(dialogue);
+        }
+    }
 }
 
-[System.Serializable]
-public class Dialogue
-{
-    public string name;
-    [TextArea(3, 10)]
-    public string[] sentences;
-}
-
-public class DialogueTrigger : MonoBehaviour
-{
-    public Dialogue dialogue;
-    private DialogueManager dialogueManager;
-
-    void Start()
-    {
-        dialogueManager = FindObjectOfType<DialogueManager>();
-    }
-
-    public void TriggerDialogue()
-    {
-        dialogueManager.StartDialogue(dialogue);
-    }
-}
