@@ -8,6 +8,7 @@ namespace Creature
     {
         Detector detector;
         Avoider avoider;
+        Stunnee stunnee;
         void Start()
         {
             detector = gameObject.GetComponent<Detector>();
@@ -26,6 +27,12 @@ namespace Creature
                 }
                 catch
                 {
+                    try
+                    {
+                        stunnee = target.GetComponent<Stunnee>();
+                        stunnee.OnDetectedByHandLight(transform.position);
+                    }
+                    catch { }
                     continue;
                 }
             }
