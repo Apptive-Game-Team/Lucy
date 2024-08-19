@@ -39,9 +39,17 @@ namespace Dialogue
                 {
                     "Corrider", new string[][]
                     {
-                        new string[] { "복도입니다." }
+                        new string[] { "복도입니다." },
+                        new string[] { "계단방이 있네요."}
                     }
-                }
+                },
+                {
+                    "RightRoom", new string[][]
+                    {
+                        new string[] {"오른쪽방 아래입니다."},
+                        new string[] {"오른쪽방 위입니다."}
+                    }
+                },
             };
         }
 
