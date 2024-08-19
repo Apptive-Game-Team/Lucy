@@ -87,6 +87,7 @@ namespace Creature{
 
         protected int maxSpeed;
         protected int minSpeed;
+
         private void InitActions()
         {
             actions = new List<CreatureAction>()
@@ -130,9 +131,9 @@ namespace Creature{
         {
             speed = minSpeed;
             DetectPlayer();
-            SetRandomPath();
             detector.setLookingAngle(detector.getLookingAngle() + 10f);
             yield return new WaitForSeconds(0.1f);
+            SetRandomPath();
             actions[(int)status].Play();
         }
 
@@ -204,7 +205,7 @@ namespace Creature{
 
                 Node node;
 
-                if (path == null ||path.Count == 0)
+                if (path == null || path.Count == 0)
                 {
                     isChasing = false;
                     yield return new WaitForSeconds(1f);
