@@ -1,12 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [Serializable]
 public class Node : IComparable<Node>
@@ -64,7 +58,7 @@ public class Node : IComparable<Node>
 
 public class PathFinder
 {
-    private readonly int[,] map;
+    private int[,] map;
     private readonly int width;
     private readonly int height;
     private Vector3Int mapOffset;
@@ -80,6 +74,11 @@ public class PathFinder
         height = map.GetLength(1);
         nodes = new Node[width, height];
         InitDirections();
+    }
+
+    public void SetMap(int[,] newMap)
+    {
+        this.map = newMap;
     }
 
     public List<Node> FindPath(Node startNode, Node endNode)
