@@ -8,6 +8,7 @@ namespace Creature
     {
         Detector detector;
         Avoider avoider;
+        Stunnee stunnee;
         void Start()
         {
             detector = gameObject.GetComponent<Detector>();
