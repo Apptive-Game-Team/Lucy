@@ -167,23 +167,18 @@ public class Inventory : MonoBehaviour
 
     public void OnUseButton()
     {
-        // 아이템 타입이 사용 가능할 경우
-        /*if (selectedItem.item.type == ItemType.Consumable)
+        if (selectedItem.item.type == ItemType.Consumable)
         {
             for (int i = 0; i < selectedItem.item.consumables.Length; i++)
             {
                 switch (selectedItem.item.consumables[i].type)
                 {
-                    // consumables 타입에 따라 Heal과 Eat
                     case ConsumableType.Battery:
-                        conditions.Heal(selectedItem.item.consumables[i].value);
-                        break;
-                    case ConsumableType.Hunger:
-                        conditions.Eat(selectedItem.item.consumables[i].value);
+                        FlashLight.battery += 2;
                         break;
                 }
             }
-        }*/
+        }
         RemoveSelectedItem();
     }
     public void OnEquipButton()
@@ -228,6 +223,11 @@ public class Inventory : MonoBehaviour
 
     void UnEquip(int index)
     {
+        if (slots[index].item.displayName == "손전등")
+        {
+            FlashLight.instance.TurnOffUi();
+            FlashLight.instance.StopCoroutine(FlashLight.instance.ConsumeBattery());
+        }
         for (int i = 0; i < curEquipped.Length; i++)
         {
             if (curEquipped[i] == slots[index])
@@ -239,11 +239,6 @@ public class Inventory : MonoBehaviour
                 unEquipButton.SetActive(false); 
                 return;
             }
-        }
-        if (slots[index].item.displayName == "손전등")
-        {
-            FlashLight.instance.TurnOffUi();
-            FlashLight.instance.StopCoroutine(FlashLight.instance.ConsumeBattery());
         }
     }
     public bool IsItemEquipped(ItemData item)
