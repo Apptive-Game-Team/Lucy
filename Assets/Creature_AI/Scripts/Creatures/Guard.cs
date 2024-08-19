@@ -15,6 +15,10 @@ namespace Creature
             base.Start();
             minSpeed = 1;
             maxSpeed = 2;
+
+            pathFinder = new PathFinder(map, mapOffset);
+            actions[(int)status].Play();
+            StartCoroutine(MoveOnPath());
         }
 
         public override IEnumerator PatrolAction()

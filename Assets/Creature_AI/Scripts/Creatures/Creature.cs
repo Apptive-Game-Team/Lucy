@@ -11,6 +11,7 @@ namespace Creature{
         PATROL = 0, // 기본
         PURSUIT = 1, // 추적
         ALERTED = 2, // 의심
+        AVOIDING = 3,
     }
 
     public class CreatureAction
@@ -65,8 +66,8 @@ namespace Creature{
         private Detector detector;
 
         private PathLineRenderer pathLineRenderer;
-        private int[,] map;
-        private Vector3Int mapOffset;
+        protected int[,] map;
+        protected Vector3Int mapOffset;
         private Vector3 deltaPosition = new Vector3();
         private Node startNode = new Node(true);
         private Node endNode = new Node(true);
@@ -105,10 +106,7 @@ namespace Creature{
             pathLineRenderer = GetComponent<PathLineRenderer>();
             detector = GetComponent<Detector>();
             detector.SetTargetMask(LayerMask.GetMask("Player"));
-            pathFinder = new PathFinder(map, mapOffset);
             InitActions();
-            actions[(int)status].Play();
-            StartCoroutine(MoveOnPath()); 
         }
 
         public virtual IEnumerator PatrolAction()
@@ -172,7 +170,7 @@ namespace Creature{
         }
 
 
-        protected List<Node> FindPath(float x, float y)
+        protected virtual List<Node> FindPath(float x, float y)
         {
             startNode.SetPosition(transform.position.x, transform.position.y);
             endNode.SetPosition(x, y);
@@ -193,33 +191,41 @@ namespace Creature{
             }
         }
 
-        protected void SetRandomPath()
+        protected virtual void SetRandomPath()
         {
             path = pathFinder.GetRandomPath(10, deltaPosition, Vector3ToVector3Int(transform.position));
         }
 
-        IEnumerator MoveOnPath()
+        protected IEnumerator MoveOnPath()
         {
             while(true)
             {
                 yield return new WaitForSeconds(0.01f);
 
                 Node node;
-                try
-                {
-                    node = path[0];
-                    if (node.X == transform.position.x && node.Y == transform.position.y)
-                    {
-                        node = path[1];
-                        path.RemoveAt(1);
-                    }
-                    path.RemoveAt(0);
-                }
-                catch
+
+                if (path == null ||path.Count == 0)
                 {
                     isChasing = false;
+                    yield return new WaitForSeconds(1f);
                     continue;
                 }
+
+                node = path[0];
+                if (node.X == transform.position.x && node.Y == transform.position.y)
+                {
+                    if (path.Count == 1)
+                    {
+                        isChasing = false;
+                        yield return new WaitForSeconds(1f);
+                        continue;
+                    }
+                        
+                    node = path[1];
+                    path.RemoveAt(1);
+                }
+                path.RemoveAt(0);
+                
 
                 isChasing = true;
 
@@ -252,7 +258,7 @@ namespace Creature{
             }
         }
 
-        Vector3Int Vector3ToVector3Int(Vector3 vector)
+        protected Vector3Int Vector3ToVector3Int(Vector3 vector)
         {
             return new Vector3Int(
                 Mathf.RoundToInt(vector.x),

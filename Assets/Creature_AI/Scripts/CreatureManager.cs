@@ -22,7 +22,6 @@ public class CreatureManager : MonoBehaviour
         {
             _instance = this;
             mapBuilder = gameObject.GetComponent<MapBuilder>();
-            player = GameObject.FindWithTag("Player").GetComponent<Player>();
             tilemap = GameObject.Find("Floor").GetComponent<Tilemap>();
             DontDestroyOnLoad(gameObject);
         }
@@ -34,7 +33,6 @@ public class CreatureManager : MonoBehaviour
 
     private int[,] map;
 
-    private Player player;
     private List<Creature.Creature> creatures = new List<Creature.Creature>();
     private MapBuilder mapBuilder;
     private Tilemap tilemap;
@@ -45,10 +43,6 @@ public class CreatureManager : MonoBehaviour
         creatures.Add(creature);
     }
 
-    public Player GetPlayer()
-    {
-        return player;
-    }
 
     public int[,] GetMap()
     {
