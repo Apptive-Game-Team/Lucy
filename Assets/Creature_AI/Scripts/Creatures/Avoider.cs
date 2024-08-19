@@ -24,10 +24,10 @@ namespace Creature
     public class Avoider : Creature
     {
 
-        Vector3 tempVelocity = new Vector2();
-        Vector3 handLightPosition;
-        int[,] lightAppliedMap;
-        void Start()
+        protected Vector3 tempVelocity = new Vector2();
+        protected Vector3 handLightPosition;
+        protected int[,] lightAppliedMap;
+        protected void Start()
         {
             base.Start();
             minSpeed = 1;
@@ -69,7 +69,7 @@ namespace Creature
             actions[(int)status].Play();
         }
 
-        private void AddLightOnMap()
+        protected void AddLightOnMap()
         {
             lightAppliedMap = DeepCopy(map);
             GameObject[] spotLights = GameObject.FindGameObjectsWithTag("Light");
@@ -108,7 +108,7 @@ namespace Creature
             base.OnTriggerEnter2D(collision);
         }
 
-        public static List<(int, int)> PointsInCircle(int cx, int cy, int radius)
+        public List<(int, int)> PointsInCircle(int cx, int cy, int radius)
         {
             List<(int, int)> points = new List<(int, int)>();
 
@@ -137,7 +137,7 @@ namespace Creature
             this.handLightPosition = handLightPosition;
         }
 
-        int[,] DeepCopy(int[,] originalArray)
+        protected int[,] DeepCopy(int[,] originalArray)
         {
             int rows = originalArray.GetLength(0);
             int cols = originalArray.GetLength(1);
