@@ -77,7 +77,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 25e7d381cdfab954e9177dc114f5577f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -247,13 +247,95 @@ PrefabInstance:
       propertyPath: m_Name
       value: HandLight
       objectReference: {fileID: 0}
+    - target: {fileID: 8918480300811769740, guid: f2f9c78dd3ebed440b56941d57656767, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4114606128274242125, guid: f2f9c78dd3ebed440b56941d57656767, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1589833201782200636}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f2f9c78dd3ebed440b56941d57656767, type: 3}
 --- !u!4 &4061724825826476492 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4114606128274242125, guid: f2f9c78dd3ebed440b56941d57656767, type: 3}
   m_PrefabInstance: {fileID: 91234505719528321}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8827318982427012109 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8918480300811769740, guid: f2f9c78dd3ebed440b56941d57656767, type: 3}
+  m_PrefabInstance: {fileID: 91234505719528321}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &481275299800866051
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4061724825826476492}
+    m_Modifications:
+    - target: {fileID: 1206381454306919487, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 1206381454306919487, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 1206381454306919487, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1206381454306919487, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1206381454306919487, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1206381454306919487, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1206381454306919487, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1206381454306919487, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1206381454306919487, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1206381454306919487, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4486711181626231259, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: m_Name
+      value: HandLightComponent
+      objectReference: {fileID: 0}
+    - target: {fileID: 6862317460095625053, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: handlightObject
+      value: 
+      objectReference: {fileID: 8827318982427012109}
+    - target: {fileID: 7047974683324687954, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+      propertyPath: handlightObject
+      value: 
+      objectReference: {fileID: 8827318982427012109}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+--- !u!4 &1589833201782200636 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1206381454306919487, guid: 938c3e12530876d40b7e373f27a3933b, type: 3}
+  m_PrefabInstance: {fileID: 481275299800866051}
   m_PrefabAsset: {fileID: 0}
