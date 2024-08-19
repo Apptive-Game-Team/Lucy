@@ -39,15 +39,15 @@ namespace Dialogue
                 {
                     "Corrider", new string[][]
                     {
-                        new string[] { "복도입니다." },
-                        new string[] { "계단방이 있네요."}
+                        new string[] { "복도입니다.","오른쪽 방으로 가서 배터리가 있는지 찾아보자." },
+                        new string[] { "계단방이 있네요.", "왼쪽방에서 열쇠를 찾아보자."}
                     }
                 },
                 {
                     "RightRoom", new string[][]
                     {
-                        new string[] {"오른쪽방 아래입니다."},
-                        new string[] {"오른쪽방 위입니다."}
+                        new string[] {"오른쪽방 아래입니다.", "아래쪽에 배터리가 있을수도?"},
+                        new string[] {"오른쪽방 위입니다.", "배터리를 대체할만한 뭔가가..."}
                     }
                 },
             };
