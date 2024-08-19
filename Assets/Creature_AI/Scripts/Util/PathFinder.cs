@@ -190,7 +190,7 @@ public class PathFinder
         for (int i = 0; i<nodeNum; i++)
         {
             computingCounter++;
-            if (computingCounter < maxComputing)
+            if (computingCounter > maxComputing)
             {
                 return null;
             }
