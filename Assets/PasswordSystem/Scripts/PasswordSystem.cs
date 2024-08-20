@@ -36,11 +36,18 @@ public class PasswordSystem : MonoBehaviour
         text.SetText(currentPassword);
     }
 
+    public void ClosePasswordPage()
+    {
+        passwordCanvas.gameObject.SetActive(false);
+    }
+
     public void SetPassword(string password, PasswordObject passwordObject)
     {
         this.passwordObject = passwordObject;
         passwordCanvas.gameObject.SetActive(true);
         this.password = password;
+        currentPassword = "";
+        text.SetText(currentPassword);
     }
 
     private void InitButtonsOnClick()
