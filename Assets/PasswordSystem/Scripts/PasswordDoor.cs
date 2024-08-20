@@ -36,7 +36,6 @@ public class PasswordDoor : PasswordObject
         {
             if (Input.GetKey(KeyCode.Z))
             {
-                print("tqlf");
                 if (!doorInfo.isLocked)
                 {
                     door.SetActive(!door.activeSelf);
