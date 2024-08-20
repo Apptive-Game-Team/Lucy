@@ -7,15 +7,19 @@ public class Locker : PasswordObject
 
     [SerializeField] GameObject printText;
 
+    [SerializeField] GameObject item;
+
     public override void Unlock()
     {
         base.Unlock();
+        Instantiate(item);
+        
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.CompareTag("Player")){
-            if (Input.GetKeyDown(KeyCode.Z))
+            if (Input.GetKey(KeyCode.Z))
             {
                 OpenPasswordPage();
             }
