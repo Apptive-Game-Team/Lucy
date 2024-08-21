@@ -19,7 +19,7 @@ public class Locker : PasswordObject
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.CompareTag("Player")){
-            if (Input.GetKey(KeyCode.Z))
+            if (InputManager.Instance.GetKeyDown(ActionCode.Interaction))
             {
                 OpenPasswordPage();
             }

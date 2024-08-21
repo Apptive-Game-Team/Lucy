@@ -36,7 +36,7 @@ public class DoorObject : MonoBehaviour
     {
         if (other.gameObject.tag.Equals("Player"))
         {
-            if (Input.GetKeyDown(KeyCode.Z))
+            if (InputManager.Instance.GetKeyDown(ActionCode.Interaction))
             {
                 if(!doorInfo.isLocked)
                 {   
