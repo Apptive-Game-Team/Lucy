@@ -31,9 +31,11 @@ public class HandLightRotator : MonoBehaviour
     void Update()
     {
         Vector3 direction = InputManager.Instance.GetMoveVector();
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        handlightObject.transform.rotation = Quaternion.Euler(0, 0, angle - 90);
-        detector.SetLookingDirection(direction);
-        
+        if (!direction.Equals(Vector3.zero))
+        {
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            handlightObject.transform.rotation = Quaternion.Euler(0, 0, angle - 90);
+            detector.SetLookingDirection(direction);
+        }
     }
 }
