@@ -15,37 +15,25 @@ public class HandLightRotator : MonoBehaviour
 
     Detector detector;
 
-    private void Start()
+    private void Awake()
     {
-       detector = gameObject.GetComponent<Detector>();
-
-     if(handlightObject == null)
-        {
-            Debug.LogError("HandLight Object°¡ ÇöÀç ¾ø½À´Ï´Ù! ¾À¿¡¼­ player ÇÏÀ§¿¡ ÀÖ´Â ¿ÀºêÁ§Æ®¸¦ Ã£¾Æ¼­ ÂüÁ¶½ÃÄÑ ÁÖ¼¼¿ä!");
-        }    
+        detector = gameObject.GetComponent<Detector>();
     }
 
+    private void Start()
+    {
+        if(handlightObject == null)
+        {
+            Debug.LogError("HandLight Objectï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ player ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Ã£ï¿½Æ¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½ï¿½ï¿½!");
+        }    
+    }
+    
     void Update()
     {
-        if(Input.GetKey(KeyCode.W))
-        {
-            handlightObject.transform.rotation = Quaternion.Euler(0, 0, 0);
-            detector.SetLookingDirection(Vector3.up);
-        }
-        else if(Input.GetKey(KeyCode.A))
-        {
-            handlightObject.transform.rotation = Quaternion.Euler(0, 0, 90);
-            detector.SetLookingDirection(Vector3.left);
-        }
-        else if(Input.GetKey(KeyCode.S))
-        {
-            handlightObject.transform.rotation = Quaternion.Euler(0, 0, 180);
-            detector.SetLookingDirection(Vector3.down);
-        }
-        else if(Input.GetKey(KeyCode.D))
-        {
-            handlightObject.transform.rotation = Quaternion.Euler(0, 0, 270);
-            detector.SetLookingDirection(Vector3.right);
-        }
+        Vector3 direction = InputManager.Instance.GetMoveVector();
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        handlightObject.transform.rotation = Quaternion.Euler(0, 0, angle - 90);
+        detector.SetLookingDirection(direction);
+        
     }
 }
