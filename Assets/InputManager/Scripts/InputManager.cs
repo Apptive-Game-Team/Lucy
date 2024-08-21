@@ -70,6 +70,8 @@ public class InputManager : MonoBehaviour
 
     private Dictionary<ActionCode, bool> keyActiveFlags = new Dictionary<ActionCode, bool>();
 
+    Vector3 moveVector = new Vector3();
+
     public void SetKeyActive(ActionCode action, bool active)
     {
         keyActiveFlags[action] = active;
@@ -98,6 +100,38 @@ public class InputManager : MonoBehaviour
         {
             return false;
         }
+    }
+
+    public Vector3 GetMoveVector()
+    {
+        if (GetKey(ActionCode.MoveUp))
+        {
+            moveVector.y = 1;
+        } else if (GetKey(ActionCode.MoveDown))
+        {
+            moveVector.y = -1;
+        } else
+        {
+            moveVector.y = 0;
+        }
+
+        if (GetKey(ActionCode.MoveLeft))
+        {
+            moveVector.x = -1;
+        } else if (GetKey(ActionCode.MoveRight))
+        {
+            moveVector.x = +1;
+        } else
+        {
+            moveVector.x = 0;
+        }
+
+        return moveVector;
+    }
+
+    public bool GetKey(ActionCode action)
+    {
+        return (Input.GetKey(keyMappings[action]) && keyActiveFlags[action]);
     }
 
     IEnumerator KeyDownCounter(ActionCode action)
