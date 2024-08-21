@@ -34,7 +34,7 @@ public class PasswordDoor : PasswordObject
     {
         if (other.gameObject.tag.Equals("Player"))
         {
-            if (Input.GetKey(KeyCode.Z))
+            if (InputManager.Instance.GetKeyDown(ActionCode.Interaction))
             {
                 if (!doorInfo.isLocked)
                 {
