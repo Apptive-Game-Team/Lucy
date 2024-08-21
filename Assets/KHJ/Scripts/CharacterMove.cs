@@ -19,7 +19,7 @@ namespace CharacterCamera
 
         void FixedUpdate()
         {
-            playerRb.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized * playerMoveSpeed * Time.deltaTime;
+            playerRb.velocity = InputManager.Instance.GetMoveVector().normalized * playerMoveSpeed * Time.deltaTime;
 
             if(Math.Abs(Input.GetAxisRaw("Horizontal")) == 1 || Math.Abs(Input.GetAxisRaw("Vertical")) == 1)
             {
