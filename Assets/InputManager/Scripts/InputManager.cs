@@ -68,6 +68,18 @@ public class InputManager : MonoBehaviour
 
     private Dictionary<ActionCode, Coroutine> keyDownCounterCoroutine = new Dictionary<ActionCode, Coroutine>();
 
+    private Dictionary<ActionCode, bool> keyActiveFlags = new Dictionary<ActionCode, bool>();
+
+    public void SetKeyActive(ActionCode action, bool active)
+    {
+        keyActiveFlags[action] = active;
+    }
+
+    public bool GetKeyActive(ActionCode action)
+    {
+        return keyActiveFlags[action];
+    }
+
     public void SetKey(ActionCode actionCode, KeyCode newKey)
     {
         if (keyMappings.ContainsKey(actionCode))
@@ -75,7 +87,6 @@ public class InputManager : MonoBehaviour
             keyMappings[actionCode] = newKey;
         }
     }
-
 
     public bool GetKeyDown(ActionCode action)
     {
@@ -100,7 +111,7 @@ public class InputManager : MonoBehaviour
     {
         foreach (ActionCode action in keyMappings.Keys)
         {
-            if (Input.GetKeyDown(keyMappings[action]))
+            if (Input.GetKeyDown(keyMappings[action]) && keyActiveFlags[action])
             {
                 keyDownBools[action] = true;
                 Coroutine tempCoroutine = keyDownCounterCoroutine[action];
@@ -120,6 +131,7 @@ public class InputManager : MonoBehaviour
         {
             keyDownBools.Add(action, false);
             keyDownCounterCoroutine.Add(action, null);
+            keyActiveFlags.Add(action, true);
         }
     }
 }
