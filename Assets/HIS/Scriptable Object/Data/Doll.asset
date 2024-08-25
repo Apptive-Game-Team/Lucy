@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56d9a7dfb26e32a4ebd2b66676f78cc4, type: 3}
+  m_Name: Doll
+  m_EditorClassIdentifier: 
+  displayName: "\uC778\uD615"
+  description: "\uD3B8\uC548\uD574\uC9C4\uB2E4...\uC815\uC2E0\uB825\uC758 \uCD5C\uB300\uCE58\uAC00
+    10 \uC99D\uAC00\uD55C\uB2E4"
+  type: 2
+  icon: {fileID: -222885256, guid: 2cc2804d5a3fa17498a259e1a74379fd, type: 3}
+  itemId: 4
+  canStack: 0
+  maxStackAmount: 0
+  consumables:
+  - type: 3
+    value: 10

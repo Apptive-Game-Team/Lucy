@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: "\uBC30\uD130\uB9AC"
   description: "\uBC30\uD130\uB9AC. \uC0AC\uC6A9\uD558\uBA74 2\uC758 \uBC30\uD130\uB9AC\uB97C
     \uCDA9\uC804\uD569\uB2C8\uB2E4."
-  type: 1
+  type: 2
   icon: {fileID: 21300000, guid: db005d11213e5da47b9769c2e6c56eee, type: 3}
   itemId: 1
   canStack: 1
