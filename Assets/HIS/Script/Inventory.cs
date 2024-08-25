@@ -135,19 +135,19 @@ public class Inventory : MonoBehaviour
         }*/
 
         // 아이템 타입을 체크하여 버튼들 활성화
-        if(selectedItem.item.type == ItemType.Consumable)
+        if(selectedItem.item.type == ItemType.CONSUMABLE)
         {
             useButton.SetActive(true);
             equipButton.SetActive(false);
             unEquipButton.SetActive(false);
         }
-        if(selectedItem.item.type == ItemType.Equipable && !uidSlot[index].equipped)
+        if(selectedItem.item.type == ItemType.EQUIPABLE && !uidSlot[index].equipped)
         {
             useButton.SetActive(false);
             equipButton.SetActive(true);
             unEquipButton.SetActive(false);
         }
-        if(selectedItem.item.type == ItemType.Equipable && uidSlot[index].equipped)
+        if(selectedItem.item.type == ItemType.EQUIPABLE && uidSlot[index].equipped)
         {
             useButton.SetActive(false);
             equipButton.SetActive(false);
@@ -167,7 +167,7 @@ public class Inventory : MonoBehaviour
 
     public void OnUseButton()
     {
-        if (selectedItem.item.type == ItemType.Consumable)
+        if (selectedItem.item.type == ItemType.CONSUMABLE)
         {
             for (int i = 0; i < selectedItem.item.consumables.Length; i++)
             {
@@ -184,7 +184,7 @@ public class Inventory : MonoBehaviour
     }
     public void OnEquipButton()
     {
-        if (selectedItem != null && selectedItem.item.type == ItemType.Equipable)
+        if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
         {
             Equip(selectedItemIndex); 
         }
@@ -217,7 +217,7 @@ public class Inventory : MonoBehaviour
 
     public void OnUnEquipButton()
     {
-        if (selectedItem != null && selectedItem.item.type == ItemType.Equipable)
+        if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
         {
             UnEquip(selectedItemIndex);
         }
