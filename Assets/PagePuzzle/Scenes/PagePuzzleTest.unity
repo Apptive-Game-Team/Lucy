@@ -2489,34 +2489,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PagePuzzleSystem
       objectReference: {fileID: 0}
-    - target: {fileID: 3336207580198059894, guid: 43edd9df9665c4350ab23ce70f96444e, type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: 1a901bd513331cf4db881353751a634d, type: 2}
-    - target: {fileID: 3336207580198059894, guid: 43edd9df9665c4350ab23ce70f96444e, type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: -2316747588236140241, guid: 1a901bd513331cf4db881353751a634d, type: 2}
-    - target: {fileID: 3336207580198059894, guid: 43edd9df9665c4350ab23ce70f96444e, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4032128743972109876, guid: 43edd9df9665c4350ab23ce70f96444e, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4157376763208113671, guid: 43edd9df9665c4350ab23ce70f96444e, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 700
-      objectReference: {fileID: 0}
-    - target: {fileID: 4157376763208113671, guid: 43edd9df9665c4350ab23ce70f96444e, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4157376763208113671, guid: 43edd9df9665c4350ab23ce70f96444e, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8178521393004870892, guid: 43edd9df9665c4350ab23ce70f96444e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6.6009054
@@ -2631,22 +2603,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4542709341917733753, guid: 2750f4fff68a541e0b3e51e190b59e16, type: 3}
-      propertyPath: m_Size.x
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4542709341917733753, guid: 2750f4fff68a541e0b3e51e190b59e16, type: 3}
-      propertyPath: m_Size.y
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4542709341917733753, guid: 2750f4fff68a541e0b3e51e190b59e16, type: 3}
-      propertyPath: m_Offset.y
-      value: -2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8487938643633045939, guid: 2750f4fff68a541e0b3e51e190b59e16, type: 3}
-      propertyPath: puzzle
-      value: "\uAC00\uC7A5 \uC544\uB984\uB2E4\uC6B4 4\uAE00\uC790 \uC22B\uC790\uB294?"
-      objectReference: {fileID: 0}
     - target: {fileID: 8487938643633045939, guid: 2750f4fff68a541e0b3e51e190b59e16, type: 3}
       propertyPath: pagePuzzleSystem
       value: 
