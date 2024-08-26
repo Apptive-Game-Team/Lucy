@@ -6,28 +6,24 @@ namespace Test
     [CreateAssetMenu(fileName = "NewDialogueData", menuName = "Dialogue/Dialogue Data", order = 1)]
     public class TestDialogueData : ScriptableObject
     {
-        public static TestDialogueData Instance  {get; private set;}
-
-        void Awake()
+        [System.Serializable]
+        public class ChapterDialogue
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
+            public string chapterName;
+            public List<SceneDialogue> scenes;
         }
 
         [System.Serializable]
         public class SceneDialogue
         {
             public string sceneName;
-            public string[][] dialogues;
+            public List<Dialogue> dialogues;
         }
 
         [System.Serializable]
-        public class ChapterDialogue
+        public class Dialogue
         {
-            public string chapterName;
-            public List<SceneDialogue> scenes;
+            public string[] dialogueLines;
         }
 
         public List<ChapterDialogue> chapterDialogues;
@@ -40,7 +36,12 @@ namespace Test
                 SceneDialogue sceneData = chapterData.scenes.Find(s => s.sceneName == scene);
                 if (sceneData != null)
                 {
-                    return sceneData.dialogues;
+                    string[][] result = new string[sceneData.dialogues.Count][];
+                    for (int i = 0; i < sceneData.dialogues.Count; i++)
+                    {
+                        result[i] = sceneData.dialogues[i].dialogueLines;
+                    }
+                    return result;
                 }
             }
 
