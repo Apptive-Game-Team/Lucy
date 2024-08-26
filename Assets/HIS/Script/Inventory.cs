@@ -174,8 +174,17 @@ public class Inventory : MonoBehaviour
                 switch (selectedItem.item.consumables[i].type)
                 {
                     case ConsumableType.Battery:
-                        FlashLight.battery += 2;
+                        FlashLight.instance.battery += 2;
                         FlashLight.instance.UpdateUi();
+                        break;
+                    case ConsumableType.CurMental:
+                        Character_Stat.instance.curMental += 10;
+                        Character_Stat.instance.UpdateStats();
+                        break;
+                    case ConsumableType.MaxMental:
+                        Character_Stat.instance.maxMental += 10;
+                        Character_Stat.instance.curMental += 10;
+                        Character_Stat.instance.UpdateStats();
                         break;
                 }
             }
@@ -197,7 +206,8 @@ public class Inventory : MonoBehaviour
         {
             HandLightSwitch.instance.TurnOnHandLight();
             FlashLight.instance.SetUi();
-            FlashLight.instance.StartCoroutine(FlashLight.instance.ConsumeBattery());
+            FlashLight.instance.StartConsumeBattery();
+            Character_Stat.instance.StopMentalReduce();
         }
 
         for (int i = 0; i < curEquipped.Length; i++)
@@ -229,7 +239,8 @@ public class Inventory : MonoBehaviour
         {
             HandLightSwitch.instance.TurnOffHandLight();
             FlashLight.instance.TurnOffUi();
-            FlashLight.instance.StopCoroutine(FlashLight.instance.ConsumeBattery());
+            FlashLight.instance.StopConsumeBattery();
+            Character_Stat.instance.StartMentalReduce();
         }
         for (int i = 0; i < curEquipped.Length; i++)
         {

@@ -15,7 +15,8 @@ public enum ConsumableType
 {
     Stamina,
     Battery,
-    Mental
+    CurMental,
+    MaxMental
 }
 
 public enum ItemID
