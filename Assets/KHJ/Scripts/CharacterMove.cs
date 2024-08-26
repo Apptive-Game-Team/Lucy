@@ -20,7 +20,17 @@ namespace CharacterCamera
         void FixedUpdate()
         {
             Vector3 direction = InputManager.Instance.GetMoveVector();
-            playerRb.velocity = direction.normalized * playerMoveSpeed * Time.deltaTime;
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                playerRb.velocity = direction.normalized * playerMoveSpeed * Time.deltaTime * 1.5f;    
+                Anim.speed = 1.5f;
+            }
+            else
+            {
+                playerRb.velocity = direction.normalized * playerMoveSpeed * Time.deltaTime;
+                Anim.speed = 1f;
+            }
+            
 
             if(Math.Abs(direction.y) == 1 || Math.Abs(direction.x) == 1)
             {
