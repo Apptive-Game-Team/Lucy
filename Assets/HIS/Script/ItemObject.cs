@@ -24,7 +24,7 @@ public class ItemObject : MonoBehaviour
     {
         if (other.gameObject.tag.Equals("Player"))
         {
-            if(Input.GetKey(KeyCode.Z))
+            if(InputManager.Instance.GetKeyDown(ActionCode.Interaction))
             {
                 Inventory.instance.AddItem(item);
                 Destroy(gameObject);
