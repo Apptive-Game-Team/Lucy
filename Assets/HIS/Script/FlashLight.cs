@@ -6,9 +6,10 @@ public class FlashLight : MonoBehaviour
 {
     public static FlashLight instance;
 
-    public static int battery = 9;
+    public int battery = 9;
     public float delay;
     public ItemData itemData;
+    public Coroutine batteryCoroutine;
 
     [Header("Activated Battery")]
     public Image[] activeBatteries;
@@ -42,8 +43,16 @@ public class FlashLight : MonoBehaviour
     {
         for (int i = 0; i < activeBatteries.Length; i++)
         {
-            activeBatteries[i].gameObject.SetActive(true);
-            inactiveBatteries[i].gameObject.SetActive(false);
+            if (i < battery)
+            {
+                activeBatteries[i].gameObject.SetActive(true);
+                inactiveBatteries[i].gameObject.SetActive(false);
+            }
+            else
+            {
+                activeBatteries[i].gameObject.SetActive(false);
+                inactiveBatteries[i].gameObject.SetActive(true);
+            }
         }
     }
 
@@ -83,6 +92,23 @@ public class FlashLight : MonoBehaviour
             yield return new WaitForSecondsRealtime(delay);
             battery--;
             UpdateUi();
+        }
+    }
+    public void StartConsumeBattery()
+    {
+        if (batteryCoroutine != null)
+        {
+            StopCoroutine(batteryCoroutine);
+        }
+        batteryCoroutine = StartCoroutine(ConsumeBattery());
+    }
+
+    public void StopConsumeBattery()
+    {
+        if (batteryCoroutine != null)
+        {
+            StopCoroutine(batteryCoroutine);
+            batteryCoroutine = null;
         }
     }
 }
