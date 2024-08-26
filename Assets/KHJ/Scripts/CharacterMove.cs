@@ -19,12 +19,23 @@ namespace CharacterCamera
 
         void FixedUpdate()
         {
-            playerRb.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized * playerMoveSpeed * Time.deltaTime;
-
-            if(Math.Abs(Input.GetAxisRaw("Horizontal")) == 1 || Math.Abs(Input.GetAxisRaw("Vertical")) == 1)
+            Vector3 direction = InputManager.Instance.GetMoveVector();
+            if (Input.GetKey(KeyCode.LeftShift))
             {
-                Anim.SetFloat("LastMoveX", Input.GetAxisRaw("Horizontal"));
-                Anim.SetFloat("LastMoveY", Input.GetAxisRaw("Vertical"));
+                playerRb.velocity = direction.normalized * playerMoveSpeed * Time.deltaTime * 1.5f;    
+                Anim.speed = 1.5f;
+            }
+            else
+            {
+                playerRb.velocity = direction.normalized * playerMoveSpeed * Time.deltaTime;
+                Anim.speed = 1f;
+            }
+            
+
+            if(Math.Abs(direction.y) == 1 || Math.Abs(direction.x) == 1)
+            {
+                Anim.SetFloat("LastMoveX", direction.x);
+                Anim.SetFloat("LastMoveY", direction.y);
             }
             
             Anim.SetFloat("MoveX", playerRb.velocity.x);

@@ -4,8 +4,10 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - mentalSlider: {fileID: 6082115540736696829, guid: f21eb07419708d94991d646990faa662, type: 3}
-  - staminaSlider: {fileID: 7270133323059010296, guid: 784a1c6fd7944394db667cc4c15834b5, type: 3}
+  - mentalSlider: {fileID: 1598797883055070106, guid: 7d58ffe86f7b8b245b0181d6d72dfe71, type: 3}
+  - staminaSlider: {fileID: 7745057138722251390, guid: b371bcbe29f4f5f48a722f700df009dd, type: 3}
+  - Count_Stamina: {fileID: 5003957444409597151, guid: 60ae67e7b7aef3a42826e29579908919, type: 3}
+  - Count_Mental: {fileID: 6463260384402428810, guid: 339fa22f500acd5448982acd16339665, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

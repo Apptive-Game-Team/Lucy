@@ -22,8 +22,6 @@ public class Inventory : MonoBehaviour
     private int selectedItemIndex;
     public TextMeshProUGUI selectedItemName;
     public TextMeshProUGUI selectedItemDescription;
-    //public TextMeshProUGUI selectedItemStatName;
-    //public TextMeshProUGUI selectedItemStatValue;
     public GameObject useButton;
     public GameObject equipButton;
     public GameObject unEquipButton;
@@ -118,36 +116,25 @@ public class Inventory : MonoBehaviour
     {
         if (slots[index].item == null) return;
 
-        // 선택한 아이템 정보 가져오기
         selectedItem = slots[index];
         selectedItemIndex = index;
 
         selectedItemName.text = selectedItem.item.displayName;
         selectedItemDescription.text = selectedItem.item.description;
-        //selectedItemStatName.text = string.Empty;
-        //selectedItemStatValue.text = string.Empty;
-
-        /*for (int i = 0; i < selectedItem.item.consumables.Length; i++)
-        {
-            // 먹을 수 있는 아이템일 경우 채워주는 체력과 배고픔을 UI 상에 표시해주기 위한 코드
-            selectedItemStatName.text += selectedItem.item.consumables[i].type.ToString() + "\n";
-            selectedItemStatValue.text += selectedItem.item.consumables[i].value.ToString() + "\n";
-        }*/
-
-        // 아이템 타입을 체크하여 버튼들 활성화
-        if(selectedItem.item.type == ItemType.Consumable)
+        
+        if(selectedItem.item.type == ItemType.CONSUMABLE)
         {
             useButton.SetActive(true);
             equipButton.SetActive(false);
             unEquipButton.SetActive(false);
         }
-        if(selectedItem.item.type == ItemType.Equipable && !uidSlot[index].equipped)
+        if(selectedItem.item.type == ItemType.EQUIPABLE && !uidSlot[index].equipped)
         {
             useButton.SetActive(false);
             equipButton.SetActive(true);
             unEquipButton.SetActive(false);
         }
-        if(selectedItem.item.type == ItemType.Equipable && uidSlot[index].equipped)
+        if(selectedItem.item.type == ItemType.EQUIPABLE && uidSlot[index].equipped)
         {
             useButton.SetActive(false);
             equipButton.SetActive(false);
@@ -157,25 +144,31 @@ public class Inventory : MonoBehaviour
 
     public void ClearSelectItemWindow()
     {
-        // 아이템 초기화
         selectedItem = null;
         selectedItemName.text = string.Empty;
         selectedItemDescription.text = string.Empty;
-        //selectedItemStatName.text = string.Empty;
-        //selectedItemStatValue.text = string.Empty;
     }
 
     public void OnUseButton()
     {
-        if (selectedItem.item.type == ItemType.Consumable)
+        if (selectedItem.item.type == ItemType.CONSUMABLE)
         {
             for (int i = 0; i < selectedItem.item.consumables.Length; i++)
             {
                 switch (selectedItem.item.consumables[i].type)
                 {
                     case ConsumableType.Battery:
-                        FlashLight.battery += 2;
+                        FlashLight.instance.battery += 2;
                         FlashLight.instance.UpdateUi();
+                        break;
+                    case ConsumableType.CurMental:
+                        Character_Stat.instance.curMental += 10;
+                        Character_Stat.instance.UpdateStats();
+                        break;
+                    case ConsumableType.MaxMental:
+                        Character_Stat.instance.maxMental += 10;
+                        Character_Stat.instance.curMental += 10;
+                        Character_Stat.instance.UpdateStats();
                         break;
                 }
             }
@@ -184,7 +177,7 @@ public class Inventory : MonoBehaviour
     }
     public void OnEquipButton()
     {
-        if (selectedItem != null && selectedItem.item.type == ItemType.Equipable)
+        if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
         {
             Equip(selectedItemIndex); 
         }
@@ -193,10 +186,12 @@ public class Inventory : MonoBehaviour
     void Equip(int index)
     {
 
-        if (slots[index].item.displayName == "손전등")
+        if (slots[index].item.itemId == ItemID.FLASHLIGHT)
         {
+            HandLightSwitch.instance.TurnOnHandLight();
             FlashLight.instance.SetUi();
-            FlashLight.instance.StartCoroutine(FlashLight.instance.ConsumeBattery());
+            FlashLight.instance.StartConsumeBattery();
+            Character_Stat.instance.StopMentalReduce();
         }
 
         for (int i = 0; i < curEquipped.Length; i++)
@@ -216,7 +211,7 @@ public class Inventory : MonoBehaviour
 
     public void OnUnEquipButton()
     {
-        if (selectedItem != null && selectedItem.item.type == ItemType.Equipable)
+        if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
         {
             UnEquip(selectedItemIndex);
         }
@@ -224,10 +219,12 @@ public class Inventory : MonoBehaviour
 
     void UnEquip(int index)
     {
-        if (slots[index].item.displayName == "손전등")
+        if (slots[index].item.itemId == ItemID.FLASHLIGHT)
         {
+            HandLightSwitch.instance.TurnOffHandLight();
             FlashLight.instance.TurnOffUi();
-            FlashLight.instance.StopCoroutine(FlashLight.instance.ConsumeBattery());
+            FlashLight.instance.StopConsumeBattery();
+            Character_Stat.instance.StartMentalReduce();
         }
         for (int i = 0; i < curEquipped.Length; i++)
         {
@@ -256,15 +253,10 @@ public class Inventory : MonoBehaviour
 
     private void RemoveSelectedItem()
     {
-        selectedItem.quantity--;    // 수량 깎기.
-
-        // 아이템의 남은 수량이 0이 되면
+        selectedItem.quantity--;    
         if (selectedItem.quantity <= 0)
         {
-            // 만약 버린 아이템이 장착 중인 아이템일 경우 해제 시키기
             if (uidSlot[selectedItemIndex].equipped) UnEquip(selectedItemIndex);
-
-            // 아이템 제거 및 UI에서도 아이템 정보 지우기
             selectedItem.item = null;
             ClearSelectItemWindow();
         }
