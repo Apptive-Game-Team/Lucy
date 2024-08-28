@@ -6,7 +6,7 @@ public class FlashLight : MonoBehaviour
 {
     public static FlashLight instance;
 
-    public int battery = 9;
+    public int battery = 1;
     public float delay;
     public ItemData itemData;
     public Coroutine batteryCoroutine;
