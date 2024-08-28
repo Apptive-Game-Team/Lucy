@@ -23,6 +23,9 @@ public class Character_Stat : MonoBehaviour
     public float curStamina;
     public float maxStamina = 100;
 
+    [SerializeField] private bool isOnLight = false;
+    private Coroutine onLightCounter;
+
     void Awake()
     {
         if (instance == null)
@@ -42,10 +45,6 @@ public class Character_Stat : MonoBehaviour
         mentalCoroutine = StartCoroutine(ReduceMental());
     }
 
-    void Update()
-    {
-
-    }
     public void SetStats()
     {
         curMental = maxMental;
@@ -81,8 +80,12 @@ public class Character_Stat : MonoBehaviour
         while (curMental > 0)
         {   
             yield return new WaitForSecondsRealtime(delay);
-            curMental-=10;
-            UpdateStats();
+            if (!isOnLight)
+            {
+                curMental -= 10;
+                UpdateStats();
+            }
+            
         }
     }
     public void StartMentalReduce()
@@ -101,5 +104,26 @@ public class Character_Stat : MonoBehaviour
             StopCoroutine(mentalCoroutine);
             mentalCoroutine = null;
         }
+    }
+
+    public void OnSpotLight()
+    {
+        isOnLight = true;
+        if (onLightCounter == null)
+        {
+            onLightCounter = StartCoroutine(OnLightCounter());
+        } else
+        {
+            StopCoroutine(onLightCounter);
+            onLightCounter = StartCoroutine(OnLightCounter());
+        }
+        
+    }
+
+    IEnumerator OnLightCounter()
+    {
+        yield return new WaitForSeconds(2);
+        isOnLight = false;
+        onLightCounter = null;
     }
 }
