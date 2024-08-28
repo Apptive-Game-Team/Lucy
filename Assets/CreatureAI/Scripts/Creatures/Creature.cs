@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -61,7 +62,7 @@ namespace Creature{
 
     public class Creature : Actor
     {
-        [SerializeField] bool debugMode = true;
+        [SerializeField] protected bool debugMode = true;
 
         private Detector detector;
 
@@ -112,6 +113,11 @@ namespace Creature{
 
         public virtual IEnumerator PatrolAction()
         {
+            if (debugMode)
+            {
+                Debug.Log(gameObject.name + " | " + this.name + " : Patrol...");
+            }
+
             speed = minSpeed;
             DetectPlayer();
             yield return new WaitForSeconds(0.1f);
@@ -120,6 +126,11 @@ namespace Creature{
 
         public virtual IEnumerator PursuitAction()
         {
+            if (debugMode)
+            {
+                Debug.Log(gameObject.name + " | " + this.name + " : Pursuit...");
+            }
+
             speed = maxSpeed;
             DetectPlayer();
             yield return new WaitForSeconds(0.1f);
@@ -129,6 +140,11 @@ namespace Creature{
 
         public virtual IEnumerator AlertedAction()
         {
+            if (debugMode)
+            {
+                Debug.Log(gameObject.name + " | " + this.name + " : Alerted...");
+            }
+
             speed = minSpeed;
             DetectPlayer();
             detector.setLookingAngle(detector.getLookingAngle() + 10f);
@@ -147,6 +163,11 @@ namespace Creature{
 
         protected void DetectPlayer()
         {
+            if (debugMode)
+            {
+                Debug.Log(gameObject.name + " | " + this.name + " : Detecting Player...");
+            }
+
             List<Collider2D> detectedPlayerCollider = detector.DetectByView();
             if (detectedPlayerCollider.Count > 0)
             {
@@ -201,6 +222,12 @@ namespace Creature{
         {
             while(true)
             {
+                if (debugMode)
+                {
+                    Debug.Log(gameObject.name + " | " + this.name + " : is Moving");
+                    lastStatus = status;
+                }
+
                 yield return new WaitForSeconds(0.01f);
 
                 Node node;
@@ -255,6 +282,11 @@ namespace Creature{
         {
             if (collision.CompareTag("Player"))
             {
+                if (debugMode)
+                {
+                    Debug.Log(gameObject.name + " | " + this.name + " : Kill Player...");
+                }
+
                 Destroy(collision.gameObject);
             }
         }
@@ -266,6 +298,20 @@ namespace Creature{
                 Mathf.RoundToInt(vector.y),
                 Mathf.RoundToInt(vector.z)
             );
+        }
+
+        CreatureStatus lastStatus = CreatureStatus.PATROL;
+
+        protected void Update()
+        {
+            if (debugMode)
+            {
+                if (status != lastStatus)
+                {
+                    Debug.Log(gameObject.name + " | " + this.name + " : updated status to " + status.ToString());
+                    lastStatus = status;
+                }
+            }
         }
     }
 }

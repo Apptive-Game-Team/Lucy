@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 [Serializable]
@@ -78,7 +79,9 @@ public class PathFinder
 
     public void SetMap(int[,] newMap)
     {
+        Debug.Log("Map Updated");
         this.map = newMap;
+        nodes = new Node[width, height];
     }
 
     public List<Node> FindPath(Node startNode, Node endNode)
@@ -192,6 +195,8 @@ public class PathFinder
             computingCounter++;
             if (computingCounter > maxComputing)
             {
+                Debug.Log("RandomPath Not Found");
+                
                 return null;
             }
             int tempRandomNum = random.Next(0, 5);
