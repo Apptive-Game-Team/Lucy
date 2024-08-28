@@ -72,16 +72,34 @@ namespace Creature
 
         protected void AddLightOnMap()
         {
+            if (debugMode)
+            {
+                Debug.Log(gameObject.name + " | " + this.name + " : Apply Light On Map...");
+            }
+
             lightAppliedMap = DeepCopy(map);
             GameObject[] spotLights = GameObject.FindGameObjectsWithTag("Light");
 
             foreach (GameObject spotLight in spotLights)
             {
                 Light2D light = spotLight.GetComponentInChildren<Light2D>();
-                List<(int, int)> points = PointsInCircle(
+                if (!light.gameObject.active)
+                {
+                    continue;
+                }
+                List<(int, int)> points;
+                try
+                {
+                    points = PointsInCircle(
                     (int)spotLight.transform.position.x,
                     (int)spotLight.transform.position.y,
                     (int)light.pointLightOuterRadius);
+                }
+                catch
+                {
+                    continue;
+                }
+                
 
                 foreach ((int, int) point in points)
                 {
@@ -154,6 +172,11 @@ namespace Creature
             }
 
             return newArray;
+        }
+
+        protected void Update()
+        {
+            base.Update();
         }
     }
 }
