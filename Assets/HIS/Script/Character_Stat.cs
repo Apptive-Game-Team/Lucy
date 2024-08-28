@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using CharacterCamera;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class Character_Stat : MonoBehaviour
     public float delay;
 
     private Coroutine mentalCoroutine;
-
+    private Coroutine staminaCoroutine;
     [Header("Player Stat")]
     public float curMental;
     public float maxMental = 100;
@@ -24,6 +25,8 @@ public class Character_Stat : MonoBehaviour
     public float maxStamina = 100;
 
     [SerializeField] private bool isOnLight = false;
+    
+    [SerializeField] public bool isRun = false;
     private Coroutine onLightCounter;
 
     void Awake()
@@ -43,6 +46,7 @@ public class Character_Stat : MonoBehaviour
         SetStats();
         UpdateStats();
         mentalCoroutine = StartCoroutine(ReduceMental());
+        staminaCoroutine = StartCoroutine(ReduceStamina());
     }
 
     public void SetStats()
@@ -74,6 +78,44 @@ public class Character_Stat : MonoBehaviour
             staminaSlider.gameObject.SetActive(true);
         }
     }
+    public IEnumerator ReduceStamina()
+    {
+        if(isRun==true)
+        {
+            while(curStamina > 0)
+            {
+                yield return new WaitForSecondsRealtime(1f);
+                curStamina -= 1;
+                UpdateStats();
+            }
+        }
+        if(isRun==false)
+        {
+            while(curStamina != maxStamina)
+            {
+                yield return new WaitForSecondsRealtime(1f);
+                curStamina += 1;
+                UpdateStats();
+            }
+        }
+    }
+    public void StartStaminaReduce()
+    {
+        if (staminaCoroutine != null)
+        {
+            StopCoroutine(staminaCoroutine);
+        }
+        staminaCoroutine = StartCoroutine(ReduceStamina());
+    }
+
+    public void StopStaminaReduce()
+    {
+        if (staminaCoroutine != null)
+        {
+            StopCoroutine(staminaCoroutine);
+            staminaCoroutine = null;
+        }
+    }
 
     public IEnumerator ReduceMental()
     {
@@ -85,7 +127,6 @@ public class Character_Stat : MonoBehaviour
                 curMental -= 10;
                 UpdateStats();
             }
-            
         }
     }
     public void StartMentalReduce()
@@ -105,7 +146,6 @@ public class Character_Stat : MonoBehaviour
             mentalCoroutine = null;
         }
     }
-
     public void OnSpotLight()
     {
         isOnLight = true;
