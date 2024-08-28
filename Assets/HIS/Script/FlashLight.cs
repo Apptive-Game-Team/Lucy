@@ -93,6 +93,13 @@ public class FlashLight : MonoBehaviour
             battery--;
             UpdateUi();
         }
+        if (battery <= 0)
+        {
+            battery = 0;
+            StopConsumeBattery();
+            Character_Stat.instance.StartMentalReduce();
+            HandLightSwitch.instance.TurnOffHandLight();
+        }
     }
     public void StartConsumeBattery()
     {

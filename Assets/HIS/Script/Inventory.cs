@@ -158,9 +158,21 @@ public class Inventory : MonoBehaviour
                 switch (selectedItem.item.consumables[i].type)
                 {
                     case ConsumableType.Battery:
-                        FlashLight.instance.battery += 2;
-                        FlashLight.instance.UpdateUi();
-                        break;
+                        if (FlashLight.instance.battery <= 0)
+                        {
+                            HandLightSwitch.instance.TurnOnHandLight();
+                            FlashLight.instance.battery += 2;
+                            FlashLight.instance.StartConsumeBattery();
+                            Character_Stat.instance.StopMentalReduce();
+                            FlashLight.instance.UpdateUi();
+                            break;
+                        }
+                        else
+                        {
+                            FlashLight.instance.battery += 2;
+                            FlashLight.instance.UpdateUi();
+                            break;
+                        }
                     case ConsumableType.CurMental:
                         Character_Stat.instance.curMental += 10;
                         Character_Stat.instance.UpdateStats();
