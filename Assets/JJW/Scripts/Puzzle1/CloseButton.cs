@@ -15,6 +15,7 @@ namespace SlicePuzzle
             if (slicePuzzleCanvas != null)
             {
                 slicePuzzleCanvas.gameObject.SetActive(false);
+                Time.timeScale = 1f;
             }
         }
     }
