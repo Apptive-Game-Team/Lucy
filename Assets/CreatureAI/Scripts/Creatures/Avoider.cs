@@ -36,8 +36,9 @@ namespace Creature
 
             actions.Add(new CreatureAvoidingAction(this));
 
+            
+            pathFinder = new PathFinder(map, mapOffset);
             AddLightOnMap();
-            pathFinder = new PathFinder(lightAppliedMap, mapOffset);
             actions[(int)status].Play();
             StartCoroutine(MoveOnPath());
         }
@@ -46,14 +47,12 @@ namespace Creature
         protected override List<Node> FindPath(float x, float y)
         {
             AddLightOnMap();
-            pathFinder.SetMap(lightAppliedMap);
             return base.FindPath(x, y);
         }
 
         protected override void SetRandomPath()
         {
             AddLightOnMap();
-            pathFinder.SetMap(lightAppliedMap);
             base.SetRandomPath();
         }
 
@@ -69,6 +68,7 @@ namespace Creature
             status = CreatureStatus.PATROL;
             actions[(int)status].Play();
         }
+        GameObject[] lastSpotLights = new GameObject[0];
 
         protected void AddLightOnMap()
         {
@@ -78,7 +78,17 @@ namespace Creature
             }
 
             lightAppliedMap = DeepCopy(map);
+            
             GameObject[] spotLights = GameObject.FindGameObjectsWithTag("Light");
+
+            if (CompareGameObjectArrays.AreGameObjectArraysEqual(lastSpotLights, spotLights))
+            {
+                return;
+            }
+            else
+            { 
+                lastSpotLights = spotLights;
+            } 
 
             foreach (GameObject spotLight in spotLights)
             {
@@ -110,6 +120,8 @@ namespace Creature
                     catch { }
                     
                 }
+
+                pathFinder.SetMap(lightAppliedMap);
             }
         }
 
