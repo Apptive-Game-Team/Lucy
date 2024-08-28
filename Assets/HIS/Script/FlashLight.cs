@@ -71,6 +71,11 @@ public class FlashLight : MonoBehaviour
                 inactiveBatteries[i].gameObject.SetActive(true);
             }
         }
+
+        if (battery <= 0)
+        {
+
+        }
     }
 
     public void TurnOffUi()
