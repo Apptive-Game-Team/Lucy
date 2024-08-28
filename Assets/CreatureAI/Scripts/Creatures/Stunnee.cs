@@ -1,8 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System;
-using UnityEngine.Rendering.Universal;
 
 namespace Creature
 {
@@ -43,6 +40,11 @@ namespace Creature
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
             base.OnTriggerEnter2D(collision);
+        }
+
+        protected void Update()
+        {
+            base.Update();
         }
     }
 }
