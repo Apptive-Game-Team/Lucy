@@ -13,8 +13,6 @@ GameObject:
   - component: {fileID: 5408844112470906601}
   - component: {fileID: 8721850722498308918}
   - component: {fileID: 67533911048328453}
-  - component: {fileID: 2118189194545860160}
-  - component: {fileID: 7077462719071918126}
   - component: {fileID: 8342884382947244937}
   - component: {fileID: 358733249766382165}
   - component: {fileID: 4427139170973063818}
@@ -131,32 +129,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handlightObject: {fileID: 8827318982427012109}
 --- !u!114 &67533911048328453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 382615813667128817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e7b27be4f640de4c93a3a3e3d1e5c0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  handlightObject: {fileID: 8827318982427012109}
---- !u!114 &2118189194545860160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 382615813667128817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e047b33a0673c0f47b7dc4202816abed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  handlightObject: {fileID: 8827318982427012109}
---- !u!114 &7077462719071918126
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -298,6 +270,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mentalSlider: {fileID: 0}
   staminaSlider: {fileID: 0}
+  Count_Stamina: {fileID: 0}
+  Count_Mental: {fileID: 0}
+  delay: 0
   curMental: 0
   maxMental: 100
   curStamina: 0
