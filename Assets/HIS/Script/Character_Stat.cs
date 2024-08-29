@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CharacterCamera;
 using TMPro;
+using Unity.Mathematics;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,6 +28,7 @@ public class Character_Stat : MonoBehaviour
     [SerializeField] private bool isOnLight = false;
     
     [SerializeField] public bool isRun = false;
+    [SerializeField] public bool canRun = true;
     private Coroutine onLightCounter;
 
     void Awake()
@@ -46,7 +48,6 @@ public class Character_Stat : MonoBehaviour
         SetStats();
         UpdateStats();
         mentalCoroutine = StartCoroutine(ReduceMental());
-        staminaCoroutine = StartCoroutine(ReduceStamina());
     }
 
     public void SetStats()
@@ -59,9 +60,9 @@ public class Character_Stat : MonoBehaviour
     {
         mentalSlider.value = curMental/maxMental;
         staminaSlider.value = curStamina/maxStamina;
-        Count_Stamina.text = (curStamina.ToString() + "/" + maxStamina.ToString());
-        Count_Mental.text = (curMental.ToString() + "/" + maxMental.ToString());
-        if (mentalSlider.value <= 0)
+        Count_Stamina.text = (Mathf.FloorToInt(curStamina).ToString() + "/" + maxStamina.ToString());
+        Count_Mental.text = (Mathf.FloorToInt(curMental).ToString() + "/" + maxMental.ToString());
+        /*if (mentalSlider.value <= 0)
         {
             mentalSlider.gameObject.SetActive(false);
         }
@@ -76,45 +77,25 @@ public class Character_Stat : MonoBehaviour
         else
         {
             staminaSlider.gameObject.SetActive(true);
-        }
+        }*/
     }
-    public IEnumerator ReduceStamina()
+    public void ChangeStamina(int n)
     {
-        if(isRun==true)
+        curStamina += n * Time.deltaTime;
+        if (curStamina > maxStamina)
         {
-            while(curStamina > 0)
-            {
-                yield return new WaitForSecondsRealtime(1f);
-                curStamina -= 1;
-                UpdateStats();
-            }
+            curStamina = maxStamina;
         }
-        if(isRun==false)
+        if (curStamina <= 0)
         {
-            while(curStamina != maxStamina)
-            {
-                yield return new WaitForSecondsRealtime(1f);
-                curStamina += 1;
-                UpdateStats();
-            }
+            curStamina = 0;
+            canRun = false;
         }
-    }
-    public void StartStaminaReduce()
-    {
-        if (staminaCoroutine != null)
+        if (curStamina >= 50)
         {
-            StopCoroutine(staminaCoroutine);
+            canRun = true;
         }
-        staminaCoroutine = StartCoroutine(ReduceStamina());
-    }
-
-    public void StopStaminaReduce()
-    {
-        if (staminaCoroutine != null)
-        {
-            StopCoroutine(staminaCoroutine);
-            staminaCoroutine = null;
-        }
+        UpdateStats();
     }
 
     public IEnumerator ReduceMental()
