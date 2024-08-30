@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 3402838726317016103}
   - component: {fileID: 1817603533800889875}
   - component: {fileID: 5408844112470906601}
+  - component: {fileID: 4208286231445307557}
+  - component: {fileID: 2338121373178659529}
   - component: {fileID: 28873558588688287}
   - component: {fileID: 3913465650681622298}
   - component: {fileID: 8721850722498308918}
@@ -20,8 +22,8 @@ GameObject:
   - component: {fileID: 4427139170973063818}
   - component: {fileID: 7387698089245928155}
   - component: {fileID: 2186692624012956118}
-  - component: {fileID: 7629868171919750769}
-  - component: {fileID: 4266467550731410210}
+  - component: {fileID: 5641376881945243942}
+  - component: {fileID: 3593263398753246397}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -118,6 +120,32 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4208286231445307557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382615813667128817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e047b33a0673c0f47b7dc4202816abed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handlightObject: {fileID: 8827318982427012109}
+--- !u!114 &2338121373178659529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382615813667128817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e7b27be4f640de4c93a3a3e3d1e5c0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handlightObject: {fileID: 8827318982427012109}
 --- !u!114 &28873558588688287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,7 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12498349756cf40e4a21ce7bf33dd686, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7629868171919750769
+--- !u!114 &5641376881945243942
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -309,7 +337,7 @@ MonoBehaviour:
   isOnLight: 0
   isRun: 0
   canRun: 1
---- !u!114 &4266467550731410210
+--- !u!114 &3593263398753246397
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
