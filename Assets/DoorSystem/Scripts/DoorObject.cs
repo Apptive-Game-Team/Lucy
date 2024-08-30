@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime;
 using Dialogue;
 using UnityEngine;
+using Test;
 
 [System.Serializable]
 public class DoorInfo
@@ -23,7 +24,7 @@ public class DoorInfo
 public class DoorObject : MonoBehaviour
 {
     public GameObject Text;
-    public DialogueController2 dialogueController2; 
+    public TestDialogueController dialogueController2; 
     [SerializeField] DoorInfo doorInfo;
     [SerializeField] GameObject door;
 

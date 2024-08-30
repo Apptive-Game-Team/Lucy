@@ -108,7 +108,7 @@ namespace Test
 
         void Start()
         {
-            StartCoroutine(StartDialogue()); // 처음 시작할때 스크립트 재생
+            //StartCoroutine(StartDialogue()); // 처음 시작할때 스크립트 재생
             dialoguePick = new List<DialoguePick>()
             {
                 new FirstRoomDialogue(testDialogueData),
