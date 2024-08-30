@@ -97,7 +97,7 @@ public class FlashLight : MonoBehaviour
         {
             battery = 0;
             StopConsumeBattery();
-            Character_Stat.instance.StartMentalReduce();
+            CharacterStat.instance.StartMentalReduce();
             HandLightSwitch.instance.TurnOffHandLight();
         }
     }

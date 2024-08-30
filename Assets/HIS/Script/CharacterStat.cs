@@ -1,22 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using CharacterCamera;
 using TMPro;
+using Unity.Mathematics;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Character_Stat : MonoBehaviour
+public class CharacterStat : MonoBehaviour
 {
-    public static Character_Stat instance;
+    public static CharacterStat instance;
 
     public Slider mentalSlider;
     public Slider staminaSlider;
-    public TextMeshProUGUI Count_Stamina;
-    public TextMeshProUGUI Count_Mental;
+    public TextMeshProUGUI count_Stamina;
+    public TextMeshProUGUI count_Mental;
     public float delay;
 
     private Coroutine mentalCoroutine;
-
+    private Coroutine staminaCoroutine;
     [Header("Player Stat")]
     public float curMental;
     public float maxMental = 100;
@@ -24,6 +26,9 @@ public class Character_Stat : MonoBehaviour
     public float maxStamina = 100;
 
     [SerializeField] private bool isOnLight = false;
+    
+    [SerializeField] public bool isRun = false;
+    [SerializeField] public bool canRun = true;
     private Coroutine onLightCounter;
 
     void Awake()
@@ -55,9 +60,9 @@ public class Character_Stat : MonoBehaviour
     {
         mentalSlider.value = curMental/maxMental;
         staminaSlider.value = curStamina/maxStamina;
-        Count_Stamina.text = (curStamina.ToString() + "/" + maxStamina.ToString());
-        Count_Mental.text = (curMental.ToString() + "/" + maxMental.ToString());
-        if (mentalSlider.value <= 0)
+        count_Stamina.text = string.Format("{0}/{1}", Mathf.FloorToInt(curStamina), maxStamina);
+        count_Mental.text = string.Format("{0}/{1}", Mathf.FloorToInt(curMental), maxMental);
+        /*if (mentalSlider.value <= 0)
         {
             mentalSlider.gameObject.SetActive(false);
         }
@@ -72,7 +77,25 @@ public class Character_Stat : MonoBehaviour
         else
         {
             staminaSlider.gameObject.SetActive(true);
+        }*/
+    }
+    public void ChangeStamina(int n)
+    {
+        curStamina += n * Time.deltaTime;
+        if (curStamina > maxStamina)
+        {
+            curStamina = maxStamina;
         }
+        if (curStamina <= 0)
+        {
+            curStamina = 0;
+            canRun = false;
+        }
+        if (curStamina >= 50)
+        {
+            canRun = true;
+        }
+        UpdateStats();
     }
 
     public IEnumerator ReduceMental()
@@ -85,7 +108,6 @@ public class Character_Stat : MonoBehaviour
                 curMental -= 10;
                 UpdateStats();
             }
-            
         }
     }
     public void StartMentalReduce()
@@ -105,7 +127,6 @@ public class Character_Stat : MonoBehaviour
             mentalCoroutine = null;
         }
     }
-
     public void OnSpotLight()
     {
         isOnLight = true;
