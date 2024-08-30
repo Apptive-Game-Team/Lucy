@@ -1,15 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RemoteController : MonoBehaviour
 {
     public ItemData item;
     public GameObject Text;
 
+    public List<Image> seperatingImages;
+
     private void Start()
     {
         Text.SetActive(false);
+        OffAllImages();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -17,26 +22,46 @@ public class RemoteController : MonoBehaviour
         if (other.gameObject.tag.Equals("Player"))
         {
             Text.SetActive(true);
-            //여기서 스크립트 출력(리모콘 인것 같다)
+            //여기서 다이어로그 출력(리모콘 인것 같다)
         }
     }
+
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.gameObject.tag.Equals("Player"))
         {
             if(InputManager.Instance.GetKeyDown(ActionCode.Interaction))
             {
-                //여기서 스크립트(배터리 빼는 이미지)
-                Inventory.instance.AddItem(item);
-                Destroy(gameObject);
+                StartCoroutine(GetBatteryEvent());
             }
         }
     }
+
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject.tag.Equals("Player"))
         {
             Text.SetActive(false);
         }
+    }
+
+    private void OffAllImages()
+    {
+        for(int i = 0; i < seperatingImages.Count; i++)
+        {
+            seperatingImages[i].gameObject.SetActive(false);
+        }
+    }
+
+    private IEnumerator GetBatteryEvent()
+    {
+        for(int i = 0; i < seperatingImages.Count; i++)
+        {
+            seperatingImages[i].gameObject.SetActive(true);
+            yield return new WaitForSeconds(2f);
+            seperatingImages[i].gameObject.SetActive(false);
+        }
+        Inventory.instance.AddItem(item);
+        Destroy(gameObject);
     }
 }

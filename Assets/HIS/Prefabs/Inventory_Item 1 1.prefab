@@ -10516,6 +10516,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   item: {fileID: 11400000, guid: fa93e729fa3c3754190d1a0a5d94c9bf, type: 2}
   Text: {fileID: 7001678628516242002}
+  seperatingImages:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &7639693809643443138
 GameObject:
   m_ObjectHideFlags: 0
