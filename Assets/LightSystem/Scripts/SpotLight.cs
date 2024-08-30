@@ -32,7 +32,7 @@ public class SpotLight : MonoBehaviour
             {
                 if (target.CompareTag("Player"))
                 {
-                    target.gameObject.GetComponent<Character_Stat>().OnSpotLight();
+                    target.gameObject.GetComponent<CharacterStat>().OnSpotLight();
                 }
             }
         } 

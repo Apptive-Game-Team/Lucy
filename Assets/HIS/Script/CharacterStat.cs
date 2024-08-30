@@ -7,14 +7,14 @@ using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Character_Stat : MonoBehaviour
+public class CharacterStat : MonoBehaviour
 {
-    public static Character_Stat instance;
+    public static CharacterStat instance;
 
     public Slider mentalSlider;
     public Slider staminaSlider;
-    public TextMeshProUGUI Count_Stamina;
-    public TextMeshProUGUI Count_Mental;
+    public TextMeshProUGUI count_Stamina;
+    public TextMeshProUGUI count_Mental;
     public float delay;
 
     private Coroutine mentalCoroutine;
@@ -60,8 +60,8 @@ public class Character_Stat : MonoBehaviour
     {
         mentalSlider.value = curMental/maxMental;
         staminaSlider.value = curStamina/maxStamina;
-        Count_Stamina.text = (Mathf.FloorToInt(curStamina).ToString() + "/" + maxStamina.ToString());
-        Count_Mental.text = (Mathf.FloorToInt(curMental).ToString() + "/" + maxMental.ToString());
+        count_Stamina.text = string.Format("{0}/{1}", Mathf.FloorToInt(curStamina), maxStamina);
+        count_Mental.text = string.Format("{0}/{1}", Mathf.FloorToInt(curMental), maxMental);
         /*if (mentalSlider.value <= 0)
         {
             mentalSlider.gameObject.SetActive(false);

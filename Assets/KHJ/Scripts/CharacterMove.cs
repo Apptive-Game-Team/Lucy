@@ -19,22 +19,23 @@ namespace CharacterCamera
         void FixedUpdate()
         {
             Vector3 direction = InputManager.Instance.GetMoveVector();
-            if (Input.GetKey(KeyCode.LeftShift) && Character_Stat.instance.curStamina!=0 && Character_Stat.instance.canRun)
+            bool isMoving = direction.magnitude > 0;
+            if (Input.GetKey(KeyCode.LeftShift) && CharacterStat.instance.curStamina!=0 && CharacterStat.instance.canRun && isMoving)
             {
                 playerRb.velocity = direction.normalized * playerMoveSpeed * Time.deltaTime * 1.5f;    
                 Anim.speed = 1.5f;
-                Character_Stat.instance.isRun = true;
-                if(Character_Stat.instance.curStamina != 0)
+                CharacterStat.instance.isRun = true;
+                if(CharacterStat.instance.curStamina >= 0)
                 {
-                    Character_Stat.instance.ChangeStamina(-10);
+                    CharacterStat.instance.ChangeStamina(-10);
                 }
             }
             else
             {
                 playerRb.velocity = direction.normalized * playerMoveSpeed * Time.deltaTime;
                 Anim.speed = 1f;
-                Character_Stat.instance.isRun = false;
-                Character_Stat.instance.ChangeStamina(+5);
+                CharacterStat.instance.isRun = false;
+                CharacterStat.instance.ChangeStamina(+5);
             }
             
 
