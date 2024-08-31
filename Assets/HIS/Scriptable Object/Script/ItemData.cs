@@ -26,7 +26,7 @@ public enum ItemID
     FLASHLIGHT,
     CANDY,
     DOLL,
-    KEY_3F,
+    KEY_3F
 }
 
 [Serializable]

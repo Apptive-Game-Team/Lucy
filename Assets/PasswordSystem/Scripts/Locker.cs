@@ -12,7 +12,7 @@ public class Locker : PasswordObject
     public override void Unlock()
     {
         base.Unlock();
-        Instantiate(item);
+        Instantiate(item, (Vector3)transform.position + Vector3.down, Quaternion.identity);
         
     }
 

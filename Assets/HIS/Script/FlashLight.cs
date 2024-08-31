@@ -6,7 +6,7 @@ public class FlashLight : MonoBehaviour
 {
     public static FlashLight instance;
 
-    public int battery = 9;
+    public int battery = 1;
     public float delay;
     public ItemData itemData;
     public Coroutine batteryCoroutine;
@@ -97,6 +97,13 @@ public class FlashLight : MonoBehaviour
             yield return new WaitForSecondsRealtime(delay);
             battery--;
             UpdateUi();
+        }
+        if (battery <= 0)
+        {
+            battery = 0;
+            StopConsumeBattery();
+            CharacterStat.instance.StartMentalReduce();
+            HandLightSwitch.instance.TurnOffHandLight();
         }
     }
     public void StartConsumeBattery()

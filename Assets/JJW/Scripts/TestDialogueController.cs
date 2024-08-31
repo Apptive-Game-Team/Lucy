@@ -1,77 +1,127 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Test
 {
+    public enum Floor
+    {
+        F3
+    }
+
+    public enum Room
+    {
+        FirstRoom,
+        Corrider,
+        RightRoom,
+        StairRoom
+    }
+
+    public abstract class DialoguePick
+    {
+        protected TestDialogueData testDialogueData;
+        public DialoguePick(TestDialogueData data)
+        {
+            testDialogueData = data;
+        }
+        public abstract void Show();
+    }
+
+    public class FirstRoomDialogue : DialoguePick
+    {
+        bool isFirst = true;
+        public FirstRoomDialogue(TestDialogueData data) : base(data) {}
+        
+        public override void Show()
+        {
+            if (isFirst)
+            {
+                TestDialogueSystem.Instance.ShowDialogue(testDialogueData.GetDialogue(Floor.F3.ToString(),Room.FirstRoom.ToString())[1]);
+                isFirst = false;
+            }
+            return;
+        }
+    }
+
+    public class CorriderDialogue : DialoguePick
+    {
+        bool isFirst = true;
+        public CorriderDialogue(TestDialogueData data) : base(data) {}
+        
+        public override void Show()
+        {
+            if (isFirst)
+            {
+                TestDialogueSystem.Instance.ShowDialogue(testDialogueData.GetDialogue(Floor.F3.ToString(),Room.Corrider.ToString())[0]);
+                isFirst = false;
+            }
+            return;
+        }
+    }
+
+    public class RightRoomDialogue : DialoguePick
+    {
+        bool isFirst = true;
+        public RightRoomDialogue(TestDialogueData data) : base(data) {}
+        
+        public override void Show()
+        {
+            if (isFirst)
+            {
+                TestDialogueSystem.Instance.ShowDialogue(testDialogueData.GetDialogue(Floor.F3.ToString(),Room.RightRoom.ToString())[0]);
+                isFirst = false;
+            }
+            return;
+        }
+    }
+
+    public class StairRoomDialogue : DialoguePick
+    {
+        bool isFirst = true;
+        public StairRoomDialogue(TestDialogueData data) : base(data) {}
+        
+        public override void Show()
+        {
+            if (isFirst)
+            {
+                TestDialogueSystem.Instance.ShowDialogue(testDialogueData.GetDialogue(Floor.F3.ToString(),Room.Corrider.ToString())[1]);
+                isFirst = false;
+            }
+            return;
+        }
+    }
+    
+
     public class TestDialogueController : MonoBehaviour
     {
+        
+
         public TestDialogueData testDialogueData;
-        public int GetOutFirstRoom = 0;
-        public int GetInRightDownRoom = 0;
-        public int GetInRightUpRoom = 0;
-        public int CheckStairRoom = 0;
+        public Floor currentFloor = 0;
+        protected List<DialoguePick> dialoguePick;
 
         public void SetDialogueFlag(int num)
         {
-            switch (num)
-            {
-                case 0:
-                    GetOutFirstRoom++;
-                    break;
-                case 1:
-                    GetInRightDownRoom++;
-                    break;
-                case 2:
-                    GetInRightUpRoom++;
-                    break;
-                case 3:
-                    CheckStairRoom++;
-                    break;
-            }
+            dialoguePick[num].Show();
         }
 
         void Start()
         {
             StartCoroutine(StartDialogue()); // 처음 시작할때 스크립트 재생
-        }
-
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
+            dialoguePick = new List<DialoguePick>()
             {
-                TestDialogueSystem.Instance.ShowDialogue(testDialogueData.GetDialogue("Chapter1","FirstRoom")[1]);
-            }
-
-            if (GetOutFirstRoom == 1 || Input.GetKeyDown(KeyCode.Alpha1)) // 문열고 복도로 나갈때 
-            {
-                TestDialogueSystem.Instance.ShowDialogue(testDialogueData.GetDialogue("Chapter1","Corrider")[0]);
-                GetOutFirstRoom++;
-            }
-
-            if (GetInRightDownRoom == 1 || Input.GetKeyDown(KeyCode.Alpha2)) // 오른쪽 방 들어갔을때
-            {
-                TestDialogueSystem.Instance.ShowDialogue(testDialogueData.GetDialogue("Chapter1","RightRoom")[0]);
-                GetInRightDownRoom++;
-            }
-
-            if (GetInRightUpRoom == 1 || Input.GetKeyDown(KeyCode.Alpha3)) // 오른쪽 방 위에 들어갈때
-            {
-                TestDialogueSystem.Instance.ShowDialogue(testDialogueData.GetDialogue("Chapter1","RightRoom")[1]);
-                GetInRightUpRoom++;
-            } 
-
-            if (CheckStairRoom == 1 || Input.GetKeyDown(KeyCode.Alpha4)) // 나와서 복도에 계단방을 확인할때
-            {
-                TestDialogueSystem.Instance.ShowDialogue(testDialogueData.GetDialogue("Chapter1","Corrider")[1]);
-                CheckStairRoom++;
-            }
+                new FirstRoomDialogue(testDialogueData),
+                new CorriderDialogue(testDialogueData),
+                new RightRoomDialogue(testDialogueData),
+                new StairRoomDialogue(testDialogueData)
+            };
         }
 
         private IEnumerator StartDialogue()
         {
             yield return WaitDelay(4f);
-            TestDialogueSystem.Instance.ShowDialogue(testDialogueData.GetDialogue("Chapter1","FirstRoom")[0]);
+            TestDialogueSystem.Instance.ShowDialogue(testDialogueData.GetDialogue("F3","FirstRoom")[0]);
         }
 
         private IEnumerator WaitDelay(float delay)
