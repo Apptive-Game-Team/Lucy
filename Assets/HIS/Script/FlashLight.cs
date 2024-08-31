@@ -71,6 +71,11 @@ public class FlashLight : MonoBehaviour
                 inactiveBatteries[i].gameObject.SetActive(true);
             }
         }
+
+        if (battery <= 0)
+        {
+
+        }
     }
 
     public void TurnOffUi()
@@ -97,7 +102,7 @@ public class FlashLight : MonoBehaviour
         {
             battery = 0;
             StopConsumeBattery();
-            Character_Stat.instance.StartMentalReduce();
+            CharacterStat.instance.StartMentalReduce();
             HandLightSwitch.instance.TurnOffHandLight();
         }
     }
