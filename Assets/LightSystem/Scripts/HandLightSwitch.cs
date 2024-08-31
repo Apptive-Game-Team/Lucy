@@ -13,7 +13,10 @@ public class HandLightSwitch : MonoBehaviour
     }
     public void TurnOnHandLight()
     {
-        handlightObject.SetActive(true);
+        if ( FlashLight.instance.battery>=0)
+        {
+            handlightObject.SetActive(true);
+        }
     }
 
     public void TurnOffHandLight()
