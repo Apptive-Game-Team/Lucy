@@ -123,7 +123,7 @@ namespace FlashDialogue
         {
             dialogueImage.SetActive(false);
             dialogueCharacter.SetActive(false);
-            inventoryCanvas.SetActive(false);
+            //inventoryCanvas.SetActive(false);
             dialogueText.text = "";
             Time.timeScale = 1f;
         }
