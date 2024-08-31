@@ -15,13 +15,14 @@ namespace SlicePuzzle
         {
             for (int i = 0; i < 9; i++)
             {
-                if (buttons[i].GetComponent<RectTransform>().anchoredPosition != new Vector2(125+(i%3)*250,-125-i/3*250))
+                if (buttons[i].GetComponent<RectTransform>().anchoredPosition != new Vector2(125+i%3*250,-125-i/3*250))
                 {
-                    Debug.Log("¿À´ä");
+                    Debug.Log("ì˜¤ë‹µ");
                     return;
                 }
             }
-            Debug.Log("Á¤´ä");
+            Debug.Log("ì •ë‹µ");
+            PuzzleInteract.Instance.ClearPuzzle();
             return;
         }
     }
