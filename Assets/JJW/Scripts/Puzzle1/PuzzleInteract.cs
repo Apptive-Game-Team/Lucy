@@ -32,7 +32,7 @@ namespace SlicePuzzle
         {
             text.SetActive(false);
             slicePuzzleCanvas.gameObject.SetActive(false);
-            //clearPuzzleImage.SetActive(false);
+            clearPuzzleImage.SetActive(false);
         }
         protected override void ActOnTrigger(Collider2D other)
         {
@@ -58,7 +58,7 @@ namespace SlicePuzzle
         {
             isClear = true;
             slicePuzzleCanvas.gameObject.SetActive(false);
-            //clearPuzzleImage.SetActive(true);
+            clearPuzzleImage.SetActive(true);
             StartCoroutine(EquipKey());
         }
 
@@ -66,6 +66,7 @@ namespace SlicePuzzle
         {
             yield return new WaitUntil(() => InputManager.Instance.GetKeyDown(ActionCode.Interaction));
             Inventory.instance.AddItem(key_3F);
+            clearPuzzleImage.SetActive(false);
             Time.timeScale = 1f;
         }
     }

@@ -274,9 +274,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a353e5c2d320ccf4eb67b53b98b1a650, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: {fileID: 2901578593480521084}
+  TextObject: {fileID: 2901578593480521084}
+  dialogueController2: {fileID: 0}
   doorInfo:
     keyId: 0
+    DialogueId: 0
     isLocked: 0
     isOpened: 0
   door: {fileID: 1580966493324102487}

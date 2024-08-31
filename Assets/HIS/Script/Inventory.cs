@@ -204,6 +204,7 @@ public class Inventory : MonoBehaviour
             FlashLight.instance.SetUi();
             FlashLight.instance.StartConsumeBattery();
             CharacterStat.instance.StopMentalReduce();
+            FlashDialogue.FlashDialogueController.Instance.EquipFlash();
         }
 
         for (int i = 0; i < curEquipped.Length; i++)

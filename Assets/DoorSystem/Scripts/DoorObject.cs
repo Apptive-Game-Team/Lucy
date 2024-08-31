@@ -22,13 +22,13 @@ public class DoorInfo
 
 public class DoorObject : InteractableObject
 {
-    public DialogueController2 dialogueController2; 
+    public Test.TestDialogueController dialogueController; 
     [SerializeField] DoorInfo doorInfo;
     [SerializeField] GameObject door;
 
     public void DialogueControll()
     {
-        dialogueController2.SetDialogueFlag(doorInfo.DialogueId);
+        dialogueController.SetDialogueFlag(doorInfo.DialogueId);
     }
 
     protected override void ActOnTrigger(Collider2D other)

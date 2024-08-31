@@ -1769,6 +1769,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MentalBar
       objectReference: {fileID: 0}
+    - target: {fileID: 7297465391606991133, guid: 7d58ffe86f7b8b245b0181d6d72dfe71, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

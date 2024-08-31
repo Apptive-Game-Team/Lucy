@@ -357,7 +357,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7374384953693187657, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
       propertyPath: doorInfo.keyId
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7374384953693187657, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
       propertyPath: doorInfo.isLocked
