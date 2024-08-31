@@ -13,7 +13,7 @@ namespace SlicePuzzle
         public Canvas slicePuzzleCanvas;
         public GameObject clearPuzzleImage;
         public GameObject text;
-        public GameObject key_3F;
+        public ItemData key_3F;
         public bool isClear = false;
 
         private void Awake()
@@ -33,7 +33,6 @@ namespace SlicePuzzle
             text.SetActive(false);
             slicePuzzleCanvas.gameObject.SetActive(false);
             //clearPuzzleImage.SetActive(false);
-            key_3F.SetActive(false);
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -73,13 +72,13 @@ namespace SlicePuzzle
             isClear = true;
             slicePuzzleCanvas.gameObject.SetActive(false);
             //clearPuzzleImage.SetActive(true);
-            key_3F.SetActive(true);
             StartCoroutine(EquipKey());
         }
 
         private IEnumerator EquipKey()
         {
             yield return new WaitUntil(() => InputManager.Instance.GetKeyDown(ActionCode.Interaction));
+            Inventory.instance.AddItem(key_3F);
             Time.timeScale = 1f;
         }
     }

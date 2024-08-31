@@ -5471,7 +5471,7 @@ PrefabInstance:
     - target: {fileID: 406151032585970888, guid: 331f2d02b9aa9a14aa2b63b6584e048b, type: 3}
       propertyPath: key_3F
       value: 
-      objectReference: {fileID: 1870533758}
+      objectReference: {fileID: 11400000, guid: e5628f3cff569df469bc883d04fc5925, type: 2}
     - target: {fileID: 406151032585970888, guid: 331f2d02b9aa9a14aa2b63b6584e048b, type: 3}
       propertyPath: slicePuzzleCanvas
       value: 
