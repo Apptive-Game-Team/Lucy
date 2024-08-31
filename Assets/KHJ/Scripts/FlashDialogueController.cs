@@ -19,6 +19,7 @@ namespace FlashDialogue
 
         private int currentDialogueIndex = 0;
         private string[] currentDialogues;
+        private bool equipFlash = false;
 
         void Awake()
         {
@@ -49,14 +50,14 @@ namespace FlashDialogue
             }
         }
 
-        // ¿©·¯ ¹®Àå Ãâ·Â
+        // ë‘ ë¬¸ìž¥ ì´ìƒ ì¶œë ¥ì‹œ
         public void ShowDialogue(string[] dialogues, float delayBetweenDialogues = 1.5f)
         {
             currentDialogues = dialogues;
             StartCoroutine(DisplayDialogues());
         }
 
-        // ÇÑ ¹®Àå Ãâ·Â
+        // í•œ ë¬¸ìž¥ ì¶œë ¥ì‹œ
         public void ShowDialogue(string dialogue)
         {
             string[] singleDialogue = new string[] { dialogue };
@@ -78,7 +79,7 @@ namespace FlashDialogue
             
         }
 
-        // ´ë»ç ÇÑ ±ÛÀÚ¾¿ Ãâ·ÂÇÏ´Â ÄÚ·çÆ¾
+        // í•œ ê¸€ìžì”© ì¶œë ¥í•˜ëŠ” ê¸°ëŠ¥
         private IEnumerator TypeDialogue(string dialogue)
         {
             dialogueText.text = "";
@@ -91,7 +92,7 @@ namespace FlashDialogue
 
         }
 
-        // Á¶°ÇÀ» ´ë±âÇÏ´Â ÄÚ·çÆ¾
+        // ë‹¤ìŒ ëŒ€ì‚¬ë¡œ ë„˜ì–´ê°€ëŠ” ì¡°ê±´
         private IEnumerator WaitForCondition()
         {
             switch (currentDialogueIndex)
@@ -102,15 +103,20 @@ namespace FlashDialogue
                     break;
 
                 case 1:
-                    yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.F));  // ÀÓÀÇ·Î ¼ÕÀüµî »ç¿ëÅ° ÁöÁ¤
+                    yield return new WaitUntil(() => equipFlash);
                     currentDialogueIndex++;
                     break;
 
                 case 2:
-                    yield return new WaitUntil(() => (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)));
+                    yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return));
                     EndDialogue();
                     break;
             }
+        }
+
+        public void EquipFlash()
+        {
+            equipFlash = true;
         }
 
         private void EndDialogue()
