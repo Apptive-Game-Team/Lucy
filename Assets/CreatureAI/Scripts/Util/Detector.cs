@@ -17,6 +17,11 @@ public class Detector : MonoBehaviour
 
     Vector3? targetPosition;
 
+    public void SetViewAngle(float angle)
+    {
+        this.viewAngle = angle;
+    }
+
     public float getLookingAngle()
     {
         return lookingAngle;
