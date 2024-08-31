@@ -7,7 +7,7 @@ using static UnityEditor.Progress;
 
 namespace SlicePuzzle
 {
-    public class PuzzleInteract : MonoBehaviour
+    public class PuzzleInteract : InteractableObject
     {
         public static PuzzleInteract Instance {get; private set;}
         public Canvas slicePuzzleCanvas;
@@ -34,8 +34,16 @@ namespace SlicePuzzle
             slicePuzzleCanvas.gameObject.SetActive(false);
             //clearPuzzleImage.SetActive(false);
         }
+        protected override void ActOnTrigger(Collider2D other)
+        {
+            if (!isClear)
+            {
+                slicePuzzleCanvas.gameObject.SetActive(true);
+                Time.timeScale = 0f;
+            }
+        }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        protected override void OnTriggerEnter2D(Collider2D other)
         {
             if (!isClear)
             {
@@ -43,27 +51,6 @@ namespace SlicePuzzle
                 {
                     text.SetActive(true);
                 }
-            }
-        }
-        private void OnTriggerStay2D(Collider2D other)
-        {
-            if (other.gameObject.tag.Equals("Player"))
-            {
-                if (InputManager.Instance.GetKeyDown(ActionCode.Interaction))
-                {
-                    if (!isClear)
-                    {
-                        slicePuzzleCanvas.gameObject.SetActive(true);
-                        Time.timeScale = 0f;
-                    }
-                }
-            }
-        }
-        private void OnTriggerExit2D(Collider2D other)
-        {
-            if (other.gameObject.tag.Equals("Player"))
-            {
-                text.SetActive(false);
             }
         }
 
