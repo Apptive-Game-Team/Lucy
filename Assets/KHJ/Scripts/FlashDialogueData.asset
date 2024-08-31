@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 760a5cbd72d1b90438bff5071260208d, type: 3}
+  m_Name: FlashDialogueData
+  m_EditorClassIdentifier: 
+  dialogues:
+  - texts:
+    - "\uC190\uC804\uB4F1\uC744 \uC8FC\uC6E0\uB2E4."
+    - "'i'\uD0A4\uB97C \uB20C\uB7EC \uC778\uBCA4\uD1A0\uB9AC\uB97C \uC5F4\uC5B4\uBCF4\uC790"
+  - texts:
+    - "\uC190\uC804\uB4F1 \uC544\uC774\uCF58\uC744 \uD074\uB9AD\uD558\uACE0 \uC0AC\uC6A9\uD55C\uB2E4
+      \uBC84\uD2BC\uC744 \uB20C\uB7EC\uBCF4\uC790"
+  - texts:
+    - "\uC798\uD588\uC5B4. \uC544\uB798\uC758 \uAC8C\uC774\uC9C0\uAC00 \uBCF4\uC774\uC9C0?
+      \uC190\uC804\uB4F1\uC758 \uBC30\uD130\uB9AC \uC794\uB7C9\uC744 \uBCF4\uC5EC\uC8FC\uB294
+      \uAC8C\uC774\uC9C0\uC57C."
+    - "\uC190\uC804\uB4F1\uC744 \uD0A4\uACE0 \uC788\uC73C\uBA74 \uAC8C\uC774\uC9C0\uAC00
+      \uC904\uC5B4\uB4E4\uAC70\uC57C"
+    - "\uC904\uC5B4\uB4E0 \uAC8C\uC774\uC9C0\uB294 \uBC30\uD130\uB9AC\uB97C \uC8FC\uC6CC\uC11C
+      \uC0AC\uC6A9\uD558\uBA74 \uB2E4\uC2DC \uB298\uB9B4\uC218 \uC788\uC744\uAC70\uC57C."
+    - "\uADF8\uB7FC \uD654\uC774\uD305!"
