@@ -20,9 +20,8 @@ public class DoorInfo
     }
 }
 
-public class DoorObject : MonoBehaviour
+public class DoorObject : InteractableObject
 {
-    public GameObject Text;
     public DialogueController2 dialogueController2; 
     [SerializeField] DoorInfo doorInfo;
     [SerializeField] GameObject door;
@@ -32,32 +31,12 @@ public class DoorObject : MonoBehaviour
         dialogueController2.SetDialogueFlag(doorInfo.DialogueId);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected override void ActOnTrigger(Collider2D other)
     {
-        if (other.gameObject.tag.Equals("Player"))
+        if (doorInfo.CheckCanOpen())
         {
-            Text.SetActive(true);
-        }
-    }
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.gameObject.tag.Equals("Player"))
-        {
-            if (InputManager.Instance.GetKeyDown(ActionCode.Interaction))
-            {
-                if(doorInfo.CheckCanOpen())
-                {   
-                    DialogueControll();
-                    door.SetActive(!door.activeSelf);
-                }
-            }
-        }
-    }
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.gameObject.tag.Equals("Player"))
-        {
-            Text.SetActive(false);
+            DialogueControll();
+            door.SetActive(!door.activeSelf);
         }
     }
 
