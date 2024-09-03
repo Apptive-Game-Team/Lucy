@@ -1,12 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Creature;
 
 public class CreatureManager : MonoBehaviour
 {
+    private int[,] map;
+
+    private List<Creature.Creature> creatures = new List<Creature.Creature>();
+    private MapBuilder mapBuilder;
+    private List<Tilemap> tilemaps = new List<Tilemap>();
+    private Vector3Int mapOffset;
+
     private static CreatureManager _instance;
     public static CreatureManager Instance
     {
@@ -22,7 +28,8 @@ public class CreatureManager : MonoBehaviour
         {
             _instance = this;
             mapBuilder = gameObject.GetComponent<MapBuilder>();
-            tilemap = GameObject.Find("Floor").GetComponent<Tilemap>();
+            tilemaps.Add(GameObject.Find("Floor").GetComponent<Tilemap>());
+            tilemaps.Add(GameObject.Find("Furniture").GetComponent<Tilemap>());
             DontDestroyOnLoad(gameObject);
         }
         else if (_instance != this)
@@ -30,13 +37,6 @@ public class CreatureManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    private int[,] map;
-
-    private List<Creature.Creature> creatures = new List<Creature.Creature>();
-    private MapBuilder mapBuilder;
-    private Tilemap tilemap;
-    private Vector3Int mapOffset;
 
     public void AddCreature(Creature.Creature creature)
     {
@@ -64,7 +64,7 @@ public class CreatureManager : MonoBehaviour
 
     private void InitMap()
     {
-        BoundsInt bounds = tilemap.cellBounds;
+        BoundsInt bounds = tilemaps[0].cellBounds;
         int maxX = 0;
         int maxY = 0;
         int minX = 0;
@@ -85,17 +85,30 @@ public class CreatureManager : MonoBehaviour
         map = new int[maxX - minX + 1, maxY - minY + 1];
         mapOffset = new Vector3Int(minX, minY);
 
-        foreach (Vector3Int position in bounds.allPositionsWithin)
+        bool isReversed = false;
+        foreach (Tilemap tilemap in tilemaps)
         {
-            TileBase tileBase = tilemap.GetTile(position);
-            if (tileBase == null)
+             
+            foreach (Vector3Int position in bounds.allPositionsWithin)
             {
-                map[position.x - mapOffset.x, position.y - mapOffset.y] = 0;
+                TileBase tileBase = tilemap.GetTile(position);
+                int offsetAppliedX = position.x - mapOffset.x;
+                int offsetAppliedY = position.y - mapOffset.y;
+
+                if (offsetAppliedX > 0 && offsetAppliedX < map.GetLength(0) && offsetAppliedY > 0 && offsetAppliedY < map.GetLength(1))
+                {
+                    if (!isReversed && tileBase != null)
+                    {
+                        map[offsetAppliedX, offsetAppliedY] = 1;
+                    }
+                    else if (isReversed && tileBase != null)
+                    {
+                        print("tlqkf");
+                        map[offsetAppliedX, offsetAppliedY] = 0;
+                    }
+                }
             }
-            else
-            {
-                map[position.x - mapOffset.x, position.y - mapOffset.y] = 1;
-            }
+            isReversed = true;
         }
     }
 }
