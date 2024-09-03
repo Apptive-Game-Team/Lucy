@@ -222,7 +222,7 @@ namespace Creature{
         {
             while(true)
             {
-                if (debugMode)
+                if (debugMode && lastStatus != status)
                 {
                     Debug.Log(gameObject.name + " | " + this.name + " : is Moving");
                     lastStatus = status;
