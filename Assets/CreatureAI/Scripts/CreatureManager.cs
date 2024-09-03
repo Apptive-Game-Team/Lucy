@@ -192,15 +192,6 @@ public class CreatureManager : MonoBehaviour
 
         GameObject[] spotLights = GameObject.FindGameObjectsWithTag("Light");
 
-        if (CompareGameObjectArrays.AreGameObjectArraysEqual(lastSpotLights, spotLights))
-        {
-            return;
-        }
-        else
-        {
-            lastSpotLights = spotLights;
-        }
-
         foreach (GameObject spotLight in spotLights)
         {
             Light2D light = spotLight.GetComponentInChildren<Light2D>();
