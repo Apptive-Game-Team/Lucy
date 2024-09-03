@@ -37,7 +37,7 @@ public class DoorObject : InteractableObject
         {
             DialogueControll();
             door.SetActive(!door.activeSelf);
-            CreatureManager.Instance.UpdateDoorOnMap();
+            CreatureManager.Instance.UpdateMap();
         }
     }
 

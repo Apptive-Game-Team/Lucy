@@ -125,7 +125,7 @@ public class CreatureManager : MonoBehaviour
         }
     }
 
-    public void UpdateDoorOnMap()
+    public void UpdateMap()
     {
         pathFinders[(int)PathFinderType.DEFAULT].SetMap(GetDoorAppliedMap());
         pathFinders[(int)PathFinderType.AVOIDER].SetMap(GetDoorAndLightAppliedMap());
