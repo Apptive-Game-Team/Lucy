@@ -238,7 +238,7 @@ Tilemap:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: 0, y: 0, z: 0}
   m_Size: {x: 19, y: 13, z: 1}
-  m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
+  m_TileAnchor: {x: 0, y: 0, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
     e00: 1
@@ -318,7 +318,7 @@ GameObject:
   - component: {fileID: 4589226823784869080}
   - component: {fileID: 6193781938718530431}
   - component: {fileID: 5704270554090656777}
-  - component: {fileID: 588553625071626396}
+  - component: {fileID: 8402885129423745948}
   m_Layer: 3
   m_Name: Wall
   m_TagString: Wall
@@ -1668,7 +1668,7 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
---- !u!50 &588553625071626396
+--- !u!50 &8402885129423745948
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -14256,7 +14256,7 @@ GameObject:
   - component: {fileID: 7852826882532146271}
   - component: {fileID: 4904083425756785503}
   - component: {fileID: 3971704132242232549}
-  - component: {fileID: 3215056061718216599}
+  - component: {fileID: 4032080176397412893}
   m_Layer: 0
   m_Name: Ceiling
   m_TagString: Wall
@@ -15686,7 +15686,7 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
---- !u!50 &3215056061718216599
+--- !u!50 &4032080176397412893
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
