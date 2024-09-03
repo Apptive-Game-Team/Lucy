@@ -69,7 +69,6 @@ namespace Creature{
 
         private PathLineRenderer pathLineRenderer;
         protected int[,] map;
-        protected int[,] doorAppliedMap;
         private Vector3 deltaPosition = new Vector3();
         private Node startNode = new Node(true);
         private Node endNode = new Node(true);
