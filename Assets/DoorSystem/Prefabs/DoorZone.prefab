@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1744955181141753592}
   m_Layer: 0
   m_Name: Door
-  m_TagString: Untagged
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -275,7 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TextObject: {fileID: 2901578593480521084}
-  dialogueController2: {fileID: 0}
+  dialogueController: {fileID: 0}
   doorInfo:
     keyId: 0
     DialogueId: 0
