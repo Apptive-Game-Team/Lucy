@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 namespace Creature{
     public enum CreatureStatus
@@ -68,13 +69,13 @@ namespace Creature{
 
         private PathLineRenderer pathLineRenderer;
         protected int[,] map;
-        protected Vector3Int mapOffset;
+        protected int[,] doorAppliedMap;
         private Vector3 deltaPosition = new Vector3();
         private Node startNode = new Node(true);
         private Node endNode = new Node(true);
         private float moveFrame = 0.05f;
 
-        protected PathFinder pathFinder;
+        protected PathFinderType pathFinderType = PathFinderType.DEFAULT;
 
         protected Vector3 targetPosition;
         protected List<Node> path;
@@ -100,15 +101,17 @@ namespace Creature{
 
         }
 
+        private void Awake()
+        {
+            InitActions();
+        }
+
         protected void Start()
         {
             status = CreatureStatus.PATROL;
-            map = CreatureManager.Instance.GetMap();
-            mapOffset = CreatureManager.Instance.GetMapOffset();
             pathLineRenderer = GetComponent<PathLineRenderer>();
             detector = GetComponent<Detector>();
             detector.SetTargetMask(LayerMask.GetMask("Player"));
-            InitActions();
         }
 
         public virtual IEnumerator PatrolAction()
@@ -199,7 +202,7 @@ namespace Creature{
             
             try
             {
-                List<Node> path = pathFinder.FindPath(startNode, endNode);
+                List<Node> path = CreatureManager.Instance.pathFinders[(int)pathFinderType].FindPath(startNode, endNode);
                 if (debugMode)
                 {
                     pathLineRenderer.SetPoints(path);
@@ -215,7 +218,7 @@ namespace Creature{
 
         protected virtual void SetRandomPath()
         {
-            path = pathFinder.GetRandomPath(10, deltaPosition, Vector3ToVector3Int(transform.position));
+            path = CreatureManager.Instance.pathFinders[(int)pathFinderType].GetRandomPath(10, deltaPosition, Vector3ToVector3Int(transform.position));
         }
 
         protected IEnumerator MoveOnPath()
