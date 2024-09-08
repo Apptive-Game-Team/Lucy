@@ -2,18 +2,31 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public enum ItemType
 {
-    Equipable,
-    Consumable,
-    JustObject
+    NONE,
+    EQUIPABLE,
+    CONSUMABLE,
+    KEY,
 }
 
 public enum ConsumableType
 {
-    Hunger,
+    Stamina,
     Battery,
-    Mental
+    CurMental,
+    MaxMental
+}
+
+public enum ItemID
+{
+    NONE,
+    BATTERY,
+    FLASHLIGHT,
+    CANDY,
+    DOLL,
+    KEY_3F
 }
 
 [Serializable]
@@ -31,6 +44,7 @@ public class ItemData : ScriptableObject
     public string description;
     public ItemType type;
     public Sprite icon;
+    public ItemID itemId;
 
     [Header("Stacking")]
     public bool canStack;

@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b15ac4d25d946c4d84e03ffb9da422f, type: 3}
+  m_Name: NewDialogueData
+  m_EditorClassIdentifier: 
+  chapterDialogues:
+  - chapterName: F3
+    scenes:
+    - sceneName: FirstRoom
+      dialogues:
+      - dialogueLines:
+        - '?'
+        - "\uC5EC\uAE34.. \uC5B4\uB514\uC9C0..?"
+      - dialogueLines:
+        - "\uC65C \uC774\uB807\uAC8C \uC5B4\uB461\uC9C0?"
+        - "\uBE5B\uC744 \uB530\uB77C \uC624\uB978\uCABD \uBC29\uC73C\uB85C \uAC00\uBCF4\uC790."
+        - "\uC190\uC804\uB4F1\uC774 \uACE7 \uAEBC\uC9C8\uAC70 \uAC19\uC73C\uB2C8
+          \uBC30\uD130\uB9AC\uB97C \uCC3E\uC544\uBD10\uC57C\uACA0\uC5B4"
+    - sceneName: Corrider
+      dialogues:
+      - dialogueLines:
+        - "\uBAAC\uC2A4\uD130\uAC00 \uBCF4\uC774\uB294\uB370 \uB9CC\uC838\uBD10\uB3C4\uB418\uB824\uB098?"
+      - dialogueLines:
+        - "\uC7A0\uACA8\uC788\uC5B4."
+        - "\uC5F4\uC1E0\uB97C \uCC3E\uC544\uBD10\uC57C\uACA0\uC5B4."
+    - sceneName: RightRoom
+      dialogues:
+      - dialogueLines:
+        - I need more battery
