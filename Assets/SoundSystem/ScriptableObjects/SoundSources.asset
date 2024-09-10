@@ -69,3 +69,11 @@ MonoBehaviour:
     name: Run4
     type: 1
     sound: {fileID: 8300000, guid: e331a9e83f5b77e49bd9efba1b2c2fd9, type: 3}
+  - id: 14
+    name: DoorOpen
+    type: 3
+    sound: {fileID: 8300000, guid: 1391d22d484a345ca9da0e523385432b, type: 3}
+  - id: 15
+    name: DoorClose
+    type: 3
+    sound: {fileID: 8300000, guid: dbb39fac5e06f4931812edec6a301126, type: 3}
