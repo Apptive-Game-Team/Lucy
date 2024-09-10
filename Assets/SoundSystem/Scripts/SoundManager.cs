@@ -4,8 +4,9 @@ using UnityEngine;
 using System;
 using SoundSystem;
 
-public class SoundManager : SingletonObject
+public class SoundManager : SingletonObject<SoundManager>
 {
+
     private void Awake()
     {
         base.Awake(); //Singleton
