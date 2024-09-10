@@ -67,6 +67,8 @@ namespace Creature{
 
         private Detector detector;
 
+        private ActorSoundController soundController;
+
         private PathLineRenderer pathLineRenderer;
         protected int[,] map;
         private Vector3 deltaPosition = new Vector3();
@@ -102,6 +104,7 @@ namespace Creature{
 
         private void Awake()
         {
+            soundController = GetComponent<ActorSoundController>();
             InitActions();
         }
 
@@ -236,6 +239,7 @@ namespace Creature{
 
                 if (path == null || path.Count == 0)
                 {
+                    soundController.StopFootstepSoundPlay();
                     isChasing = false;
                     yield return new WaitForSeconds(1f);
                     continue;
@@ -268,7 +272,7 @@ namespace Creature{
                 detector.SetLookingDirection(deltaPosition);
 
                 deltaPosition.Normalize();
-
+                soundController.StartFootstepSoundPlay(status == CreatureStatus.PURSUIT);
                 while (deltaX > 0 || deltaY > 0)
                 {
                     deltaX -= Math.Abs(deltaPosition.x * speed * moveFrame);
