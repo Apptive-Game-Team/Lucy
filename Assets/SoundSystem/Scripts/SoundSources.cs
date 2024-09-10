@@ -31,7 +31,7 @@ namespace SoundSystem
         [SerializeField]
         List<SoundSource> soundSources = new List<SoundSource>();
 
-        SoundSource? GetByName(string name)
+        public SoundSource? GetByName(string name)
         {
             foreach (SoundSource source in soundSources)
             {
@@ -43,7 +43,7 @@ namespace SoundSystem
             return null;
         }
 
-        SoundSource? GetById(int id)
+        public SoundSource? GetById(int id)
         {
             foreach (SoundSource source in soundSources)
             {
@@ -53,6 +53,21 @@ namespace SoundSystem
                 }
             }
             return null;
+        }
+
+        public List<SoundSource> GetSoundSourcesByNameContain(string subName)
+        {
+            List<SoundSource> targets = new List<SoundSource>();
+
+            foreach (SoundSource source in soundSources)
+            {
+                if (source.name.Contains(subName))
+                {
+                    targets.Add(source);
+                }
+            }
+
+            return targets;
         }
     }
 }
