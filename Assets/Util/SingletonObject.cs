@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SingletonObject : MonoBehaviour
+public class SingletonObject<T> : MonoBehaviour where T : MonoBehaviour
 {
+    T t;
 
-    private static SingletonObject _instance;
-    public static SingletonObject Instance
+    public static T _instance;
+    public static T Instance
     {
         get
         {
@@ -18,7 +19,7 @@ public class SingletonObject : MonoBehaviour
     {
         if (_instance == null)
         {
-            _instance = this;
+            _instance = this as T;
             DontDestroyOnLoad(gameObject);
         }
         else
