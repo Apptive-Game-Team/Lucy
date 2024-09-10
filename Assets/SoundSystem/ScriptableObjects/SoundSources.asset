@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdfa4a0a3549c449fa98c7d8be133bcd, type: 3}
+  m_Name: SoundSources
+  m_EditorClassIdentifier: 
+  soundSources:
+  - id: 0
+    name: Footstep1
+    type: 1
+    sound: {fileID: 8300000, guid: b993df4a93c1d304ab19d8b2eb88c9a5, type: 3}
+  - id: 1
+    name: Footstep2
+    type: 1
+    sound: {fileID: 8300000, guid: 5c9bdbce37b06a24fa6ea793bcfd1907, type: 3}
+  - id: 2
+    name: Footstep3
+    type: 1
+    sound: {fileID: 8300000, guid: 0909de896e9029541b92ae05fe15e4b6, type: 3}
+  - id: 3
+    name: Footstep4
+    type: 1
+    sound: {fileID: 8300000, guid: 6ad0cf00f050bee41a2dee098475dc78, type: 3}
+  - id: 4
+    name: HorrorDream
+    type: 0
+    sound: {fileID: 8300000, guid: e76663dfc4ce3ae439a1642d27ccefe3, type: 3}
+  - id: 5
+    name: HorrorGuitar
+    type: 0
+    sound: {fileID: 8300000, guid: 5cecf4565a9f4df449b0f3021d5c00f3, type: 3}
+  - id: 6
+    name: HorrorStrange
+    type: 0
+    sound: {fileID: 8300000, guid: 860fec7f2eed32f4397171d7aecb4d02, type: 3}
+  - id: 7
+    name: HorrorWeAreSafe
+    type: 0
+    sound: {fileID: 8300000, guid: 45400638a56be7a4ea9c7e920d8410b6, type: 3}
+  - id: 8
+    name: HorrorPiano
+    type: 0
+    sound: {fileID: 8300000, guid: c24fff81e3e63c3499716b64cdaf6032, type: 3}
+  - id: 9
+    name: HitStress
+    type: 3
+    sound: {fileID: 8300000, guid: e031a2074fc57e147b5c4e516f54a129, type: 3}
+  - id: 10
+    name: Run1
+    type: 1
+    sound: {fileID: 8300000, guid: ffa5441258224694690169f4bd95b969, type: 3}
+  - id: 11
+    name: Run2
+    type: 1
+    sound: {fileID: 8300000, guid: 5a5fe2a543e35ef44980fcf5ac79551a, type: 3}
+  - id: 12
+    name: Run3
+    type: 1
+    sound: {fileID: 8300000, guid: 062aac8f0463d7945a5a16732efbea51, type: 3}
+  - id: 13
+    name: Run4
+    type: 1
+    sound: {fileID: 8300000, guid: e331a9e83f5b77e49bd9efba1b2c2fd9, type: 3}
