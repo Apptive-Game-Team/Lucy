@@ -24,11 +24,14 @@ public class SoundManager : SingletonObject<SoundManager>
     }
 
     [SerializeField]
-    private SoundSources soundSources;
+    public SoundSources soundSources;
 
     [SerializeField]
     private AudioSource audioSource;
 
-
-    
+    private void Start()
+    {
+        audioSource.clip = soundSources.GetByName("HorrorStrange").Value.sound;
+        audioSource.Play();
+    }
 }
