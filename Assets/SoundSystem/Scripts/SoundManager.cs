@@ -31,7 +31,18 @@ public class SoundManager : SingletonObject<SoundManager>
 
     private void Start()
     {
-        audioSource.clip = soundSources.GetByName("HorrorStrange").Value.sound;
+        PlayBackgroundMusic("HorrorStrange");
+    }
+
+    public void PlayBackgroundMusic(string name)
+    {
+        audioSource.clip = soundSources.GetByName(name).Value.sound;
         audioSource.Play();
     }
+
+    public void StopBackgroundMusic(string name)
+    {
+        audioSource.Stop();
+    }
+
 }
