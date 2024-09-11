@@ -46,6 +46,8 @@ public class InputManager : SingletonObject<InputManager>
 
     Vector3 moveVector = new Vector3();
 
+    private List<IKeyInputListener> inputListeners = new List<IKeyInputListener>();
+
     public void SetKeyActive(ActionCode action, bool active)
     {
         keyActiveFlags[action] = active;
@@ -110,6 +112,7 @@ public class InputManager : SingletonObject<InputManager>
 
     IEnumerator KeyDownCounter(ActionCode action)
     {
+        
         yield return new WaitForSeconds(0.5f);
         keyDownBools[action] = false;
         keyDownCounterCoroutine[action] = null;
@@ -119,18 +122,35 @@ public class InputManager : SingletonObject<InputManager>
     {
         foreach (ActionCode action in keyMappings.Keys)
         {
-            if (Input.GetKeyDown(keyMappings[action]) && keyActiveFlags[action])
+            if (keyActiveFlags[action])
             {
-                keyDownBools[action] = true;
-                Coroutine tempCoroutine = keyDownCounterCoroutine[action];
-                if (tempCoroutine != null)
+                if (Input.GetKeyDown(keyMappings[action]))
                 {
-                    StopCoroutine(tempCoroutine);
+                    CallOnKeyDownListeners(action);
+                    keyDownBools[action] = true;
+                    Coroutine tempCoroutine = keyDownCounterCoroutine[action];
+                    if (tempCoroutine != null)
+                    {
+                        StopCoroutine(tempCoroutine);
+                    }
+                    keyDownCounterCoroutine[action] = StartCoroutine(KeyDownCounter(action));
                 }
-                keyDownCounterCoroutine[action] = StartCoroutine(KeyDownCounter(action));
+                else if (Input.GetKey(keyMappings[action]))
+                {
+                    CallOnKeyListeners(action);
+                } else if (Input.GetKeyDown(keyMappings[action]))
+                {
+                    CallOnKeyUpListeners(action);
+                }
             }
+
         }
 
+    }
+
+    public void SetKeyListener(IKeyInputListener listener)
+    {
+        inputListeners.Add(listener);
     }
 
     private void InitKeyDownDictionarys()
@@ -140,6 +160,33 @@ public class InputManager : SingletonObject<InputManager>
             keyDownBools.Add(action, false);
             keyDownCounterCoroutine.Add(action, null);
             keyActiveFlags.Add(action, true);
+        }
+    }
+
+    private void CallOnKeyListeners(ActionCode action)
+    {
+        foreach (IKeyInputListener listener in inputListeners)
+        {
+            listener.OnKey(action);
+
+        }
+    }
+
+    private void CallOnKeyDownListeners(ActionCode action)
+    {
+        foreach (IKeyInputListener listener in inputListeners)
+        {
+            listener.OnKeyDown(action);
+
+        }
+    }
+
+    private void CallOnKeyUpListeners(ActionCode action)
+    {
+        foreach (IKeyInputListener listener in inputListeners)
+        {
+            listener.OnKeyUp(action);
+
         }
     }
 }
