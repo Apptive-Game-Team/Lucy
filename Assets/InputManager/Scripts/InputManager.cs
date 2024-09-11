@@ -21,6 +21,10 @@ public class InputManager : SingletonObject<InputManager>
         base.Awake();
     }
 
+    public bool isMoveActioncode(ActionCode action)
+    {
+        return (int)action >= (int)ActionCode.MoveUp && (int)action <= (int)ActionCode.MoveLeft;
+    }
 
     private void Start()
     {
