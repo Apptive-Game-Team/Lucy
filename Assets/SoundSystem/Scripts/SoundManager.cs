@@ -40,9 +40,8 @@ public class SoundManager : SingletonObject<SoundManager>
         audioSource.Play();
     }
 
-    public void StopBackgroundMusic(string name)
+    public void StopBackgroundMusic()
     {
         audioSource.Stop();
     }
-
 }
