@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SoundDetector : MonoBehaviour
 {
-    private float maxDistance = 30f;
+    private float maxDistance = 10f;
 
     [SerializeField] bool debugMode = true;
 
