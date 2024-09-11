@@ -11,8 +11,6 @@ public class SoundDetector : MonoBehaviour
 
     [SerializeField] LayerMask targetMask;
 
-    LayerMask obstacleMask;
-
     List<Collider2D> hitTargetList = new List<Collider2D>();
 
     Vector3? targetPosition;
@@ -31,11 +29,13 @@ public class SoundDetector : MonoBehaviour
         {
             float distance = Vector3.Distance(transform.position, target.transform.position);
             AudioSource source = target.GetComponent<AudioSource>();
-            if (distance > target.GetComponent<AudioSource>().maxDistance && source.isPlaying)
+
+            if (distance < target.GetComponent<AudioSource>().maxDistance && source.isPlaying)
             {
                 hitTargetList.Add(target);
             }
         }
+
         if (debugMode)
         {
             print("sound detector found " + hitTargetList.Count + " target");
