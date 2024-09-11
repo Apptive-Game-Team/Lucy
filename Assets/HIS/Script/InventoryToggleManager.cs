@@ -15,12 +15,6 @@ public class InventoryToggleManager : MonoBehaviour
     public GameObject equipButton;
     public GameObject unEquipButton;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -55,7 +49,6 @@ public class InventoryToggleManager : MonoBehaviour
         Inventory.instance.ClearSelectItemWindow();
         inventoryWindow.SetActive(false);
         onCloseInventory?.Invoke();
-
         useButton.SetActive(false);
         equipButton.SetActive(false);
         unEquipButton.SetActive(false);
