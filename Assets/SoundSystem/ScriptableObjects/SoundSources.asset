@@ -77,3 +77,7 @@ MonoBehaviour:
     name: DoorClose
     type: 3
     sound: {fileID: 8300000, guid: dbb39fac5e06f4931812edec6a301126, type: 3}
+  - id: 16
+    name: ButtonSound
+    type: 2
+    sound: {fileID: 8300000, guid: 0593df3ca48d74559a26d92606d4750e, type: 3}
