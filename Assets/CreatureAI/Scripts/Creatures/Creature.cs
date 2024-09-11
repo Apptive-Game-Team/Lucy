@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
+using static Team6203.Util;
 
 namespace Creature{
     public enum CreatureStatus
@@ -65,6 +62,7 @@ namespace Creature{
     {
         [SerializeField] protected bool debugMode = true;
 
+        private SoundDetector soundDetector;
         private Detector detector;
 
         private ActorSoundController soundController;
@@ -114,6 +112,8 @@ namespace Creature{
             pathLineRenderer = GetComponent<PathLineRenderer>();
             detector = GetComponent<Detector>();
             detector.SetTargetMask(LayerMask.GetMask("Player"));
+            soundDetector = GetComponent<SoundDetector>();
+            soundDetector.SetTargetMask(LayerMask.GetMask("Door") | LayerMask.GetMask("Player"));
         }
 
         public virtual IEnumerator PatrolAction()
@@ -173,7 +173,7 @@ namespace Creature{
                 Debug.Log(gameObject.name + " | " + this.name + " : Detecting Player...");
             }
 
-            List<Collider2D> detectedPlayerCollider = detector.DetectByView();
+            List<Collider2D> detectedPlayerCollider = ConcatenateListWithoutDuplicates(detector.DetectByView(), soundDetector.Detect());
             if (detectedPlayerCollider.Count > 0)
             {
                 status = CreatureStatus.PURSUIT;
