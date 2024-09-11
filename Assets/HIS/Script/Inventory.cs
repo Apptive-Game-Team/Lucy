@@ -1,7 +1,9 @@
-using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
+using System.Collections;
+using UnityEngine.UI;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 
 [System.Serializable]
 public class ItemSlot
@@ -25,10 +27,11 @@ public class Inventory : MonoBehaviour
     public GameObject useButton;
     public GameObject equipButton;
     public GameObject unEquipButton;
-
     public ItemSlot[] curEquipped;
+    public List<Image> seperatingImages;
 
     public static Inventory instance;
+    public ItemData battery;
 
     private void Awake()
     {
@@ -53,6 +56,10 @@ public class Inventory : MonoBehaviour
         useButton.SetActive(false);
         equipButton.SetActive(false);
         unEquipButton.SetActive(false);
+        for (int i = 0;i < seperatingImages.Count;i++)
+        {
+            seperatingImages[i].gameObject.SetActive(false);
+        }
         ClearSelectItemWindow();
     }
 
@@ -185,6 +192,12 @@ public class Inventory : MonoBehaviour
                 }
             }
         }
+
+        if (selectedItem.item.itemId == ItemID.RemoteController)
+        {
+            StartCoroutine(GetBatteryEvent(battery));
+        }
+
         RemoveSelectedItem();
     }
     public void OnEquipButton()
@@ -291,5 +304,19 @@ public class Inventory : MonoBehaviour
             }
         }
         return false;
+    }
+    
+    private IEnumerator GetBatteryEvent(ItemData item)
+    {
+        //inventoryWindow.SetActive(false);
+        Time.timeScale = 0;
+        for (int i = 0; i < seperatingImages.Count; i++)
+        {
+            seperatingImages[i].gameObject.SetActive(true);
+            yield return new WaitForSecondsRealtime(2f);
+            seperatingImages[i].gameObject.SetActive(false);
+        }
+        Time.timeScale = 1;
+        AddItem(item);
     }
 }

@@ -32,7 +32,9 @@ public class RemoteController : MonoBehaviour
         {
             if(InputManager.Instance.GetKeyDown(ActionCode.Interaction))
             {
-                StartCoroutine(GetBatteryEvent());
+                Inventory.instance.AddItem(item);
+                //StartCoroutine(GetBatteryEvent());
+                Destroy(gameObject);
             }
         }
     }
@@ -51,6 +53,11 @@ public class RemoteController : MonoBehaviour
         {
             seperatingImages[i].gameObject.SetActive(false);
         }
+    }
+
+    public void GetBatteryEventCoroutine()
+    {
+        StartCoroutine(GetBatteryEvent());
     }
 
     private IEnumerator GetBatteryEvent()
