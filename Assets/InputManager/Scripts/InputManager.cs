@@ -20,6 +20,8 @@ public class InputManager : SingletonObject<InputManager>
     {
         base.Awake();
     }
+    private const float KEY_LISTENER_DELAY = 0.05f;
+    private const float KET_DOWN_DELAY = 0.5f;
 
     public bool isMoveActioncode(ActionCode action)
     {
@@ -118,7 +120,7 @@ public class InputManager : SingletonObject<InputManager>
     IEnumerator KeyDownCounter(ActionCode action)
     {
         
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(KET_DOWN_DELAY);
         keyDownBools[action] = false;
         keyDownCounterCoroutine[action] = null;
     }
@@ -165,7 +167,7 @@ public class InputManager : SingletonObject<InputManager>
     {
         while (true)
         {
-            yield return new WaitForSecondsRealtime(0.05f);
+            yield return new WaitForSecondsRealtime(KEY_LISTENER_DELAY);
             foreach (ActionCode action in keyMappings.Keys)
             {
                 if (keyActiveFlags[action])
