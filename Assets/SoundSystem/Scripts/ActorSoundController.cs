@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using SoundSystem;
 
-public class ActorSoundController : MonoBehaviour
+public class ActorSoundController : SoundController
 {
     private SoundManager soundManager;
     private List<SoundSource> walkSounds;
     private List<SoundSource> runSounds;
-    private AudioSource audioSource;
     private Coroutine _footstepSoundCoroutine;
     private int footstepSoundCount;
     private bool _isRun;
 
     private void Awake()
     {
-        audioSource = gameObject.GetComponent<AudioSource>();
+        base.Awake();
     }
 
     private void Start()
