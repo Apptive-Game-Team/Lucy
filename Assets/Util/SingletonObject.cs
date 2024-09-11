@@ -11,20 +11,16 @@ public class SingletonObject<T> : MonoBehaviour where T : MonoBehaviour
     {
         get
         {
-            return _instance;
-        }
-    }
+            _instance = FindObjectOfType<T>();
+            
+            if (_instance == null)
+            {
+                GameObject singletonObject = new GameObject(typeof(T).ToString());
+                _instance = singletonObject.AddComponent<T>();
+            }
 
-    protected void Awake()
-    {
-        if (_instance == null)
-        {
-            _instance = this as T;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
+            DontDestroyOnLoad(_instance.gameObject);
+            return _instance;
         }
     }
 }

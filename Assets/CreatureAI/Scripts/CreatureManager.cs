@@ -12,7 +12,7 @@ public enum PathFinderType
     AVOIDER=1,
 }
 
-public class CreatureManager : MonoBehaviour
+public class CreatureManager : SingletonObject<CreatureManager>
 {
     private int[,] map;
     private int[,] doorAppliedMap;
@@ -27,31 +27,13 @@ public class CreatureManager : MonoBehaviour
 
     public List<PathFinder> pathFinders = new List<PathFinder>();
 
-    private static CreatureManager _instance;
-    public static CreatureManager Instance
-    {
-        get
-        {
-            return _instance;
-        }
-    }
-
     private void Awake()
     {
-        if (_instance == null)
-        {
-            _instance = this;
-            mapBuilder = gameObject.GetComponent<MapBuilder>();
-            tilemaps.Add(GameObject.Find("Floor").GetComponent<Tilemap>());
-            tilemaps.Add(GameObject.Find("Furniture").GetComponent<Tilemap>());
-            InitMap();
-            InitPathFinders();
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (_instance != this)
-        {
-            Destroy(gameObject);
-        }
+        mapBuilder = gameObject.GetComponent<MapBuilder>();
+        tilemaps.Add(GameObject.Find("Floor").GetComponent<Tilemap>());
+        tilemaps.Add(GameObject.Find("Furniture").GetComponent<Tilemap>());
+        InitMap();
+        InitPathFinders();
     }
 
     void InitPathFinders()
