@@ -39,5 +39,17 @@ namespace Team6203
             return dict1.Count == 0;
         }
 
+        public static List<T> ConcatenateListWithoutDuplicates<T>(List<T> list1, List<T> list2)
+        {
+            foreach (T value in list2)
+            {
+                if (!list1.Contains(value))
+                {
+                    list1.Add(value);
+                }
+            }
+            return list1;
+        }
     }
 }
+
