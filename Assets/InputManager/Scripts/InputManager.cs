@@ -37,10 +37,6 @@ public class InputManager : SingletonObject<InputManager>
     Vector3 moveVector = new Vector3();
 
     private List<IKeyInputListener> inputListeners = new List<IKeyInputListener>();
-    private void Awake()
-    {
-        base.Awake();
-    }
 
     public bool isMoveActioncode(ActionCode action)
     {
