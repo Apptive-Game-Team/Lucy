@@ -9,8 +9,6 @@ public class SoundManager : SingletonObject<SoundManager>
 
     private void Awake()
     {
-        base.Awake(); //Singleton
-
         if (audioSource == null)
         {
             try
