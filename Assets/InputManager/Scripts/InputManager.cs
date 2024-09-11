@@ -12,43 +12,13 @@ public enum ActionCode
     MoveLeft
 }
 
-public class InputManager : MonoBehaviour
+public class InputManager : SingletonObject<InputManager>
 {
-    #region Singleton
-    private static InputManager _instance;
-
-    public static InputManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = FindObjectOfType<InputManager>();
-                if (_instance == null)
-                {
-                    GameObject singletonObject = new GameObject(typeof(InputManager).ToString());
-                    _instance = singletonObject.AddComponent<InputManager>();
-
-                    DontDestroyOnLoad(singletonObject);
-                }
-            }
-            return _instance;
-        }
-    }
-
     private void Awake()
     {
-        if (_instance == null)
-        {
-            _instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject); 
-        }
+        base.Awake();
     }
-    #endregion
+
 
     private void Start()
     {
