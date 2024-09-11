@@ -10,8 +10,11 @@ namespace CharacterCamera
         private Rigidbody2D playerRb;
         private Animator Anim;
         public float playerMoveSpeed = 150f;
+        private ActorSoundController soundController;
+
         void Awake()
         {
+            soundController = GetComponent<ActorSoundController>();
             playerRb = GetComponent<Rigidbody2D>();
             Anim = GetComponent<Animator>();
         }
@@ -36,6 +39,14 @@ namespace CharacterCamera
                 Anim.speed = 1f;
                 CharacterStat.instance.isRun = false;
                 CharacterStat.instance.ChangeStamina(+5);
+            }
+
+            if (isMoving)
+            {
+                soundController.StartFootstepSoundPlay(CharacterStat.instance.isRun);
+            } else
+            {
+                soundController.StopFootstepSoundPlay();
             }
             
 
