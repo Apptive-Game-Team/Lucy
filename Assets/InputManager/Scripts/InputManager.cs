@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+//using System.Numerics;
 
 public enum ActionCode
 {
@@ -72,6 +73,9 @@ public class InputManager : MonoBehaviour
 
     Vector3 moveVector = new Vector3();
 
+    private List<Vector2> directionList = new();
+
+
     public void SetKeyActive(ActionCode action, bool active)
     {
         keyActiveFlags[action] = active;
@@ -102,36 +106,73 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    public Vector3 GetMoveVector()
+    
+
+public Vector3 GetMoveVector()
+{
+    if (Input.GetKeyDown(keyMappings[ActionCode.MoveUp]))
     {
-        if (GetKey(ActionCode.MoveUp))
+        if (!directionList.Contains(Vector2.up))
         {
-            moveVector.y = 1;
-        } else if (GetKey(ActionCode.MoveDown))
-        {
-            moveVector.y = -1;
-        } else
-        {
-            moveVector.y = 0;
+            directionList.Add(Vector2.up);
         }
-
-        if (GetKey(ActionCode.MoveLeft))
-        {
-            moveVector.x = -1;
-        } else if (GetKey(ActionCode.MoveRight))
-        {
-            moveVector.x = +1;
-        } else
-        {
-            moveVector.x = 0;
-        }
-
-        return moveVector;
     }
+    else if (Input.GetKeyDown(keyMappings[ActionCode.MoveDown]))
+    {
+        if (!directionList.Contains(Vector2.down))
+        {
+            directionList.Add(Vector2.down);
+        }
+    }
+    else if (Input.GetKeyDown(keyMappings[ActionCode.MoveLeft]))
+    {
+        if (!directionList.Contains(Vector2.left))
+        {
+            directionList.Add(Vector2.left);
+        }
+    }
+    else if (Input.GetKeyDown(keyMappings[ActionCode.MoveRight]))
+    {
+        if (!directionList.Contains(Vector2.right))
+        {
+            directionList.Add(Vector2.right);
+        }
+    }
+
+    if (Input.GetKeyUp(keyMappings[ActionCode.MoveUp]))
+    {
+        directionList.Remove(Vector2.up);
+    }
+    else if (Input.GetKeyUp(keyMappings[ActionCode.MoveDown]))
+    {
+        directionList.Remove(Vector2.down);
+    }
+    else if (Input.GetKeyUp(keyMappings[ActionCode.MoveLeft]))
+    {
+        directionList.Remove(Vector2.left);
+    }
+    else if (Input.GetKeyUp(keyMappings[ActionCode.MoveRight]))
+    {
+        directionList.Remove(Vector2.right);
+    }
+
+    if (directionList.Count > 0)
+    {
+        moveVector.x = directionList[^1].x;
+        moveVector.y = directionList[^1].y;
+    }
+    else
+    {
+        moveVector.x = 0;
+        moveVector.y = 0;
+    }
+
+    return moveVector;
+}
 
     public bool GetKey(ActionCode action)
     {
-        return (Input.GetKey(keyMappings[action]) && keyActiveFlags[action]);
+        return Input.GetKey(keyMappings[action]) && keyActiveFlags[action];
     }
 
     IEnumerator KeyDownCounter(ActionCode action)
