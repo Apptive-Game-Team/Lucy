@@ -16,24 +16,13 @@ public enum ActionCode
 
 public class InputManager : SingletonObject<InputManager>
 {
-    private void Awake()
-    {
-        base.Awake();
-    }
     private const float KEY_LISTENER_DELAY = 0.05f;
     private const float KET_DOWN_DELAY = 0.5f;
 
-    public bool isMoveActioncode(ActionCode action)
-    {
-        return (int)action >= (int)ActionCode.MoveUp && (int)action <= (int)ActionCode.MoveLeft;
-    }
 
-    private void Start()
-    {
-        InitKeyDownDictionarys();
-        StartCoroutine(CallListenersCoroutine());
-    }
-
+    private Dictionary<ActionCode, bool> keyDownBools = new Dictionary<ActionCode, bool>();
+    private Dictionary<ActionCode, Coroutine> keyDownCounterCoroutine = new Dictionary<ActionCode, Coroutine>();
+    private Dictionary<ActionCode, bool> keyActiveFlags = new Dictionary<ActionCode, bool>();
     private Dictionary<ActionCode, KeyCode> keyMappings = new Dictionary<ActionCode, KeyCode>()
     {
         { ActionCode.Interaction, KeyCode.Z },
@@ -45,15 +34,24 @@ public class InputManager : SingletonObject<InputManager>
         { ActionCode.SelectClick, KeyCode.Mouse0 },
     };
 
-    private Dictionary<ActionCode, bool> keyDownBools = new Dictionary<ActionCode, bool>();
-
-    private Dictionary<ActionCode, Coroutine> keyDownCounterCoroutine = new Dictionary<ActionCode, Coroutine>();
-
-    private Dictionary<ActionCode, bool> keyActiveFlags = new Dictionary<ActionCode, bool>();
-
     Vector3 moveVector = new Vector3();
 
     private List<IKeyInputListener> inputListeners = new List<IKeyInputListener>();
+    private void Awake()
+    {
+        base.Awake();
+    }
+
+    public bool isMoveActioncode(ActionCode action)
+    {
+        return (int)action >= (int)ActionCode.MoveUp && (int)action <= (int)ActionCode.MoveLeft;
+    }
+
+    private void Start()
+    {
+        InitKeyDownDictionarys();
+        StartCoroutine(CallListenersCoroutine());
+    }
 
     public void SetKeyActive(ActionCode action, bool active)
     {
