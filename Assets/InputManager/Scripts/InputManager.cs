@@ -9,7 +9,9 @@ public enum ActionCode
     MoveUp,
     MoveDown,
     MoveRight,
-    MoveLeft
+    MoveLeft,
+    OpenInventory,
+    SelectClick,
 }
 
 public class InputManager : SingletonObject<InputManager>
@@ -31,7 +33,9 @@ public class InputManager : SingletonObject<InputManager>
         { ActionCode.MoveUp, KeyCode.UpArrow },
         { ActionCode.MoveDown, KeyCode.DownArrow },
         { ActionCode.MoveRight, KeyCode.RightArrow },
-        { ActionCode.MoveLeft, KeyCode.LeftArrow }
+        { ActionCode.MoveLeft, KeyCode.LeftArrow },
+        { ActionCode.OpenInventory, KeyCode.I },
+        { ActionCode.SelectClick, KeyCode.Mouse0 },
     };
 
     private Dictionary<ActionCode, bool> keyDownBools = new Dictionary<ActionCode, bool>();
