@@ -14,6 +14,7 @@ public class HandLightRotator : MonoBehaviour, IKeyInputListener
     [SerializeField] GameObject handlightObject;
 
     Detector detector;
+    InputManager inputManager;
 
     private void Awake()
     {
@@ -22,7 +23,8 @@ public class HandLightRotator : MonoBehaviour, IKeyInputListener
 
     private void Start()
     {
-        InputManager.Instance.SetKeyListener(this);
+        inputManager = InputManager.Instance;
+        inputManager.SetKeyListener(this);
         if(handlightObject == null)
         {
             Debug.LogError("HandLight Object�� ���� �����ϴ�! ������ player ������ �ִ� ������Ʈ�� ã�Ƽ� �������� �ּ���!");
@@ -30,7 +32,7 @@ public class HandLightRotator : MonoBehaviour, IKeyInputListener
     }
     void IKeyInputListener.OnKey(ActionCode action)
     {
-        if ((int) action >= (int)ActionCode.MoveUp && (int) action <= (int)ActionCode.MoveLeft)
+        if (inputManager.isMoveActioncode(action))
         {
             Vector3 direction = InputManager.Instance.GetMoveVector();
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
