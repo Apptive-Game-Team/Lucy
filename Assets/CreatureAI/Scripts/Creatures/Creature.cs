@@ -125,7 +125,7 @@ namespace Creature{
 
             speed = minSpeed;
             DetectPlayer();
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.5f);
             actions[(int)status].Play();
         }
 
@@ -138,7 +138,7 @@ namespace Creature{
 
             speed = maxSpeed;
             DetectPlayer();
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.5f);
             GetPathToPosition(targetPosition);
             actions[(int)status].Play();
         }
@@ -153,7 +153,7 @@ namespace Creature{
             speed = minSpeed;
             DetectPlayer();
             detector.setLookingAngle(detector.getLookingAngle() + 10f);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.5f);
             SetRandomPath();
             actions[(int)status].Play();
         }
