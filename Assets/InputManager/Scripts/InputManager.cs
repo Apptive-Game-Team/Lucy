@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-//using System.Numerics;
 
 public enum ActionCode
 {
@@ -10,71 +9,45 @@ public enum ActionCode
     MoveUp,
     MoveDown,
     MoveRight,
-    MoveLeft
+    MoveLeft,
+    OpenInventory,
+    SelectClick,
 }
 
-public class InputManager : MonoBehaviour
+public class InputManager : SingletonObject<InputManager>
 {
-    #region Singleton
-    private static InputManager _instance;
+    private const float KEY_LISTENER_DELAY = 0.05f;
+    private const float KET_DOWN_DELAY = 0.5f;
 
-    public static InputManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = FindObjectOfType<InputManager>();
-                if (_instance == null)
-                {
-                    GameObject singletonObject = new GameObject(typeof(InputManager).ToString());
-                    _instance = singletonObject.AddComponent<InputManager>();
 
-                    DontDestroyOnLoad(singletonObject);
-                }
-            }
-            return _instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (_instance == null)
-        {
-            _instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject); 
-        }
-    }
-    #endregion
-
-    private void Start()
-    {
-        InitKeyDownDictionarys();
-    }
-
+    private Dictionary<ActionCode, bool> keyDownBools = new Dictionary<ActionCode, bool>();
+    private Dictionary<ActionCode, Coroutine> keyDownCounterCoroutine = new Dictionary<ActionCode, Coroutine>();
+    private Dictionary<ActionCode, bool> keyActiveFlags = new Dictionary<ActionCode, bool>();
     private Dictionary<ActionCode, KeyCode> keyMappings = new Dictionary<ActionCode, KeyCode>()
     {
         { ActionCode.Interaction, KeyCode.Z },
         { ActionCode.MoveUp, KeyCode.UpArrow },
         { ActionCode.MoveDown, KeyCode.DownArrow },
         { ActionCode.MoveRight, KeyCode.RightArrow },
-        { ActionCode.MoveLeft, KeyCode.LeftArrow }
+        { ActionCode.MoveLeft, KeyCode.LeftArrow },
+        { ActionCode.OpenInventory, KeyCode.I },
+        { ActionCode.SelectClick, KeyCode.Mouse0 },
     };
-
-    private Dictionary<ActionCode, bool> keyDownBools = new Dictionary<ActionCode, bool>();
-
-    private Dictionary<ActionCode, Coroutine> keyDownCounterCoroutine = new Dictionary<ActionCode, Coroutine>();
-
-    private Dictionary<ActionCode, bool> keyActiveFlags = new Dictionary<ActionCode, bool>();
 
     Vector3 moveVector = new Vector3();
 
-    private List<Vector2> directionList = new();
+    private List<IKeyInputListener> inputListeners = new List<IKeyInputListener>();
 
+    public bool isMoveActioncode(ActionCode action)
+    {
+        return (int)action >= (int)ActionCode.MoveUp && (int)action <= (int)ActionCode.MoveLeft;
+    }
+
+    private void Start()
+    {
+        InitKeyDownDictionarys();
+        StartCoroutine(CallListenersCoroutine());
+    }
 
     public void SetKeyActive(ActionCode action, bool active)
     {
@@ -106,98 +79,72 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    
-
-public Vector3 GetMoveVector()
-{
-    if (Input.GetKeyDown(keyMappings[ActionCode.MoveUp]))
+    public Vector3 GetMoveVector()
     {
-        if (!directionList.Contains(Vector2.up))
+        if (GetKey(ActionCode.MoveUp))
         {
-            directionList.Add(Vector2.up);
-        }
-    }
-    else if (Input.GetKeyDown(keyMappings[ActionCode.MoveDown]))
-    {
-        if (!directionList.Contains(Vector2.down))
+            moveVector.y = 1;
+        } else if (GetKey(ActionCode.MoveDown))
         {
-            directionList.Add(Vector2.down);
-        }
-    }
-    else if (Input.GetKeyDown(keyMappings[ActionCode.MoveLeft]))
-    {
-        if (!directionList.Contains(Vector2.left))
+            moveVector.y = -1;
+        } else
         {
-            directionList.Add(Vector2.left);
+            moveVector.y = 0;
         }
-    }
-    else if (Input.GetKeyDown(keyMappings[ActionCode.MoveRight]))
-    {
-        if (!directionList.Contains(Vector2.right))
+
+        if (GetKey(ActionCode.MoveLeft))
         {
-            directionList.Add(Vector2.right);
+            moveVector.x = -1;
+        } else if (GetKey(ActionCode.MoveRight))
+        {
+            moveVector.x = +1;
+        } else
+        {
+            moveVector.x = 0;
         }
-    }
 
-    if (Input.GetKeyUp(keyMappings[ActionCode.MoveUp]))
-    {
-        directionList.Remove(Vector2.up);
+        return moveVector;
     }
-    else if (Input.GetKeyUp(keyMappings[ActionCode.MoveDown]))
-    {
-        directionList.Remove(Vector2.down);
-    }
-    else if (Input.GetKeyUp(keyMappings[ActionCode.MoveLeft]))
-    {
-        directionList.Remove(Vector2.left);
-    }
-    else if (Input.GetKeyUp(keyMappings[ActionCode.MoveRight]))
-    {
-        directionList.Remove(Vector2.right);
-    }
-
-    if (directionList.Count > 0)
-    {
-        moveVector.x = directionList[^1].x;
-        moveVector.y = directionList[^1].y;
-    }
-    else
-    {
-        moveVector.x = 0;
-        moveVector.y = 0;
-    }
-
-    return moveVector;
-}
 
     public bool GetKey(ActionCode action)
     {
-        return Input.GetKey(keyMappings[action]) && keyActiveFlags[action];
+        return (Input.GetKey(keyMappings[action]) && keyActiveFlags[action]);
     }
 
     IEnumerator KeyDownCounter(ActionCode action)
     {
-        yield return new WaitForSeconds(0.5f);
+        
+        yield return new WaitForSeconds(KET_DOWN_DELAY);
         keyDownBools[action] = false;
         keyDownCounterCoroutine[action] = null;
     }
+
+    
 
     void Update()
     {
         foreach (ActionCode action in keyMappings.Keys)
         {
-            if (Input.GetKeyDown(keyMappings[action]) && keyActiveFlags[action])
+            if (keyActiveFlags[action])
             {
-                keyDownBools[action] = true;
-                Coroutine tempCoroutine = keyDownCounterCoroutine[action];
-                if (tempCoroutine != null)
+                if (Input.GetKeyDown(keyMappings[action]))
                 {
-                    StopCoroutine(tempCoroutine);
+                    keyDownBools[action] = true;
+                    Coroutine tempCoroutine = keyDownCounterCoroutine[action];
+                    if (tempCoroutine != null)
+                    {
+                        StopCoroutine(tempCoroutine);
+                    }
+                    keyDownCounterCoroutine[action] = StartCoroutine(KeyDownCounter(action));
                 }
-                keyDownCounterCoroutine[action] = StartCoroutine(KeyDownCounter(action));
             }
         }
 
+    }
+
+    public void SetKeyListener(IKeyInputListener listener)
+    {
+        inputListeners.Add(listener);
     }
 
     private void InitKeyDownDictionarys()
@@ -207,6 +154,61 @@ public Vector3 GetMoveVector()
             keyDownBools.Add(action, false);
             keyDownCounterCoroutine.Add(action, null);
             keyActiveFlags.Add(action, true);
+        }
+    }
+
+    IEnumerator CallListenersCoroutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSecondsRealtime(KEY_LISTENER_DELAY);
+            foreach (ActionCode action in keyMappings.Keys)
+            {
+                if (keyActiveFlags[action])
+                {
+                    if (GetKeyDown(action))
+                    {
+                        CallOnKeyDownListeners(action);
+                    }
+                    else if (Input.GetKey(keyMappings[action]))
+                    {
+                        CallOnKeyListeners(action);
+                    }
+                    else if (Input.GetKeyDown(keyMappings[action]))
+                    {
+                        CallOnKeyUpListeners(action);
+                    }
+                }
+
+            }
+        }
+    }
+
+
+    private void CallOnKeyListeners(ActionCode action)
+    {
+        foreach (IKeyInputListener listener in inputListeners)
+        {
+            listener.OnKey(action);
+
+        }
+    }
+
+    private void CallOnKeyDownListeners(ActionCode action)
+    {
+        foreach (IKeyInputListener listener in inputListeners)
+        {
+            listener.OnKeyDown(action);
+
+        }
+    }
+
+    private void CallOnKeyUpListeners(ActionCode action)
+    {
+        foreach (IKeyInputListener listener in inputListeners)
+        {
+            listener.OnKeyUp(action);
+
         }
     }
 }

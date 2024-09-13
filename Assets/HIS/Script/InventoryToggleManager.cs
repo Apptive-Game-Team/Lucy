@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class InventoryToggleManager : MonoBehaviour
+public class InventoryToggleManager : MonoBehaviour, IKeyInputListener
 {
     [Header("Events")]
     public UnityEvent onOpenInventory;
@@ -15,19 +15,12 @@ public class InventoryToggleManager : MonoBehaviour
     public GameObject equipButton;
     public GameObject unEquipButton;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private InputManager inputManager;
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            ToggleInventory();
-        }
+        inputManager = InputManager.Instance;
+        inputManager.SetKeyListener(this);
     }
 
     public void ToggleInventory()
@@ -55,9 +48,16 @@ public class InventoryToggleManager : MonoBehaviour
         Inventory.instance.ClearSelectItemWindow();
         inventoryWindow.SetActive(false);
         onCloseInventory?.Invoke();
-
         useButton.SetActive(false);
         equipButton.SetActive(false);
         unEquipButton.SetActive(false);
+    }
+
+    void IKeyInputListener.OnKeyDown(ActionCode action)
+    {
+        if (action == ActionCode.OpenInventory)
+        {
+            ToggleInventory();
+        }
     }
 }
