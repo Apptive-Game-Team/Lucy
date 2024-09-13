@@ -7,8 +7,8 @@ public class PuzzleSwitch2F : MonoBehaviour
 {
     [SerializeField] private GameObject floorTile;
     [SerializeField] private GameObject voidTile;
-    [SerializeField] private GameObject bridgeTile;
-
+    [SerializeField] private GameObject[] bridges;
+    [SerializeField] private GameObject player;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +23,12 @@ public class PuzzleSwitch2F : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-       bridgeTile.SetActive(false);
+        if (other.gameObject == player)
+        {
+            for (int i = 0; i < bridges.Length; i++)
+            {
+                bridges[i].SetActive(true);
+            }
+        }
     }
 }
