@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: KakaoTalk_20240811_172146064_02
+  m_Name: MazeFloor
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: e3be5714584609d499c19fd746a10998, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cebdcbff05556154b813c230f8cd243d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
