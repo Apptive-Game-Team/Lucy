@@ -22,6 +22,8 @@ public class DoorInfo
 
 public class DoorObject : InteractableObject
 {
+    private ToggleableObjectSoundController soundController;
+
     public Test.TestDialogueController dialogueController; 
     [SerializeField] DoorInfo doorInfo;
     [SerializeField] GameObject door;
@@ -37,8 +39,14 @@ public class DoorObject : InteractableObject
         {
             DialogueControll();
             door.SetActive(!door.activeSelf);
+            soundController.PlaySound(door.activeSelf);
             CreatureManager.Instance.UpdateMap();
         }
+    }
+
+    private void Awake()
+    {
+        soundController = GetComponent<ToggleableObjectSoundController>();
     }
 
     private void Start()
@@ -47,5 +55,6 @@ public class DoorObject : InteractableObject
         {
             Debug.LogWarning("This Door is Locked, But Has not Key. Please Door");
         }
+        soundController.SetType("Door");
     }
 }
