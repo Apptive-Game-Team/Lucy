@@ -6,6 +6,7 @@ public class FurnitureController : MonoBehaviour
 {
     public static FurnitureController Instance { get; private set;}
     public Dictionary<FurnitureType, Furnitures> furnitures;
+    public GameObject player;
 
     void Awake()
     {
@@ -28,6 +29,14 @@ public class FurnitureController : MonoBehaviour
             { FurnitureType.Drawer, new Drawer() }
         };
     }
+
+    void Update()
+    {
+        if (!player.activeSelf && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
+        {
+            player.SetActive(true);
+        }
+    }
 }
 
 public abstract class Furnitures
@@ -39,7 +48,7 @@ public class Cabinet : Furnitures
 {
     public override void Interact()
     {
-        Debug.Log("Cabinet");
+        GameObject.Find("Player").SetActive(false);
     }
 }
 
