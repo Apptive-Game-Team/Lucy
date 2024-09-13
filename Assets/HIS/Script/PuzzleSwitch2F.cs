@@ -25,10 +25,15 @@ public class PuzzleSwitch2F : MonoBehaviour
     {
         if (other.gameObject == player)
         {
-            for (int i = 0; i < bridges.Length; i++)
-            {
-                bridges[i].SetActive(true);
-            }
+            StartCoroutine(OnBridge());
+        }
+    }
+    private IEnumerator OnBridge()
+    {
+        yield return new WaitForSecondsRealtime(1f);
+        for (int i = 0; i < bridges.Length; i++)
+        {
+            bridges[i].SetActive(true);
         }
     }
 }
