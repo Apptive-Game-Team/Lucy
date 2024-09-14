@@ -113,7 +113,6 @@ public class InputManager : SingletonObject<InputManager>
 
     IEnumerator KeyDownCounter(ActionCode action)
     {
-        
         yield return new WaitForSeconds(KET_DOWN_DELAY);
         keyDownBools[action] = false;
         keyDownCounterCoroutine[action] = null;
