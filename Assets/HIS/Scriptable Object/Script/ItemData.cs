@@ -16,7 +16,8 @@ public enum ConsumableType
     Stamina,
     Battery,
     CurMental,
-    MaxMental
+    MaxMental,
+    RemoteController
 }
 
 public enum ItemID
@@ -26,6 +27,7 @@ public enum ItemID
     FLASHLIGHT,
     CANDY,
     DOLL,
+    RemoteController,
     KEY_3F
 }
 
