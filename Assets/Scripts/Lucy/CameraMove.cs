@@ -6,8 +6,8 @@ namespace CharacterCamera
 {
     public class CameraMove : MonoBehaviour
     {
-        public GameObject Character;
-        public GameObject BackGround;
+        public GameObject player;
+        public GameObject square;
         float height;
         float width;
         float diffX;
@@ -16,7 +16,7 @@ namespace CharacterCamera
         
         void Awake()
         {
-            Renderer BackgroundRenderer = BackGround.GetComponent<Renderer>();
+            Renderer BackgroundRenderer = square.GetComponent<Renderer>();
             Vector2 MapSize = new Vector2(BackgroundRenderer.bounds.size.x, BackgroundRenderer.bounds.size.y);
             height = Camera.main.orthographicSize;
             width = height * Screen.width / Screen.height;
@@ -32,11 +32,11 @@ namespace CharacterCamera
 
         void CameraPosition()
         {
-            transform.position = Vector3.Lerp(transform.position,Character.transform.position + new Vector3(0,0,-10),Time.deltaTime * CameraMoveSpeed);
+            transform.position = Vector3.Lerp(transform.position, player.transform.position + new Vector3(0,0,-10),Time.deltaTime * CameraMoveSpeed);
             //transform.LookAt(Character.transform);
 
-            float ClampX = Mathf.Clamp(transform.position.x, -diffX + BackGround.transform.position.x, diffX + BackGround.transform.position.x);
-            float ClampY = Mathf.Clamp(transform.position.y, -diffY + BackGround.transform.position.y, diffY + BackGround.transform.position.y);
+            float ClampX = Mathf.Clamp(transform.position.x, -diffX + square.transform.position.x, diffX + square.transform.position.x);
+            float ClampY = Mathf.Clamp(transform.position.y, -diffY + square.transform.position.y, diffY + square.transform.position.y);
             transform.position = new Vector3(ClampX,ClampY,-10);
         }
     }
