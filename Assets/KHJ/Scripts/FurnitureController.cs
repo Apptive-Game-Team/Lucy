@@ -36,14 +36,15 @@ public class FurnitureController : MonoBehaviour, IKeyInputListener
         InputManager.Instance.SetKeyListener(this);
     }
 
-    void IKeyInputListener.OnKeyDown(ActionCode action)
+    //void IKeyInputListener.OnKeyDown(ActionCode action)
+    void Update()
     {
-        if (!player.activeSelf && action == ActionCode.Interaction)
+        if (!player.activeSelf && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
         {
             player.SetActive(true);
         }
 
-        if (bookPage.activeSelf && action == ActionCode.Interaction)
+        if (bookPage.activeSelf && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
         {
             bookPage.SetActive(false);
             Time.timeScale = 1;
