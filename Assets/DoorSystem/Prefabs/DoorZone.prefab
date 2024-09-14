@@ -240,7 +240,7 @@ GameObject:
   - component: {fileID: 7374384953693187657}
   - component: {fileID: 4086186575504723905}
   - component: {fileID: 6159087612524177035}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DoorZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}

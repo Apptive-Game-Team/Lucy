@@ -21,6 +21,7 @@ public class InputManager : SingletonObject<InputManager>
 
 
     private Dictionary<ActionCode, bool> keyDownBools = new Dictionary<ActionCode, bool>();
+    private Dictionary<ActionCode, bool> keyDownBoolsForListener = new Dictionary<ActionCode, bool>();
     private Dictionary<ActionCode, Coroutine> keyDownCounterCoroutine = new Dictionary<ActionCode, Coroutine>();
     private Dictionary<ActionCode, bool> keyActiveFlags = new Dictionary<ActionCode, bool>();
     private Dictionary<ActionCode, KeyCode> keyMappings = new Dictionary<ActionCode, KeyCode>()
@@ -113,7 +114,6 @@ public class InputManager : SingletonObject<InputManager>
 
     IEnumerator KeyDownCounter(ActionCode action)
     {
-        
         yield return new WaitForSeconds(KET_DOWN_DELAY);
         keyDownBools[action] = false;
         keyDownCounterCoroutine[action] = null;
@@ -130,6 +130,7 @@ public class InputManager : SingletonObject<InputManager>
                 if (Input.GetKeyDown(keyMappings[action]))
                 {
                     keyDownBools[action] = true;
+                    keyDownBoolsForListener[action] = true;
                     Coroutine tempCoroutine = keyDownCounterCoroutine[action];
                     if (tempCoroutine != null)
                     {
@@ -154,6 +155,7 @@ public class InputManager : SingletonObject<InputManager>
             keyDownBools.Add(action, false);
             keyDownCounterCoroutine.Add(action, null);
             keyActiveFlags.Add(action, true);
+            keyDownBoolsForListener.Add(action, false);
         }
     }
 
@@ -166,15 +168,16 @@ public class InputManager : SingletonObject<InputManager>
             {
                 if (keyActiveFlags[action])
                 {
-                    if (GetKeyDown(action))
+                    if (keyDownBoolsForListener[action])
                     {
+                        keyDownBoolsForListener[action] = false;
                         CallOnKeyDownListeners(action);
                     }
                     else if (Input.GetKey(keyMappings[action]))
                     {
                         CallOnKeyListeners(action);
                     }
-                    else if (Input.GetKeyDown(keyMappings[action]))
+                    else if (Input.GetKeyUp(keyMappings[action]))
                     {
                         CallOnKeyUpListeners(action);
                     }

@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
+using static Team6203.Util;
 
 namespace Creature{
     public enum CreatureStatus
@@ -65,6 +62,7 @@ namespace Creature{
     {
         [SerializeField] protected bool debugMode = true;
 
+        private SoundDetector soundDetector;
         private Detector detector;
 
         private ActorSoundController soundController;
@@ -91,6 +89,11 @@ namespace Creature{
         protected int maxSpeed;
         protected int minSpeed;
 
+        private LayerMask soundTargetMask;
+
+        private const float ACTION_DELAY = 0.5f;
+        private const float TEMP_DELAY = 0.01f;
+        private const float ALERT_TIME = 10f;
         private void InitActions()
         {
             actions = new List<CreatureAction>()
@@ -114,6 +117,9 @@ namespace Creature{
             pathLineRenderer = GetComponent<PathLineRenderer>();
             detector = GetComponent<Detector>();
             detector.SetTargetMask(LayerMask.GetMask("Player"));
+            soundDetector = GetComponent<SoundDetector>();
+            soundTargetMask = LayerMask.GetMask("Door") | LayerMask.GetMask("Player");
+            soundDetector.SetTargetMask(soundTargetMask);
         }
 
         public virtual IEnumerator PatrolAction()
@@ -125,7 +131,7 @@ namespace Creature{
 
             speed = minSpeed;
             DetectPlayer();
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(ACTION_DELAY);
             actions[(int)status].Play();
         }
 
@@ -138,7 +144,7 @@ namespace Creature{
 
             speed = maxSpeed;
             DetectPlayer();
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(ACTION_DELAY);
             GetPathToPosition(targetPosition);
             actions[(int)status].Play();
         }
@@ -153,14 +159,14 @@ namespace Creature{
             speed = minSpeed;
             DetectPlayer();
             detector.setLookingAngle(detector.getLookingAngle() + 10f);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(ACTION_DELAY);
             SetRandomPath();
             actions[(int)status].Play();
         }
 
         public IEnumerator AlertedCounter()
         {
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(ALERT_TIME);
             if (status.Equals(CreatureStatus.ALERTED))
                 status = CreatureStatus.PATROL;
             alertedCounterCoroutine = null;
@@ -173,7 +179,7 @@ namespace Creature{
                 Debug.Log(gameObject.name + " | " + this.name + " : Detecting Player...");
             }
 
-            List<Collider2D> detectedPlayerCollider = detector.DetectByView();
+            List<Collider2D> detectedPlayerCollider = ConcatenateListWithoutDuplicates(detector.DetectByView(), soundDetector.Detect());
             if (detectedPlayerCollider.Count > 0)
             {
                 status = CreatureStatus.PURSUIT;
@@ -233,7 +239,7 @@ namespace Creature{
                     lastStatus = status;
                 }
 
-                yield return new WaitForSeconds(0.01f);
+                yield return new WaitForSeconds(TEMP_DELAY);
 
                 Node node;
 
@@ -241,7 +247,7 @@ namespace Creature{
                 {
                     soundController.StopFootstepSoundPlay();
                     isChasing = false;
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(ACTION_DELAY);
                     continue;
                 }
 
@@ -251,7 +257,7 @@ namespace Creature{
                     if (path.Count == 1)
                     {
                         isChasing = false;
-                        yield return new WaitForSeconds(1f);
+                        yield return new WaitForSeconds(ACTION_DELAY);
                         continue;
                     }
                         
