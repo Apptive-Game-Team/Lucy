@@ -37,7 +37,7 @@ public class DoorObject : InteractableObject
     {
         if (doorInfo.CheckCanOpen())
         {
-            DialogueControll();
+            //DialogueControll();
             door.SetActive(!door.activeSelf);
             soundController.PlaySound(door.activeSelf);
             CreatureManager.Instance.UpdateMap();

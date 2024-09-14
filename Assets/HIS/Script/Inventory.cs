@@ -3,7 +3,6 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 
 [System.Serializable]
 public class ItemSlot

@@ -4,7 +4,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class FurnitureController : MonoBehaviour
+public class FurnitureController : MonoBehaviour, IKeyInputListener
 {
     public static FurnitureController Instance { get; private set;}
     public Dictionary<FurnitureType, Furnitures> furnitures;
@@ -33,16 +33,17 @@ public class FurnitureController : MonoBehaviour
             { FurnitureType.Bookshelf, new Bookshelf(bookPage)},
             { FurnitureType.Drawer, new Drawer(key,drawerImages)}
         };
+        InputManager.Instance.SetKeyListener(this);
     }
 
-    void Update()
+    void IKeyInputListener.OnKeyDown(ActionCode action)
     {
-        if (!player.activeSelf && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
+        if (!player.activeSelf && action == ActionCode.Interaction)
         {
             player.SetActive(true);
         }
 
-        if (bookPage.activeSelf && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
+        if (bookPage.activeSelf && action == ActionCode.Interaction)
         {
             bookPage.SetActive(false);
             Time.timeScale = 1;
