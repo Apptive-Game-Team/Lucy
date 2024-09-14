@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/HIS/Scenes/Inventory&Item.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: Assets/JJW/Scenes/Title.unity
+    path: Assets/Tilemap_jackupsil/Scenes/Title.unity
     guid: c6cff32063778fc46a421edd330f609b
   - enabled: 0
     path: Assets/JJW/Scenes/Test240819.unity
