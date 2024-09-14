@@ -195,8 +195,9 @@ public class PathFinder
             computingCounter++;
             if (computingCounter > maxComputing)
             {
+#if UNITY_EDITOR
                 Debug.Log("RandomPath Not Found");
-                
+#endif   
                 return null;
             }
             int tempRandomNum = random.Next(0, 5);

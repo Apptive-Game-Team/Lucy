@@ -124,11 +124,13 @@ namespace Creature{
 
         public virtual IEnumerator PatrolAction()
         {
+
+#if UNITY_EDITOR
             if (debugMode)
             {
                 Debug.Log(gameObject.name + " | " + this.name + " : Patrol...");
             }
-
+#endif
             speed = minSpeed;
             DetectPlayer();
             yield return new WaitForSeconds(ACTION_DELAY);
@@ -137,11 +139,12 @@ namespace Creature{
 
         public virtual IEnumerator PursuitAction()
         {
+#if UNITY_EDITOR
             if (debugMode)
             {
                 Debug.Log(gameObject.name + " | " + this.name + " : Pursuit...");
             }
-
+#endif
             speed = maxSpeed;
             DetectPlayer();
             yield return new WaitForSeconds(ACTION_DELAY);
@@ -151,11 +154,12 @@ namespace Creature{
 
         public virtual IEnumerator AlertedAction()
         {
+#if UNITY_EDITOR
             if (debugMode)
             {
                 Debug.Log(gameObject.name + " | " + this.name + " : Alerted...");
             }
-
+#endif
             speed = minSpeed;
             DetectPlayer();
             detector.setLookingAngle(detector.getLookingAngle() + 10f);
@@ -174,10 +178,12 @@ namespace Creature{
 
         protected void DetectPlayer()
         {
+#if UNITY_EDITOR
             if (debugMode)
             {
                 Debug.Log(gameObject.name + " | " + this.name + " : Detecting Player...");
             }
+#endif
 
             List<Collider2D> detectedPlayerCollider = ConcatenateListWithoutDuplicates(detector.DetectByView(), soundDetector.Detect());
             if (detectedPlayerCollider.Count > 0)
@@ -233,12 +239,13 @@ namespace Creature{
         {
             while(true)
             {
+#if UNITY_EDITOR
                 if (debugMode && lastStatus != status)
                 {
                     Debug.Log(gameObject.name + " | " + this.name + " : is Moving");
                     lastStatus = status;
                 }
-
+#endif
                 yield return new WaitForSeconds(TEMP_DELAY);
 
                 Node node;
@@ -294,11 +301,12 @@ namespace Creature{
         {
             if (collision.CompareTag("Player"))
             {
+#if UNITY_EDITOR
                 if (debugMode)
                 {
                     Debug.Log(gameObject.name + " | " + this.name + " : Kill Player...");
                 }
-
+#endif
                 Destroy(collision.gameObject);
             }
         }
@@ -311,11 +319,12 @@ namespace Creature{
                 Mathf.RoundToInt(vector.z)
             );
         }
-
+#if UNITY_EDITOR
         CreatureStatus lastStatus = CreatureStatus.PATROL;
 
         protected void Update()
         {
+
             if (debugMode)
             {
                 if (status != lastStatus)
@@ -325,6 +334,7 @@ namespace Creature{
                 }
             }
         }
+#endif
     }
 }
 
