@@ -171,7 +171,6 @@ public class InputManager : SingletonObject<InputManager>
                 {
                     if (keyDownBoolsForListener[action])
                     {
-                        print("tlqkf");
                         keyDownBoolsForListener[action] = false;
                         CallOnKeyDownListeners(action);
                     }
