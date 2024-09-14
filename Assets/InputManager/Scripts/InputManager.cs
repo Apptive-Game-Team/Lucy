@@ -17,7 +17,7 @@ public enum ActionCode
 public class InputManager : SingletonObject<InputManager>
 {
     private const float KEY_LISTENER_DELAY = 0.05f;
-    private const float KET_DOWN_DELAY = 0.5f;
+    private const float KET_DOWN_DELAY = 1f;
 
 
     private Dictionary<ActionCode, bool> keyDownBools = new Dictionary<ActionCode, bool>();
