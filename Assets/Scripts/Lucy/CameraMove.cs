@@ -22,6 +22,7 @@ namespace CharacterCamera
             width = height * Screen.width / Screen.height;
             diffX = MapSize.x/2 - width;
             diffY = MapSize.y/2 - height;
+            DontDestroyOnLoad(gameObject);
         }
 
         void Update()
