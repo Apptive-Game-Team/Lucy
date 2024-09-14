@@ -1,5 +1,3 @@
-//#define DEBUG
-
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -39,8 +37,11 @@ public class SoundDetector : MonoBehaviour
             }
         }
 
-#if DEBUG
-        print("sound detector found " + hitTargetList.Count + " target");
+#if UNITY_EDITOR
+        if (debugMode)
+        {
+            print("sound detector found " + hitTargetList.Count + " target");
+        }
 #endif
         return hitTargetList;
     }
