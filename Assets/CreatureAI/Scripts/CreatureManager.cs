@@ -1,9 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System;
+using Creature;
 using UnityEngine.Rendering.Universal;
-using static Team6203.Util;
 
 public enum PathFinderType
 {
@@ -116,7 +117,7 @@ public class CreatureManager : SingletonObject<CreatureManager>
     {
         GameObject[] doors = GameObject.FindGameObjectsWithTag("Door");
 
-        if (AreArraysEqual(lastDoors, doors))
+        if (CompareGameObjectArrays.AreGameObjectArraysEqual(lastDoors, doors))
         {
             return doorAppliedMap;
         }
@@ -134,7 +135,7 @@ public class CreatureManager : SingletonObject<CreatureManager>
 
         GameObject[] spotLights = GameObject.FindGameObjectsWithTag("Light");
 
-        if (AreArraysEqual<GameObject>(lastSpotLights, spotLights))
+        if (CompareGameObjectArrays.AreGameObjectArraysEqual(lastSpotLights, spotLights))
         {
             return doorAndlightAppliedMap;
         }

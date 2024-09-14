@@ -47,14 +47,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1539279165031085476}
     m_Modifications:
-    - target: {fileID: 1580966493324102487, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2901578593480521084, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 3213515504183321358, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
       propertyPath: m_LocalPosition.x
       value: 13
@@ -107,10 +99,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DoorZone (7)
       objectReference: {fileID: 0}
-    - target: {fileID: 7504884086427261072, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -129,14 +117,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1539279165031085476}
     m_Modifications:
-    - target: {fileID: 1580966493324102487, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2901578593480521084, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 3213515504183321358, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2
@@ -185,10 +165,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DoorZone (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 7504884086427261072, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -207,14 +183,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1539279165031085476}
     m_Modifications:
-    - target: {fileID: 1580966493324102487, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2901578593480521084, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 3213515504183321358, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -263,10 +231,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DoorZone (3)
       objectReference: {fileID: 0}
-    - target: {fileID: 7504884086427261072, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -285,14 +249,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1539279165031085476}
     m_Modifications:
-    - target: {fileID: 1580966493324102487, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2901578593480521084, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 3213515504183321358, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6
@@ -341,10 +297,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DoorZone (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 7504884086427261072, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -363,14 +315,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1539279165031085476}
     m_Modifications:
-    - target: {fileID: 1580966493324102487, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2901578593480521084, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 3213515504183321358, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
       propertyPath: m_LocalPosition.x
       value: -14
@@ -427,10 +371,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DoorZone (6)
       objectReference: {fileID: 0}
-    - target: {fileID: 7504884086427261072, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -449,14 +389,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1539279165031085476}
     m_Modifications:
-    - target: {fileID: 1580966493324102487, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2901578593480521084, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 3213515504183321358, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6
@@ -501,10 +433,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DoorZone
       objectReference: {fileID: 0}
-    - target: {fileID: 7504884086427261072, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -523,14 +451,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1539279165031085476}
     m_Modifications:
-    - target: {fileID: 1580966493324102487, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2901578593480521084, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 3213515504183321358, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
       propertyPath: m_LocalPosition.x
       value: -22
@@ -579,10 +499,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DoorZone (4)
       objectReference: {fileID: 0}
-    - target: {fileID: 7504884086427261072, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -601,14 +517,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1539279165031085476}
     m_Modifications:
-    - target: {fileID: 1580966493324102487, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2901578593480521084, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 3213515504183321358, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
       propertyPath: m_LocalPosition.x
       value: -15
@@ -656,10 +564,6 @@ PrefabInstance:
     - target: {fileID: 7504884086427261072, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
       propertyPath: m_Name
       value: DoorZone (5)
-      objectReference: {fileID: 0}
-    - target: {fileID: 7504884086427261072, guid: 7c027b3dc66e42645b79d5be8f89cd94, type: 3}
-      propertyPath: m_Layer
-      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

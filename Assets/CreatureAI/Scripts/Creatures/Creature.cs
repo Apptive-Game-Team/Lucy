@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static Team6203.Util;
+using UnityEngine.Rendering.Universal;
 
 namespace Creature{
     public enum CreatureStatus
@@ -62,7 +65,6 @@ namespace Creature{
     {
         [SerializeField] protected bool debugMode = true;
 
-        private SoundDetector soundDetector;
         private Detector detector;
 
         private ActorSoundController soundController;
@@ -112,8 +114,6 @@ namespace Creature{
             pathLineRenderer = GetComponent<PathLineRenderer>();
             detector = GetComponent<Detector>();
             detector.SetTargetMask(LayerMask.GetMask("Player"));
-            soundDetector = GetComponent<SoundDetector>();
-            soundDetector.SetTargetMask(LayerMask.GetMask("Door") | LayerMask.GetMask("Player"));
         }
 
         public virtual IEnumerator PatrolAction()
@@ -125,7 +125,7 @@ namespace Creature{
 
             speed = minSpeed;
             DetectPlayer();
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.1f);
             actions[(int)status].Play();
         }
 
@@ -138,7 +138,7 @@ namespace Creature{
 
             speed = maxSpeed;
             DetectPlayer();
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.1f);
             GetPathToPosition(targetPosition);
             actions[(int)status].Play();
         }
@@ -153,7 +153,7 @@ namespace Creature{
             speed = minSpeed;
             DetectPlayer();
             detector.setLookingAngle(detector.getLookingAngle() + 10f);
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.1f);
             SetRandomPath();
             actions[(int)status].Play();
         }
@@ -173,7 +173,7 @@ namespace Creature{
                 Debug.Log(gameObject.name + " | " + this.name + " : Detecting Player...");
             }
 
-            List<Collider2D> detectedPlayerCollider = ConcatenateListWithoutDuplicates(detector.DetectByView(), soundDetector.Detect());
+            List<Collider2D> detectedPlayerCollider = detector.DetectByView();
             if (detectedPlayerCollider.Count > 0)
             {
                 status = CreatureStatus.PURSUIT;
