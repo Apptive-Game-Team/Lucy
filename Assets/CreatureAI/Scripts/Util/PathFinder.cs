@@ -66,8 +66,10 @@ public class PathFinder
     private List<Tuple<int, int>> directions;
     public int maxComputing = 1000;
 
+    private bool debugMode = false;
+
     private Node[,] nodes;
-    public PathFinder(int[,] map, Vector3Int mapOffset)
+    public PathFinder(int[,] map, Vector3Int mapOffset, bool debugMode = false)
     {
         this.map = map;
         this.mapOffset = mapOffset;
@@ -79,7 +81,13 @@ public class PathFinder
 
     public void SetMap(int[,] newMap)
     {
-        Debug.Log("Map Updated");
+#if UNITY_EDITOR
+        if (debugMode)
+        {
+            Debug.Log("Map Updated");
+        }
+
+#endif
         this.map = newMap;
         nodes = new Node[width, height];
     }
@@ -196,7 +204,8 @@ public class PathFinder
             if (computingCounter > maxComputing)
             {
 #if UNITY_EDITOR
-                Debug.Log("RandomPath Not Found");
+                if (debugMode)
+                    Debug.Log("RandomPath Not Found");
 #endif   
                 return null;
             }
