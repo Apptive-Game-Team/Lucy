@@ -24,6 +24,8 @@ public class CreatureManager : SingletonObject<CreatureManager>
     GameObject[] lastSpotLights = new GameObject[0];
     GameObject[] lastDoors = new GameObject[0];
 
+    [SerializeField] bool debugMode;
+
     public List<PathFinder> pathFinders = new List<PathFinder>();
 
     private void Awake()
@@ -37,8 +39,8 @@ public class CreatureManager : SingletonObject<CreatureManager>
 
     void InitPathFinders()
     {
-        pathFinders.Add(new PathFinder(GetDoorAppliedMap(), mapOffset));
-        pathFinders.Add(new PathFinder(GetDoorAndLightAppliedMap(), mapOffset));
+        pathFinders.Add(new PathFinder(GetDoorAppliedMap(), mapOffset, debugMode));
+        pathFinders.Add(new PathFinder(GetDoorAndLightAppliedMap(), mapOffset, debugMode));
     }
 
     public void AddCreature(Creature.Creature creature)
