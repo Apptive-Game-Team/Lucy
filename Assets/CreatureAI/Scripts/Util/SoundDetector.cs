@@ -1,3 +1,5 @@
+//#define DEBUG
+
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -5,6 +7,7 @@ using UnityEngine;
 
 public class SoundDetector : MonoBehaviour
 {
+    [SerializeField]
     private float maxDistance = 10f;
 
     [SerializeField] bool debugMode = true;
@@ -30,18 +33,15 @@ public class SoundDetector : MonoBehaviour
             float distance = Vector3.Distance(transform.position, target.transform.position);
             AudioSource source = target.GetComponent<AudioSource>();
 
-            if (distance < target.GetComponent<AudioSource>().maxDistance && source.isPlaying)
+            if (distance < source.maxDistance && source.isPlaying)
             {
                 hitTargetList.Add(target);
             }
         }
 
-        if (debugMode)
-        {
-            print("sound detector found " + hitTargetList.Count + " target");
-        }
-        
-
+#if DEBUG
+        print("sound detector found " + hitTargetList.Count + " target");
+#endif
         return hitTargetList;
     }
 
