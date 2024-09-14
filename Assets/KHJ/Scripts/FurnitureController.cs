@@ -7,6 +7,7 @@ public class FurnitureController : MonoBehaviour
     public static FurnitureController Instance { get; private set;}
     public Dictionary<FurnitureType, Furnitures> furnitures;
     public GameObject player;
+    public GameObject bookPage;
 
     void Awake()
     {
@@ -25,7 +26,7 @@ public class FurnitureController : MonoBehaviour
         furnitures = new Dictionary<FurnitureType, Furnitures>()
         {
             { FurnitureType.Cabinet, new Cabinet() },
-            { FurnitureType.Bookshelf, new Bookshelf() },
+            { FurnitureType.Bookshelf, new Bookshelf(bookPage)},
             { FurnitureType.Drawer, new Drawer() }
         };
     }
@@ -35,6 +36,12 @@ public class FurnitureController : MonoBehaviour
         if (!player.activeSelf && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
         {
             player.SetActive(true);
+        }
+
+        if (bookPage.activeSelf && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
+        {
+            bookPage.SetActive(false);
+            Time.timeScale = 1;
         }
     }
 }
@@ -54,8 +61,16 @@ public class Cabinet : Furnitures
 
 public class Bookshelf : Furnitures
 {
+    private GameObject bookPage;
+    public Bookshelf(GameObject bookPage)
+    {
+        this.bookPage = bookPage;
+    }
+    
     public override void Interact()
     {
+        bookPage.SetActive(true);
+        Time.timeScale = 0;
         Debug.Log("Bookshelf");
     }
 }
