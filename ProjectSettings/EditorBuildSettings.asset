@@ -11,7 +11,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/JJW/Scenes/Title.unity
     guid: c6cff32063778fc46a421edd330f609b
-  - enabled: 1
+  - enabled: 0
     path: Assets/JJW/Scenes/Test240819.unity
     guid: 8c8a6b33f5c428844b696b3d693a400e
+  - enabled: 1
+    path: Assets/Scene/0101.unity
+    guid: a03198b187446144b8630e3fa82715a5
+  - enabled: 1
+    path: Assets/Scene/0102.unity
+    guid: 8a671a2c56d1f4647a7a3a992ba3680e
+  - enabled: 1
+    path: Assets/Scene/0201.unity
+    guid: a51bb288dde4d1d4ba7df026e9cc67cc
   m_configObjects: {}
