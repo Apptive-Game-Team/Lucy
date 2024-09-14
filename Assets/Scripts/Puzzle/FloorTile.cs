@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class FloorTile : MonoBehaviour
 {
-    void Start()
-    {
-        
-    }
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.CompareTag("Player"))
@@ -17,6 +13,7 @@ public class FloorTile : MonoBehaviour
             CharacterStat.instance.reduceAmount = 10;
         }
     }
+
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))

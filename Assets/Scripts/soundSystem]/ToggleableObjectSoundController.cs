@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class ToggleableObjectSoundController : SoundController
 {
-
     private bool toggleSwitch = false;
     private AudioClip[] audioClips = new AudioClip[2];
+
+    private void Awake()
+    {
+        base.Awake();
+    }
 
     public void SetType(string type)
     {
