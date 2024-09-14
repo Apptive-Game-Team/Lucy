@@ -31,8 +31,8 @@ public class CreatureManager : SingletonObject<CreatureManager>
     private void Awake()
     {
         mapBuilder = gameObject.GetComponent<MapBuilder>();
-        tilemaps.Add(GameObject.Find("Floor").GetComponent<Tilemap>());
-        tilemaps.Add(GameObject.Find("Furniture").GetComponent<Tilemap>());
+        tilemaps.Add(GameObject.Find("Floor_tilemap").GetComponent<Tilemap>());
+        tilemaps.Add(GameObject.Find("Furniture_grid").GetComponent<Tilemap>());
         InitMap();
         InitPathFinders();
     }
