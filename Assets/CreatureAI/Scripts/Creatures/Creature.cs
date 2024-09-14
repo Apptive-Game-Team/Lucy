@@ -89,6 +89,11 @@ namespace Creature{
         protected int maxSpeed;
         protected int minSpeed;
 
+        private LayerMask soundTargetMask;
+
+        private const float ACTION_DELAY = 0.5f;
+        private const float TEMP_DELAY = 0.01f;
+        private const float ALERT_TIME = 10f;
         private void InitActions()
         {
             actions = new List<CreatureAction>()
@@ -113,7 +118,8 @@ namespace Creature{
             detector = GetComponent<Detector>();
             detector.SetTargetMask(LayerMask.GetMask("Player"));
             soundDetector = GetComponent<SoundDetector>();
-            soundDetector.SetTargetMask(LayerMask.GetMask("Door") | LayerMask.GetMask("Player"));
+            soundTargetMask = LayerMask.GetMask("Door") | LayerMask.GetMask("Player");
+            soundDetector.SetTargetMask(soundTargetMask);
         }
 
         public virtual IEnumerator PatrolAction()
@@ -125,7 +131,7 @@ namespace Creature{
 
             speed = minSpeed;
             DetectPlayer();
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(ACTION_DELAY);
             actions[(int)status].Play();
         }
 
@@ -138,7 +144,7 @@ namespace Creature{
 
             speed = maxSpeed;
             DetectPlayer();
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(ACTION_DELAY);
             GetPathToPosition(targetPosition);
             actions[(int)status].Play();
         }
@@ -153,14 +159,14 @@ namespace Creature{
             speed = minSpeed;
             DetectPlayer();
             detector.setLookingAngle(detector.getLookingAngle() + 10f);
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(ACTION_DELAY);
             SetRandomPath();
             actions[(int)status].Play();
         }
 
         public IEnumerator AlertedCounter()
         {
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(ALERT_TIME);
             if (status.Equals(CreatureStatus.ALERTED))
                 status = CreatureStatus.PATROL;
             alertedCounterCoroutine = null;
@@ -233,7 +239,7 @@ namespace Creature{
                     lastStatus = status;
                 }
 
-                yield return new WaitForSeconds(0.01f);
+                yield return new WaitForSeconds(TEMP_DELAY);
 
                 Node node;
 
@@ -241,7 +247,7 @@ namespace Creature{
                 {
                     soundController.StopFootstepSoundPlay();
                     isChasing = false;
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(ACTION_DELAY);
                     continue;
                 }
 
@@ -251,7 +257,7 @@ namespace Creature{
                     if (path.Count == 1)
                     {
                         isChasing = false;
-                        yield return new WaitForSeconds(1f);
+                        yield return new WaitForSeconds(ACTION_DELAY);
                         continue;
                     }
                         
