@@ -217,10 +217,12 @@ namespace Creature{
             try
             {
                 List<Node> path = CreatureManager.Instance.pathFinders[(int)pathFinderType].FindPath(startNode, endNode);
+#if UNITY_EDITOR
                 if (debugMode)
                 {
                     pathLineRenderer.SetPoints(path);
                 }
+#endif
                 return path;
             }
             catch (Exception e)
