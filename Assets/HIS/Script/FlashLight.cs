@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class FlashLight : MonoBehaviour
 {
     public static FlashLight instance;
-    public int consumeSpeed = 1;
+    public int consumeAmount = 1;
     public int battery = 1;
     public float delay;
     public ItemData itemData;
@@ -95,7 +95,7 @@ public class FlashLight : MonoBehaviour
         while (battery > 0)
         {
             yield return new WaitForSecondsRealtime(delay);
-            battery -= 1 * consumeSpeed;
+            battery -= consumeAmount;
             UpdateUi();
         }
         if (battery <= 0)

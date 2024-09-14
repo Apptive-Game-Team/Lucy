@@ -4,28 +4,26 @@ using UnityEngine;
 
 public class FloorTile : MonoBehaviour
 {
-    [SerializeField] private GameObject player;
-    // Start is called before the first frame update
     void Start()
     {
         
     }
-
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        
-    }
-    private void OnTriggerEnter2D(Collider2D player)
-    {
-        PuzzleManager.instance.isSafe = true;
-        FlashLight.instance.consumeSpeed = 1;
-        CharacterStat.instance.reduceSpeed = 1;
+        if(other.CompareTag("Player"))
+        {
+            BridgePuzzleManager.instance.isSafe = true;
+            FlashLight.instance.consumeAmount = 1;
+            CharacterStat.instance.reduceAmount = 10;
+        }
     }
     private void OnTriggerExit2D(Collider2D other)
     {
-        PuzzleManager.instance.isSafe = false;
-        FlashLight.instance.consumeSpeed = 3;
-        CharacterStat.instance.reduceSpeed = 3;
+        if (other.CompareTag("Player"))
+        {
+            BridgePuzzleManager.instance.isSafe = false;
+            FlashLight.instance.consumeAmount = 3;
+            CharacterStat.instance.reduceAmount = 30;
+        }
     }
 }

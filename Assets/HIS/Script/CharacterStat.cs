@@ -24,7 +24,7 @@ public class CharacterStat : MonoBehaviour
     public float maxMental = 100;
     public float curStamina;
     public float maxStamina = 100;
-    public int reduceSpeed = 1;
+    public int reduceAmount = 10;
 
     [SerializeField] private bool isOnLight = false;
     
@@ -106,7 +106,7 @@ public class CharacterStat : MonoBehaviour
             yield return new WaitForSecondsRealtime(delay);
             if (!isOnLight)
             {
-                curMental -= 10 * reduceSpeed;
+                curMental -= reduceAmount;
                 UpdateStats();
             }
         }
