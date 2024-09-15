@@ -115,7 +115,7 @@ namespace Creature{
 
         protected virtual void Start()
         {
-            creatureManager = ReferenceManager.Instance.FindByName("CreatureManager") as CreatureManager;
+            creatureManager = ReferenceManager.Instance.FindComponentByName<CreatureManager>("CreatureManager");
             status = CreatureStatus.PATROL;
             pathLineRenderer = GetComponent<PathLineRenderer>();
             detector = GetComponent<Detector>();
