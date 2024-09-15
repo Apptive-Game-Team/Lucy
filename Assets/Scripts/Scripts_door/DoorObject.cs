@@ -39,7 +39,7 @@ public class DoorObject : InteractableObject
 
     private void Start()
     {
-        creatureManager = ReferenceManager.Instance.FindByName("CreatureManager") as CreatureManager;
+        creatureManager = ReferenceManager.Instance.FindComponentByName<CreatureManager>("CreatureManager");
         if(doorInfo.isLocked && doorInfo.keyId == ItemID.NONE)  
         {
             Debug.LogWarning("This Door is Locked, But Has not Key. Please Door");
