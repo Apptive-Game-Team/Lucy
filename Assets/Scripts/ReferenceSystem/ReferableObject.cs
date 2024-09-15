@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ReferableObject : MonoBehaviour
 {
-    protected void Awake()
+    protected virtual void Awake()
     {
         ReferenceManager.Instance.SetReferableObject(gameObject.name, this, false);
     }
