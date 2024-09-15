@@ -27,6 +27,7 @@ public class FurnitureController : MonoBehaviour, IKeyInputListener
 
     void Start()
     {
+        player = ReferenceManager.Instance.FindByName("Player").gameObject;
         furnitures = new Dictionary<FurnitureType, Furnitures>()
         {
             { FurnitureType.Cabinet, new Cabinet()},
