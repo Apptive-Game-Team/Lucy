@@ -7,7 +7,7 @@ public class SoundController : MonoBehaviour
 {
     protected AudioSource audioSource;
 
-    protected void Awake()
+    protected virtual void Awake()
     {
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)

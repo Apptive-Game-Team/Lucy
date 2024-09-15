@@ -10,7 +10,7 @@ namespace Creature
         [SerializeField] List<Node> MoveNodes = new List<Node>();
         private int patrolMoveFlag = 0;
 
-        void Start()
+        protected override void Start()
         {
             base.Start();
             minSpeed = 1;

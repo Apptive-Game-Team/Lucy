@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class ToggleableObjectSoundController : SoundController
 {
-    private bool toggleSwitch = false;
     private AudioClip[] audioClips = new AudioClip[2];
 
-    private void Awake()
+    protected override void Awake()
     {
         base.Awake();
     }

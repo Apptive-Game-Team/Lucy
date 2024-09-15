@@ -6,7 +6,7 @@ namespace Creature
 {
     public class Moster : Creature
     {
-        void Start()
+        protected override void Start()
         {
             base.Start();
             minSpeed = 1;

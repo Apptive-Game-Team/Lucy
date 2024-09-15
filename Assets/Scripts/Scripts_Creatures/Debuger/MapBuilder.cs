@@ -6,13 +6,14 @@ public class MapBuilder : MonoBehaviour
 {
 
     [SerializeField] GameObject wall;
-    
+    private CreatureManager creatureManager;
 
     
     void Start()
     {
-        int[,] map = CreatureManager.Instance.GetMap();
-        Vector3Int mapOffset = CreatureManager.Instance.GetMapOffset();
+        creatureManager = ReferenceManager.Instance.FindComponentByName<CreatureManager>("CreatureManager");
+        int[,] map = creatureManager.GetMap();
+        Vector3Int mapOffset = creatureManager.GetMapOffset();
         for (int i = 0; i< map.GetLength(0); i++)
         {
             for (int j = 0; j< map.GetLength(1); j++)

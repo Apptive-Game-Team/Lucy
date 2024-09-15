@@ -11,7 +11,7 @@ public class UISoundController : SoundController, IKeyInputListener
 {
     private List<SoundSource> soundSources = new List<SoundSource>();
 
-    private void Awake()
+    protected override void Awake()
     {
         base.Awake();
     }

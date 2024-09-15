@@ -86,6 +86,8 @@ namespace Creature{
         protected CreatureStatus status;
         private Coroutine alertedCounterCoroutine;
 
+        protected CreatureManager creatureManager;
+
         protected int maxSpeed;
         protected int minSpeed;
 
@@ -111,8 +113,9 @@ namespace Creature{
             InitActions();
         }
 
-        protected void Start()
+        protected virtual void Start()
         {
+            creatureManager = ReferenceManager.Instance.FindComponentByName<CreatureManager>("CreatureManager");
             status = CreatureStatus.PATROL;
             pathLineRenderer = GetComponent<PathLineRenderer>();
             detector = GetComponent<Detector>();
@@ -216,7 +219,7 @@ namespace Creature{
             
             try
             {
-                List<Node> path = CreatureManager.Instance.pathFinders[(int)pathFinderType].FindPath(startNode, endNode);
+                List<Node> path = creatureManager.pathFinders[(int)pathFinderType].FindPath(startNode, endNode);
 #if UNITY_EDITOR
                 if (debugMode)
                 {
@@ -234,7 +237,7 @@ namespace Creature{
 
         protected virtual void SetRandomPath()
         {
-            path = CreatureManager.Instance.pathFinders[(int)pathFinderType].GetRandomPath(10, deltaPosition, Vector3ToVector3Int(transform.position));
+            path = creatureManager.pathFinders[(int)pathFinderType].GetRandomPath(10, deltaPosition, Vector3ToVector3Int(transform.position));
         }
 
         protected IEnumerator MoveOnPath()
@@ -324,7 +327,7 @@ namespace Creature{
 #if UNITY_EDITOR
         CreatureStatus lastStatus = CreatureStatus.PATROL;
 
-        protected void Update()
+        protected virtual void Update()
         {
 
             if (debugMode)

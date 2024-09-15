@@ -32,9 +32,11 @@ public class NpcDialogueController : MonoBehaviour
     public static NpcDialogueController Instance { get; private set;}
     public NpcDialogueData npcDialogueData;
     protected List<NpcDialogues> npcDialogue;
+
+    private DontDestoryReferableObject dialogueImages;
     public GameObject dialogueImage;
     public GameObject dialogueCharacter;
-    public TextMeshProUGUI dialogueText;
+    public TMP_Text dialogueText;
 
     public float typingSpeed = 0.05f;
     public float delayBetweenDialogues = 1.2f;
@@ -49,13 +51,19 @@ public class NpcDialogueController : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }
-        dialogueImage.SetActive(false);
-        dialogueCharacter.SetActive(false);
+        } 
     }
 
     void Start()
     {
+        dialogueImages =  ReferenceManager.Instance.FindComponentByName<DontDestoryReferableObject>("DialogueImages");
+
+        dialogueImage = dialogueImages.transform.Find("DialogueBackground").gameObject;
+        dialogueCharacter = dialogueImages.transform.Find("LucyDialogueImage").gameObject;
+        dialogueText = dialogueImages.GetComponentInChildren<TMP_Text>();
+        dialogueImage.SetActive(false);
+        dialogueCharacter.SetActive(false);
+
         npcDialogue = new List<NpcDialogues>()
         {
             new puzzleNpc(npcDialogueData)
