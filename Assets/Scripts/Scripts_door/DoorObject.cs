@@ -18,7 +18,7 @@ public class DoorInfo
 public class DoorObject : InteractableObject
 {
     private ToggleableObjectSoundController soundController;
-
+    private CreatureManager creatureManager;
     [SerializeField] DoorInfo doorInfo;
     [SerializeField] GameObject door;
 
@@ -28,7 +28,7 @@ public class DoorObject : InteractableObject
         {
             door.SetActive(!door.activeSelf);
             soundController.PlaySound(door.activeSelf);
-            CreatureManager.Instance.UpdateMap();
+            creatureManager.UpdateMap();
         }
     }
 
@@ -39,7 +39,8 @@ public class DoorObject : InteractableObject
 
     private void Start()
     {
-        if(doorInfo.isLocked && doorInfo.keyId == ItemID.NONE) 
+        creatureManager = ReferenceManager.Instance.FindByName("CreatureManager") as CreatureManager;
+        if(doorInfo.isLocked && doorInfo.keyId == ItemID.NONE)  
         {
             Debug.LogWarning("This Door is Locked, But Has not Key. Please Door");
         }
