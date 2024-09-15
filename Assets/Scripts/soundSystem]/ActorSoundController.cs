@@ -12,7 +12,7 @@ public class ActorSoundController : SoundController
     private int footstepSoundCount;
     private bool _isRun;
 
-    private void Awake()
+    protected override void Awake()
     {
         base.Awake();
     }

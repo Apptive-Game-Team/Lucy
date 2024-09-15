@@ -21,7 +21,7 @@ namespace Creature
     public class Stunnee : Avoider
     {
 
-        protected void Start()
+        protected override void Start()
         {
             base.Start();
             actions[(int)CreatureStatus.AVOIDING] = new CreatureStunAction(this);
@@ -42,9 +42,11 @@ namespace Creature
             base.OnTriggerEnter2D(collision);
         }
 
-        protected void Update()
+#if UNITY_EDITOR
+        protected override void Update()
         {
             base.Update();
         }
+#endif
     }
 }

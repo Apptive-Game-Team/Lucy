@@ -27,7 +27,7 @@ namespace Creature
         protected Vector3 tempVelocity = new Vector2();
         protected Vector3 handLightPosition;
 
-        protected void Start()
+        protected override void Start()
         {
             pathFinderType = PathFinderType.AVOIDER;
             base.Start();
@@ -57,7 +57,7 @@ namespace Creature
             tempVelocity.Set(transform.position.x - handLightPosition.x, transform.position.y - handLightPosition.y, 0);
             tempVelocity.Normalize();
             speed = 4;
-            path = CreatureManager.Instance.pathFinders[(int)pathFinderType].GetRandomPath(20, tempVelocity, Vector3ToVector3Int(transform.position));
+            path = creatureManager.pathFinders[(int)pathFinderType].GetRandomPath(20, tempVelocity, Vector3ToVector3Int(transform.position));
 
             yield return new WaitForSeconds(4);
             status = CreatureStatus.PATROL;
@@ -84,9 +84,11 @@ namespace Creature
             this.handLightPosition = handLightPosition;
         }
 
-        protected void Update()
+#if UNITY_EDITOR
+        protected override void Update()
         {
             base.Update();
         }
+#endif
     }
 }

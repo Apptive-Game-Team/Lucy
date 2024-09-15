@@ -111,7 +111,7 @@ namespace Creature{
             InitActions();
         }
 
-        protected void Start()
+        protected virtual void Start()
         {
             status = CreatureStatus.PATROL;
             pathLineRenderer = GetComponent<PathLineRenderer>();
@@ -324,7 +324,7 @@ namespace Creature{
 #if UNITY_EDITOR
         CreatureStatus lastStatus = CreatureStatus.PATROL;
 
-        protected void Update()
+        protected virtual void Update()
         {
 
             if (debugMode)
