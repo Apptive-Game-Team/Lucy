@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4487756712048951882}
   - component: {fileID: 6531007328155673411}
   - component: {fileID: 7200822750370687276}
+  - component: {fileID: 1353634384494629326}
   - component: {fileID: 3881585536916860576}
   - component: {fileID: 8193953063804938678}
   - component: {fileID: 8825241547797154522}
@@ -167,6 +168,23 @@ MonoBehaviour:
     IsWalkable: 0
     GCost: 0
     HCost: 0
+--- !u!114 &1353634384494629326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455895877376984673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05f7cc5580a749aa9565da5bc7baa62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDistance: 10
+  debugMode: 1
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!120 &3881585536916860576
 LineRenderer:
   serializedVersion: 2
