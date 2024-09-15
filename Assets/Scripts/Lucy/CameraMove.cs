@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace CharacterCamera
 {
@@ -37,8 +38,12 @@ namespace CharacterCamera
             {
                 CameraPosition();
             }
-            catch
-            { } 
+            catch (MissingReferenceException e)
+            {
+#if UNITY_EDITOR
+                print("Square or Player is not Attached yet");
+#endif
+            }
         }
 
         void CameraPosition()
