@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class ReferenceManager : SingletonObject<ReferenceManager>
 {
@@ -19,8 +20,20 @@ public class ReferenceManager : SingletonObject<ReferenceManager>
         
     }
 
-    public MonoBehaviour FindByName(string key)
+    public T FindComponentByName<T>(string key) where T : class
     {
-        return components[key].Item1;
+        try
+        {
+            return components[key].Item1 as T;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public GameObject FindGameObjectByName(string key)
+    {
+        return components[key].Item1.gameObject;
     }
 }
