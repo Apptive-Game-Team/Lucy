@@ -8,6 +8,8 @@ public class PortalManager : SingletonObject<PortalManager>
     [SerializeField] SceneDataList sceneDataList;
     [SerializeField] PortalDataList portalDataList;
 
+    private const float CALL_LISTENER_DELAY = 0.1f;
+
     private List<ISceneChangeListener> listeners = new List<ISceneChangeListener>();
 
     private void Start()
@@ -23,7 +25,7 @@ public class PortalManager : SingletonObject<PortalManager>
 
     private IEnumerator CallOnSceneChange()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(CALL_LISTENER_DELAY);
         foreach (ISceneChangeListener listener in listeners)
         {
             listener.OnSceneChange();
