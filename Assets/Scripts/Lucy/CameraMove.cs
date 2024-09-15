@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CharacterCamera
 {
-    public class CameraMove : MonoBehaviour
+    public class CameraMove : MonoBehaviour, ISceneChangeListener
     {
         public GameObject player;
         public GameObject square;
@@ -13,9 +13,15 @@ namespace CharacterCamera
         float diffX;
         float diffY;
         public float CameraMoveSpeed = 150f;
-        
+
         void Awake()
         {
+            PortalManager.Instance.SetSceneChangeListener(this);
+        }
+
+        void ISceneChangeListener.OnSceneChange()
+        {
+            square = ReferenceManager.Instance.FindByName("Square").gameObject;
             Renderer BackgroundRenderer = square.GetComponent<Renderer>();
             Vector2 MapSize = new Vector2(BackgroundRenderer.bounds.size.x, BackgroundRenderer.bounds.size.y);
             height = Camera.main.orthographicSize;
@@ -27,7 +33,12 @@ namespace CharacterCamera
 
         void Update()
         {
-            CameraPosition();
+            try
+            {
+                CameraPosition();
+            }
+            catch
+            { } 
         }
 
         void CameraPosition()
