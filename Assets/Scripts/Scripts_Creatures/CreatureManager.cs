@@ -33,7 +33,7 @@ public class CreatureManager : MonoBehaviour
         ReferenceManager.Instance.SetReferableObject("CreatureManager", this, false);
         mapBuilder = gameObject.GetComponent<MapBuilder>();
         tilemaps.Add(GameObject.Find("Floor_tilemap").GetComponent<Tilemap>());
-        tilemaps.Add(GameObject.Find("Furniture_grid").GetComponent<Tilemap>());
+        //tilemaps.Add(GameObject.Find("Furniture_grid").GetComponent<Tilemap>());
         InitMap();
         InitPathFinders();
     }
@@ -121,6 +121,10 @@ public class CreatureManager : MonoBehaviour
 
         if (AreArraysEqual(lastDoors, doors))
         {
+            if (doorAppliedMap == null)
+            {
+                return map;
+            }
             return doorAppliedMap;
         }
 
