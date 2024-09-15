@@ -11,7 +11,7 @@ public class MapBuilder : MonoBehaviour
     
     void Start()
     {
-        creatureManager = ReferenceManager.Instance.FindByName("CreatureManager") as CreatureManager;
+        creatureManager = ReferenceManager.Instance.FindComponentByName<CreatureManager>("CreatureManager");
         int[,] map = creatureManager.GetMap();
         Vector3Int mapOffset = creatureManager.GetMapOffset();
         for (int i = 0; i< map.GetLength(0); i++)
