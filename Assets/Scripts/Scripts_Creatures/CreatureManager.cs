@@ -11,7 +11,7 @@ public enum PathFinderType
     AVOIDER=1,
 }
 
-public class CreatureManager : SingletonObject<CreatureManager>
+public class CreatureManager : MonoBehaviour
 {
     private int[,] map;
     private int[,] doorAppliedMap;
@@ -30,6 +30,7 @@ public class CreatureManager : SingletonObject<CreatureManager>
 
     private void Awake()
     {
+        ReferenceManager.Instance.SetReferableObject("CreatureManager", this, false);
         mapBuilder = gameObject.GetComponent<MapBuilder>();
         tilemaps.Add(GameObject.Find("Floor_tilemap").GetComponent<Tilemap>());
         tilemaps.Add(GameObject.Find("Furniture_grid").GetComponent<Tilemap>());
@@ -136,8 +137,12 @@ public class CreatureManager : SingletonObject<CreatureManager>
 
         GameObject[] spotLights = GameObject.FindGameObjectsWithTag("Light");
 
-        if (AreArraysEqual<GameObject>(lastSpotLights, spotLights))
+        if (AreArraysEqual(lastSpotLights, spotLights))
         {
+            if (doorAndlightAppliedMap == null)
+            {
+                return doorAppliedMap;
+            }
             return doorAndlightAppliedMap;
         }
         lastSpotLights = spotLights;
@@ -178,7 +183,7 @@ public class CreatureManager : SingletonObject<CreatureManager>
         foreach (GameObject spotLight in spotLights)
         {
             Light2D light = spotLight.GetComponentInChildren<Light2D>();
-            if (!light.gameObject.active)
+            if (!light.gameObject.activeSelf)
             {
                 continue;
             }
