@@ -674,6 +674,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallFloor
       objectReference: {fileID: 0}
+    - target: {fileID: 3330754680331993831, guid: f3921fb5282ef70478a7c46877700703, type: 3}
+      propertyPath: m_Name
+      value: Floor_tilemap
+      objectReference: {fileID: 0}
     - target: {fileID: 5034789383674948935, guid: f3921fb5282ef70478a7c46877700703, type: 3}
       propertyPath: m_Size.x
       value: 19
