@@ -56,7 +56,7 @@ public class NpcDialogueController : MonoBehaviour
 
     void Start()
     {
-        dialogueImages =  ReferenceManager.Instance.FindByName("DialogueImages") as DontDestoryReferableObject;
+        dialogueImages =  ReferenceManager.Instance.FindComponentByName<DontDestoryReferableObject>("DialogueImages");
 
         dialogueImage = dialogueImages.transform.Find("DialogueBackground").gameObject;
         dialogueCharacter = dialogueImages.transform.Find("LucyDialogueImage").gameObject;
