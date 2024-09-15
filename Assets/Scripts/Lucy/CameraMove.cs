@@ -21,7 +21,7 @@ namespace CharacterCamera
 
         void ISceneChangeListener.OnSceneChange()
         {
-            square = ReferenceManager.Instance.FindByName("Square").gameObject;
+            square = ReferenceManager.Instance.FindGameObjectByName("Square");
             Renderer BackgroundRenderer = square.GetComponent<Renderer>();
             Vector2 MapSize = new Vector2(BackgroundRenderer.bounds.size.x, BackgroundRenderer.bounds.size.y);
             height = Camera.main.orthographicSize;
