@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxDistance: 10
-  debugMode: 1
+  debugMode: 0
   targetMask:
     serializedVersion: 2
     m_Bits: 0
