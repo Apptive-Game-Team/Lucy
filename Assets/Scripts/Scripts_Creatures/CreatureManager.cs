@@ -145,6 +145,10 @@ public class CreatureManager : MonoBehaviour
         {
             if (doorAndlightAppliedMap == null)
             {
+                if (doorAppliedMap == null)
+                {
+                    return map;
+                }
                 return doorAppliedMap;
             }
             return doorAndlightAppliedMap;
