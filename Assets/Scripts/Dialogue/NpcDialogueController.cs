@@ -61,10 +61,6 @@ public class NpcDialogueController : MonoBehaviour
         dialogueImage = dialogueImages.transform.Find("DialogueBackground").gameObject;
         dialogueCharacter = dialogueImages.transform.Find("LucyDialogueImage").gameObject;
         dialogueText = dialogueImages.GetComponentInChildren<TMP_Text>();
-        if (dialogueText == null)
-        {
-            print("tlqkf");
-        }
         dialogueImage.SetActive(false);
         dialogueCharacter.SetActive(false);
 
