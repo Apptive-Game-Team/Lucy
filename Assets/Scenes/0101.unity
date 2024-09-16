@@ -6622,14 +6622,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 3157817895449557270, guid: c24e0f83019fb466e8b6c345d8be967d, type: 3}
-      propertyPath: Loop
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3157817895449557270, guid: c24e0f83019fb466e8b6c345d8be967d, type: 3}
-      propertyPath: m_PlayOnAwake
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3402838726317016103, guid: c24e0f83019fb466e8b6c345d8be967d, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.1
