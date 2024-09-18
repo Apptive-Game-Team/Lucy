@@ -83,48 +83,50 @@ public class InputManager : SingletonObject<InputManager>
 
     public Vector3 GetMoveVector()
     {
-        if (Input.GetKeyDown(keyMappings[ActionCode.MoveUp]))
+        if (Input.GetKey(keyMappings[ActionCode.MoveUp]))
         {
             if (!directionList.Contains(Vector2.up))
             {
                 directionList.Add(Vector2.up);
             }
         }
-        else if (Input.GetKeyDown(keyMappings[ActionCode.MoveDown]))
+        else if (!Input.GetKey(keyMappings[ActionCode.MoveUp]))
+        {
+            directionList.Remove(Vector2.up);
+        }
+
+        if (Input.GetKey(keyMappings[ActionCode.MoveDown]))
         {
             if (!directionList.Contains(Vector2.down))
             {
                 directionList.Add(Vector2.down);
             }
         }
-        else if (Input.GetKeyDown(keyMappings[ActionCode.MoveLeft]))
+        else if (!Input.GetKey(keyMappings[ActionCode.MoveDown]))
+        {
+            directionList.Remove(Vector2.down);
+        }
+
+        if (Input.GetKey(keyMappings[ActionCode.MoveLeft]))
         {
             if (!directionList.Contains(Vector2.left))
             {
                 directionList.Add(Vector2.left);
             }
         }
-        else if (Input.GetKeyDown(keyMappings[ActionCode.MoveRight]))
+        else if (!Input.GetKey(keyMappings[ActionCode.MoveLeft]))
+        {
+            directionList.Remove(Vector2.left);
+        }
+
+        if (Input.GetKey(keyMappings[ActionCode.MoveRight]))
         {
             if (!directionList.Contains(Vector2.right))
             {
                 directionList.Add(Vector2.right);
             }
         }
-
-        if (Input.GetKeyUp(keyMappings[ActionCode.MoveUp]))
-        {
-            directionList.Remove(Vector2.up);
-        }
-        else if (Input.GetKeyUp(keyMappings[ActionCode.MoveDown]))
-        {
-            directionList.Remove(Vector2.down);
-        }
-        else if (Input.GetKeyUp(keyMappings[ActionCode.MoveLeft]))
-        {
-            directionList.Remove(Vector2.left);
-        }
-        else if (Input.GetKeyUp(keyMappings[ActionCode.MoveRight]))
+        else if (!Input.GetKey(keyMappings[ActionCode.MoveRight]))
         {
             directionList.Remove(Vector2.right);
         }
