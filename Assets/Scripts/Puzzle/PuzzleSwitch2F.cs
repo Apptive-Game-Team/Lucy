@@ -5,14 +5,12 @@ using UnityEngine.Tilemaps;
 
 public class PuzzleSwitch2F : MonoBehaviour
 {
-    [SerializeField] private GameObject floorTile;
-    [SerializeField] private GameObject voidTile;
     [SerializeField] private GameObject[] bridges;
-    [SerializeField] private GameObject player;
+    private GameObject player;
     // Start is called before the first frame update
     void Start()
     {
-        
+        player = GameObject.Find("Player");
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
