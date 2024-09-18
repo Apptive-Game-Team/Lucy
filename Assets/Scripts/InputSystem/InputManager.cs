@@ -90,7 +90,7 @@ public class InputManager : SingletonObject<InputManager>
                 directionList.Add(Vector2.up);
             }
         }
-        else if (!Input.GetKey(keyMappings[ActionCode.MoveUp]))
+        else
         {
             directionList.Remove(Vector2.up);
         }
@@ -102,7 +102,7 @@ public class InputManager : SingletonObject<InputManager>
                 directionList.Add(Vector2.down);
             }
         }
-        else if (!Input.GetKey(keyMappings[ActionCode.MoveDown]))
+        else
         {
             directionList.Remove(Vector2.down);
         }
@@ -114,7 +114,7 @@ public class InputManager : SingletonObject<InputManager>
                 directionList.Add(Vector2.left);
             }
         }
-        else if (!Input.GetKey(keyMappings[ActionCode.MoveLeft]))
+        else
         {
             directionList.Remove(Vector2.left);
         }
@@ -126,7 +126,7 @@ public class InputManager : SingletonObject<InputManager>
                 directionList.Add(Vector2.right);
             }
         }
-        else if (!Input.GetKey(keyMappings[ActionCode.MoveRight]))
+        else
         {
             directionList.Remove(Vector2.right);
         }
