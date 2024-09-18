@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HandLightSwitch : MonoBehaviour
 {
-    [SerializeField] GameObject handlightObject;
+    [SerializeField] public GameObject handlightObject;
     public static HandLightSwitch instance;
 
     private void Awake()

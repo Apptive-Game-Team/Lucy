@@ -26,8 +26,11 @@ public class CharacterStat : MonoBehaviour
     public float maxStamina = 100;
     public int reduceAmount = 10;
 
+    private AudioSource audioSource;
+    private const float MENTAL_WARNING_RATE = 0.5f;
+
     [SerializeField] private bool isOnLight = false;
-    
+
     [SerializeField] public bool isRun = false;
     [SerializeField] public bool canRun = true;
     private Coroutine onLightCounter;
@@ -46,6 +49,8 @@ public class CharacterStat : MonoBehaviour
 
     void Start()
     {
+        audioSource = transform.Find("PlayerStatusSoundController").GetComponent<AudioSource>();
+        audioSource.clip = SoundManager.Instance.soundSources.GetByName("Heartbeat").Value.sound;
         SetStats();
         UpdateStats();
         mentalCoroutine = StartCoroutine(ReduceMental());
@@ -107,6 +112,13 @@ public class CharacterStat : MonoBehaviour
             if (!isOnLight)
             {
                 curMental -= reduceAmount;
+                if (curMental <= maxMental / MENTAL_WARNING_RATE && !audioSource.isPlaying)
+                {
+                    audioSource.Play();
+                } else  if (curMental > maxMental / 2)
+                {
+                    audioSource.Stop();
+                }
                 UpdateStats();
             }
         }

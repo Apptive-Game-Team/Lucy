@@ -81,3 +81,15 @@ MonoBehaviour:
     name: ButtonSound
     type: 2
     sound: {fileID: 8300000, guid: 0593df3ca48d74559a26d92606d4750e, type: 3}
+  - id: 17
+    name: Heartbeat
+    type: 3
+    sound: {fileID: 8300000, guid: 64ed54603ea4bdc4c930044de83bdd69, type: 3}
+  - id: 18
+    name: OpenTheDoor1
+    type: 5
+    sound: {fileID: 8300000, guid: e65e41bdcea1a448d9e051bf4659373e, type: 3}
+  - id: 19
+    name: OpenTheDoor2
+    type: 5
+    sound: {fileID: 8300000, guid: 87664acbbc18c413dbe3b0ea8318d0ba, type: 3}
