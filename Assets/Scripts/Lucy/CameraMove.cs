@@ -14,11 +14,14 @@ namespace CharacterCamera
         float diffX;
         float diffY;
         public float CameraMoveSpeed = 150f;
+        public GameObject hallucination;
 
         void Awake()
         {
+            ReferenceManager.Instance.SetReferableObject("MainCamera",this,false);
             PortalManager.Instance.SetSceneChangeListener(this);
             DontDestroyOnLoad(gameObject);
+            hallucination.SetActive(false);
         }
 
         void ISceneChangeListener.OnSceneChange()

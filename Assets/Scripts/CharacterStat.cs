@@ -25,6 +25,8 @@ public class CharacterStat : MonoBehaviour
     public float curStamina;
     public float maxStamina = 100;
     public int reduceAmount = 10;
+    private GameObject hallucination;
+    private SpriteRenderer hallucinationSpriteRenderer;
 
     private AudioSource audioSource;
     private const float MENTAL_WARNING_RATE = 0.5f;
@@ -54,6 +56,8 @@ public class CharacterStat : MonoBehaviour
         SetStats();
         UpdateStats();
         mentalCoroutine = StartCoroutine(ReduceMental());
+        hallucination = ReferenceManager.Instance.FindComponentByName<CameraMove>("MainCamera").hallucination;
+        hallucinationSpriteRenderer = hallucination.GetComponent<SpriteRenderer>();
     }
 
     public void SetStats()
@@ -112,12 +116,21 @@ public class CharacterStat : MonoBehaviour
             if (!isOnLight)
             {
                 curMental -= reduceAmount;
-                if (curMental <= maxMental / MENTAL_WARNING_RATE && !audioSource.isPlaying)
+                audioSource.pitch = 1 + (float)(((maxMental * MENTAL_WARNING_RATE) - curMental) / (maxMental * MENTAL_WARNING_RATE));
+                float alpha = (float)(((maxMental * MENTAL_WARNING_RATE) - curMental) / (maxMental * MENTAL_WARNING_RATE)) / 3;
+
+                Color hallucinationColor = hallucinationSpriteRenderer.color;
+                hallucinationColor.a = alpha;
+                hallucinationSpriteRenderer.color = hallucinationColor;
+
+                if (curMental <= maxMental * MENTAL_WARNING_RATE && !audioSource.isPlaying)
                 {
                     audioSource.Play();
-                } else  if (curMental > maxMental / 2)
+                    hallucination.SetActive(true);
+                } else  if (curMental > maxMental * MENTAL_WARNING_RATE)
                 {
                     audioSource.Stop();
+                    hallucination.SetActive(false);
                 }
                 UpdateStats();
             }
