@@ -8,6 +8,7 @@ TagManager:
   - Wall
   - Light
   - Door
+  - Bridge
   layers:
   - Default
   - TransparentFX

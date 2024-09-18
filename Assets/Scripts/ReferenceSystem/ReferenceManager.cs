@@ -5,6 +5,7 @@ using System;
 
 public class ReferenceManager : SingletonObject<ReferenceManager>
 {
+
     private Dictionary<string, (MonoBehaviour, bool)> components = new Dictionary<string, (MonoBehaviour, bool)>();
 
     public void SetReferableObject(string key, MonoBehaviour component, bool isDontDestory)
