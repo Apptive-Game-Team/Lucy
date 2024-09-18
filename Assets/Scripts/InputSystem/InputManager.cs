@@ -36,6 +36,7 @@ public class InputManager : SingletonObject<InputManager>
     };
 
     Vector3 moveVector = new Vector3();
+    private List<Vector2> directionList = new List<Vector2>();
 
     private List<IKeyInputListener> inputListeners = new List<IKeyInputListener>();
 
@@ -82,26 +83,63 @@ public class InputManager : SingletonObject<InputManager>
 
     public Vector3 GetMoveVector()
     {
-        if (GetKey(ActionCode.MoveUp))
+        if (Input.GetKey(keyMappings[ActionCode.MoveUp]))
         {
-            moveVector.y = 1;
-        } else if (GetKey(ActionCode.MoveDown))
+            if (!directionList.Contains(Vector2.up))
+            {
+                directionList.Add(Vector2.up);
+            }
+        }
+        else
         {
-            moveVector.y = -1;
-        } else
-        {
-            moveVector.y = 0;
+            directionList.Remove(Vector2.up);
         }
 
-        if (GetKey(ActionCode.MoveLeft))
+        if (Input.GetKey(keyMappings[ActionCode.MoveDown]))
         {
-            moveVector.x = -1;
-        } else if (GetKey(ActionCode.MoveRight))
+            if (!directionList.Contains(Vector2.down))
+            {
+                directionList.Add(Vector2.down);
+            }
+        }
+        else
         {
-            moveVector.x = +1;
-        } else
+            directionList.Remove(Vector2.down);
+        }
+
+        if (Input.GetKey(keyMappings[ActionCode.MoveLeft]))
+        {
+            if (!directionList.Contains(Vector2.left))
+            {
+                directionList.Add(Vector2.left);
+            }
+        }
+        else
+        {
+            directionList.Remove(Vector2.left);
+        }
+
+        if (Input.GetKey(keyMappings[ActionCode.MoveRight]))
+        {
+            if (!directionList.Contains(Vector2.right))
+            {
+                directionList.Add(Vector2.right);
+            }
+        }
+        else
+        {
+            directionList.Remove(Vector2.right);
+        }
+
+        if (directionList.Count > 0)
+        {
+            moveVector.x = directionList[^1].x;
+            moveVector.y = directionList[^1].y;
+        }
+        else
         {
             moveVector.x = 0;
+            moveVector.y = 0;
         }
 
         return moveVector;
