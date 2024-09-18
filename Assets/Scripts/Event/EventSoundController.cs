@@ -15,4 +15,9 @@ public class EventSoundController : SoundController
         audioSource.loop = isLoop;
         audioSource.Play();
     }
+
+    public void StopSound()
+    {
+        audioSource.Stop();
+    }
 }
