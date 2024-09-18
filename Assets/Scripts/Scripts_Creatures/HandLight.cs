@@ -9,25 +9,32 @@ namespace Creature
         Detector detector;
         Avoider avoider;
         Stunnee stunnee;
+
+        HandLightSwitch handLightSwitch;
+
         void Start()
         {
+            handLightSwitch = GetComponent<HandLightSwitch>();
             detector = gameObject.GetComponent<Detector>();
             detector.SetTargetMask(LayerMask.GetMask("Creature"));
         }
 
         void Update()
         {
-            List<Collider2D> targets =  detector.DetectByView();
-            foreach (Collider2D target in targets)
+            if (handLightSwitch.handlightObject.activeSelf)
             {
-                try
+                List<Collider2D> targets = detector.DetectByView();
+                foreach (Collider2D target in targets)
                 {
-                    avoider = target.GetComponent<Avoider>();
-                    avoider.OnDetectedByHandLight(transform.position);
-                }
-                catch
-                {
-                    continue;
+                    try
+                    {
+                        avoider = target.GetComponent<Avoider>();
+                        avoider.OnDetectedByHandLight(transform.position);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
                 }
             }
         }

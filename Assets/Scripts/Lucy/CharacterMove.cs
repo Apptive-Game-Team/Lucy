@@ -14,7 +14,7 @@ namespace CharacterCamera
 
         void Awake()
         {
-            soundController = GetComponent<ActorSoundController>();
+            soundController = transform.Find("FootsoundController").GetComponent<ActorSoundController>();
             playerRb = GetComponent<Rigidbody2D>();
             Anim = GetComponent<Animator>();
         }
