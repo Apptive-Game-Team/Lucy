@@ -19,3 +19,5 @@ MonoBehaviour:
     sceneName: 0102
   - sceneID: 3
     sceneName: 0201
+  - sceneID: 4
+    sceneName: Puzzle_2F
