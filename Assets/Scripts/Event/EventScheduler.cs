@@ -56,7 +56,15 @@ public class FirstMeetNpcGameEvent : IGameEvent
 {
     public void Execute()
     {
-        
+        EventScheduler.Instance.eventObjects["FirstMeetNpcEventObject"].PlaySound();
+    }
+}
+
+public class AfterNpcGameEvent : IGameEvent
+{
+    public void Execute()
+    {
+        EventScheduler.Instance.eventObjects["FirstMeetNpcEventObject"].StopSound();
     }
 }
 
@@ -65,11 +73,14 @@ public class EventScheduler : SingletonObject<EventScheduler>
     [SerializeField]
     private GameEvent currentGameEvent;
 
+    public Dictionary<string, EventObject> eventObjects = new Dictionary<string, EventObject>();
+
     private GameEvent LoadCurrentEvent()
     {
         // Save Load System is Required
         return GameEvent.START;
     }
+    
 
     void Start()
     {
@@ -79,5 +90,7 @@ public class EventScheduler : SingletonObject<EventScheduler>
     public void UpdateGameEvent()
     {
         currentGameEvent = (GameEvent)(currentGameEvent + 1);
+        GameEventFactory.CreateEvent(currentGameEvent).Execute();
+
     }
 }
