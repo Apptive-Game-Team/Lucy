@@ -27,13 +27,12 @@ public class puzzleNpc : NpcDialogues
     }
 }
 
-public class NpcDialogueController : MonoBehaviour
+public class NpcDialogueController : SingletonObject<NpcDialogueController>, ISceneChangeListener
 {
-    public static NpcDialogueController Instance { get; private set;}
     public NpcDialogueData npcDialogueData;
     protected List<NpcDialogues> npcDialogue;
 
-    private DontDestoryReferableObject dialogueImages;
+    private ReferableObject dialogueImages;
     public GameObject dialogueImage;
     public GameObject dialogueCharacter;
     public TMP_Text dialogueText;
@@ -41,22 +40,15 @@ public class NpcDialogueController : MonoBehaviour
     public float typingSpeed = 0.05f;
     public float delayBetweenDialogues = 1.2f;
 
-    void Awake()
+    protected override void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        } 
+        base.Awake();
+        PortalManager.Instance.SetSceneChangeListener(this);
     }
 
-    void Start()
+    void ISceneChangeListener.OnSceneChange()
     {
-        dialogueImages =  ReferenceManager.Instance.FindComponentByName<DontDestoryReferableObject>("DialogueImages");
+        dialogueImages =  ReferenceManager.Instance.FindComponentByName<ReferableObject>("DialogueImages");
 
         dialogueImage = dialogueImages.transform.Find("DialogueBackground").gameObject;
         dialogueCharacter = dialogueImages.transform.Find("LucyDialogueImage").gameObject;
