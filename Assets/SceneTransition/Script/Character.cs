@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Character : SingletonObject<Character>
 {
-    private void Start()
+    protected override void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        base.Awake();
     }
 }
