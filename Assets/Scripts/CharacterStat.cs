@@ -1,9 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using CharacterCamera;
 using TMPro;
-using Unity.Mathematics;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -58,6 +55,7 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
         UpdateStats();
         mentalCoroutine = StartCoroutine(ReduceMental());
     }
+
     void ISceneChangeListener.OnSceneChange()
     {
         hallucination = ReferenceManager.Instance.FindComponentByName<CameraMove>("MainCamera").hallucination;
@@ -124,7 +122,7 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
                 curMental -= reduceAmount;
                 audioSource.pitch = 1 + (float)(((maxMental * MENTAL_WARNING_RATE) - curMental) / (maxMental * MENTAL_WARNING_RATE));
                 float alpha = (float)(((maxMental * MENTAL_WARNING_RATE) - curMental) / (maxMental * MENTAL_WARNING_RATE)) / 3;
-
+                yield return new WaitUntil(() => hallucinationSpriteRenderer != null);
                 Color hallucinationColor = hallucinationSpriteRenderer.color;
                 hallucinationColor.a = alpha;
                 hallucinationSpriteRenderer.color = hallucinationColor;
