@@ -19,13 +19,14 @@ namespace CharacterCamera
         void OnEnable()
         {
             ReferenceManager.Instance.SetReferableObject("MainCamera",this,false);
+            hallucination = transform.Find("hallucination").gameObject;
             hallucination.SetActive(false);
         }
 
         void Start()
         {
             square = ReferenceManager.Instance.FindGameObjectByName("Square");
-            player = ReferenceManager.Instance.FindGameObjectByName("Player");
+            player = Character.Instance.gameObject;
             Renderer BackgroundRenderer = square.GetComponent<Renderer>();
             Vector2 MapSize = new Vector2(BackgroundRenderer.bounds.size.x, BackgroundRenderer.bounds.size.y);
             height = Camera.main.orthographicSize;
