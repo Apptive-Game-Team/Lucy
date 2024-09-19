@@ -5,12 +5,12 @@ using UnityEngine;
 
 public enum BridgeID
 {
-    Switch1 = 1,
-    Switch2 = 2,
-    Switch3 = 3,
-    Switch4 = 4,
-    Switch5 = 5,
-    Switch6 = 6,
+    Switch1 = 0,
+    Switch2 = 1,
+    Switch3 = 2,
+    Switch4 = 3,
+    Switch5 = 4,
+    Switch6 = 5,
 }
 
 [Serializable]
