@@ -7,7 +7,7 @@ using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterStat : MonoBehaviour
+public class CharacterStat : MonoBehaviour, ISceneChangeListener
 {
     public static CharacterStat instance;
 
@@ -51,11 +51,15 @@ public class CharacterStat : MonoBehaviour
 
     void Start()
     {
+        PortalManager.Instance.SetSceneChangeListener(this);
         audioSource = transform.Find("PlayerStatusSoundController").GetComponent<AudioSource>();
         audioSource.clip = SoundManager.Instance.soundSources.GetByName("Heartbeat").Value.sound;
         SetStats();
         UpdateStats();
         mentalCoroutine = StartCoroutine(ReduceMental());
+    }
+    void ISceneChangeListener.OnSceneChange()
+    {
         hallucination = ReferenceManager.Instance.FindComponentByName<CameraMove>("MainCamera").hallucination;
         hallucinationSpriteRenderer = hallucination.GetComponent<SpriteRenderer>();
     }
@@ -110,6 +114,8 @@ public class CharacterStat : MonoBehaviour
 
     public IEnumerator ReduceMental()
     {
+        yield return new WaitUntil(() => hallucinationSpriteRenderer != null);
+
         while (curMental > 0)
         {   
             yield return new WaitForSecondsRealtime(delay);
