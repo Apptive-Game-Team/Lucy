@@ -6,26 +6,34 @@ using System;
 public class ReferenceManager : SingletonObject<ReferenceManager>
 {
 
-    private Dictionary<string, (MonoBehaviour, bool)> components = new Dictionary<string, (MonoBehaviour, bool)>();
+    private Dictionary<string, int> keyToIndex = new Dictionary<string, int>();
+    [SerializeField]
+    private List<MonoBehaviour> indexToComponents = new List<MonoBehaviour>();
+    //private Dictionary<string, (MonoBehaviour, bool)> components = new Dictionary<string, (MonoBehaviour, bool)>();
+
+    protected override void Awake()
+    {
+        base.Awake();
+    }
 
     public void SetReferableObject(string key, MonoBehaviour component, bool isDontDestory)
     {
-        try
+        if (keyToIndex.ContainsKey(key))
         {
-            components.Add(key, (component, isDontDestory));
-        }
-        catch
+            indexToComponents[keyToIndex[key]] = component;
+        } else
         {
-            components[key] = (component, isDontDestory);
+            int index = indexToComponents.Count;
+            indexToComponents.Add(component);
+            keyToIndex.Add(key, index);
         }
-        
     }
 
     public T FindComponentByName<T>(string key) where T : class
     {
         try
         {
-            return components[key].Item1 as T;
+            return indexToComponents[keyToIndex[key]] as T;
         }
         catch
         {
@@ -35,6 +43,6 @@ public class ReferenceManager : SingletonObject<ReferenceManager>
 
     public GameObject FindGameObjectByName(string key)
     {
-        return components[key].Item1.gameObject;
+        return indexToComponents[keyToIndex[key]].gameObject;
     }
 }
