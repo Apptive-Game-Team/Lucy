@@ -5,7 +5,7 @@ using System;
 
 namespace CharacterCamera
 {
-    public class CameraMove : MonoBehaviour, ISceneChangeListener
+    public class CameraMove : MonoBehaviour
     {
         public GameObject player;
         public GameObject square;
@@ -16,17 +16,16 @@ namespace CharacterCamera
         public float CameraMoveSpeed = 150f;
         public GameObject hallucination;
 
-        void Awake()
+        void OnEnable()
         {
             ReferenceManager.Instance.SetReferableObject("MainCamera",this,false);
-            PortalManager.Instance.SetSceneChangeListener(this);
-            DontDestroyOnLoad(gameObject);
             hallucination.SetActive(false);
         }
 
-        void ISceneChangeListener.OnSceneChange()
+        void Start()
         {
             square = ReferenceManager.Instance.FindGameObjectByName("Square");
+            player = ReferenceManager.Instance.FindGameObjectByName("Player");
             Renderer BackgroundRenderer = square.GetComponent<Renderer>();
             Vector2 MapSize = new Vector2(BackgroundRenderer.bounds.size.x, BackgroundRenderer.bounds.size.y);
             height = Camera.main.orthographicSize;
