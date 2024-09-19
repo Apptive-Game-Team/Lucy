@@ -9,15 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cf37b7132897754ebfc6f82de13fb13, type: 3}
-  m_Name: SceneDataList
+  m_Script: {fileID: 11500000, guid: 035b7e514b15cd14dad5b640f419d146, type: 3}
+  m_Name: BridgeDataList
   m_EditorClassIdentifier: 
-  sceneDatas:
-  - sceneID: 1
-    sceneName: 0101
-  - sceneID: 2
-    sceneName: 0102
-  - sceneID: 3
-    sceneName: 0201
-  - sceneID: 4
-    sceneName: Puzzle_2F
+  bridgeDatas:
+  - bridgeID: 1
+  - bridgeID: 2
+  - bridgeID: 3
+  - bridgeID: 4
+  - bridgeID: 5
+  - bridgeID: 6

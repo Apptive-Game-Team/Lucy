@@ -20,6 +20,7 @@ namespace CharacterCamera
         {
             ReferenceManager.Instance.SetReferableObject("MainCamera",this,false);
             PortalManager.Instance.SetSceneChangeListener(this);
+            DontDestroyOnLoad(gameObject);
             hallucination.SetActive(false);
         }
 
@@ -32,7 +33,7 @@ namespace CharacterCamera
             width = height * Screen.width / Screen.height;
             diffX = MapSize.x/2 - width;
             diffY = MapSize.y/2 - height;
-            DontDestroyOnLoad(gameObject);
+            
         }
 
         void Update()

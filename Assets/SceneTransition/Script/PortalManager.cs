@@ -28,7 +28,15 @@ public class PortalManager : SingletonObject<PortalManager>
         yield return new WaitForSeconds(CALL_LISTENER_DELAY);
         foreach (ISceneChangeListener listener in listeners)
         {
-            listener.OnSceneChange();
+            try
+            {
+                listener.OnSceneChange();
+            }
+            catch
+            {
+
+            }
+            
         }
     }
 
