@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIController : MonoBehaviour
+public class UIController : SingletonObject<UIController>
 {
-    void Start()
+    protected override void Awake()
     {
-        DontDestroyOnLoad(gameObject);       
+        base.Awake();
     }
 }
