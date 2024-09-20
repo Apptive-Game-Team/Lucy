@@ -61,7 +61,10 @@ namespace CharacterCamera
                 float ClampY = Mathf.Clamp(transform.position.y, -diffY + square.transform.position.y, diffY + square.transform.position.y);
                 transform.position = new Vector3(ClampX, ClampY, -10);
             }
-            catch
+            catch (MissingReferenceException)
+            {
+                player = Character.Instance.gameObject;
+            } catch (NullReferenceException)
             {
                 player = Character.Instance.gameObject;
             }
