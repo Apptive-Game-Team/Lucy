@@ -50,6 +50,16 @@ namespace Team6203
             }
             return list1;
         }
+
+
+        public static Vector3Int Vector3ToVector3Int(Vector3 vector)
+        {
+            return new Vector3Int(
+                Mathf.RoundToInt(vector.x),
+                Mathf.RoundToInt(vector.y),
+                Mathf.RoundToInt(vector.z)
+            );
+        }
     }
 }
 
