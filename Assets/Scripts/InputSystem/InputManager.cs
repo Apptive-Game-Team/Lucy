@@ -56,7 +56,7 @@ public class InputManager : SingletonObject<InputManager>
         keyActiveFlags[action] = active;
     }
 
-    public void MoveControl(bool active)
+    public void SetMovementState(bool active)
     {
         SetKeyActive(ActionCode.MoveUp, active);
         SetKeyActive(ActionCode.MoveDown, active);

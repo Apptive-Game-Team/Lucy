@@ -60,12 +60,12 @@ public class Bookshelf : Furnitures
         if (!bookPage.activeSelf)
         {
             bookPage.SetActive(true);
-            InputManager.Instance.MoveControl(false);
+            InputManager.Instance.SetMovementState(false);
         }
         else
         {
             bookPage.SetActive(false);
-            InputManager.Instance.MoveControl(true);
+            InputManager.Instance.SetMovementState(true);
         }
         
         Debug.Log("Bookshelf");
