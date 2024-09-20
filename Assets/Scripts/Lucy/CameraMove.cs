@@ -42,7 +42,7 @@ namespace CharacterCamera
             {
                 CameraPosition();
             }
-            catch (MissingReferenceException e)
+            catch (MissingReferenceException)
             {
 #if UNITY_EDITOR
                 print("Square or Player is not Attached yet");
@@ -52,12 +52,23 @@ namespace CharacterCamera
 
         void CameraPosition()
         {
-            transform.position = Vector3.Lerp(transform.position, player.transform.position + new Vector3(0,0,-10),Time.deltaTime * CameraMoveSpeed);
-            //transform.LookAt(Character.transform);
+            try
+            {
+                transform.position = Vector3.Lerp(transform.position, player.transform.position + new Vector3(0, 0, -10), Time.deltaTime * CameraMoveSpeed);
+                //transform.LookAt(Character.transform);
 
-            float ClampX = Mathf.Clamp(transform.position.x, -diffX + square.transform.position.x, diffX + square.transform.position.x);
-            float ClampY = Mathf.Clamp(transform.position.y, -diffY + square.transform.position.y, diffY + square.transform.position.y);
-            transform.position = new Vector3(ClampX,ClampY,-10);
+                float ClampX = Mathf.Clamp(transform.position.x, -diffX + square.transform.position.x, diffX + square.transform.position.x);
+                float ClampY = Mathf.Clamp(transform.position.y, -diffY + square.transform.position.y, diffY + square.transform.position.y);
+                transform.position = new Vector3(ClampX, ClampY, -10);
+            }
+            catch (MissingReferenceException)
+            {
+                player = Character.Instance.gameObject;
+            } catch (NullReferenceException)
+            {
+                player = Character.Instance.gameObject;
+            }
+            
         }
     }
 }
