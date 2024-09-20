@@ -8,6 +8,6 @@ public class Furniture : InteractableObject
 
     protected override void ActOnTrigger(Collider2D other)
     {
-        FurnitureController.Instance.furnitures[furniture.furnitureType].Interact();
+        FurnitureController.Instance.furnitures[furniture.furnitureType].Interact(this);
     }
 }

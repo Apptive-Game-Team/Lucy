@@ -37,8 +37,9 @@ public class DoorObject : InteractableObject
         soundController = GetComponent<ToggleableObjectSoundController>();
     }
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         creatureManager = ReferenceManager.Instance.FindComponentByName<CreatureManager>("CreatureManager");
         if(doorInfo.isLocked && doorInfo.keyId == ItemID.NONE)  
         {
