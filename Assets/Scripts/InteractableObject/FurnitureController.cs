@@ -4,23 +4,16 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class FurnitureController : SingletonObject<FurnitureController>, IKeyInputListener, ISceneChangeListener
+public class FurnitureController : SingletonObject<FurnitureController>, IKeyInputListener
 {
     public Dictionary<FurnitureType, Furnitures> furnitures;
     public GameObject player;
-    public GameObject bookPage;
     public GameObject flashlight;
     public List<Sprite> drawerImages;
-
-    public void OnSceneChange()
-    {
-        bookPage = ReferenceManager.Instance.FindGameObjectByName("EventImages").transform.Find("RemoteController1").gameObject;
-    }
 
     protected override void Awake()
     {
         base.Awake();
-        PortalManager.Instance.SetSceneChangeListener(this);
     }
 
     void Start()
@@ -30,7 +23,7 @@ public class FurnitureController : SingletonObject<FurnitureController>, IKeyInp
         furnitures = new Dictionary<FurnitureType, Furnitures>()
         {
             { FurnitureType.Cabinet, new Cabinet()},
-            { FurnitureType.Bookshelf, new Bookshelf(bookPage)},
+            { FurnitureType.Bookshelf, new Bookshelf()},
             { FurnitureType.Drawer, new Drawer(flashlight,drawerImages)}
         };
         InputManager.Instance.SetKeyListener(this);
@@ -43,26 +36,17 @@ public class FurnitureController : SingletonObject<FurnitureController>, IKeyInp
         {
             player.SetActive(true);
         }
-        try{
-                if (bookPage.activeSelf && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
-                {
-                    bookPage.SetActive(false);
-                    Time.timeScale = 1;
-                }
-        }catch(System.Exception){
-            Debug.LogWarning("BookPage is not Attached yet");
-        }
     }
 }
 
 public abstract class Furnitures
 {
-    public abstract void Interact();
+    public abstract void Interact(Furniture furniture);
 }
 
 public class Cabinet : Furnitures
 {
-    public override void Interact()
+    public override void Interact(Furniture furniture)
     {
         GameObject.Find("Player").SetActive(false);
     }
@@ -70,17 +54,21 @@ public class Cabinet : Furnitures
 
 public class Bookshelf : Furnitures
 {
-    private GameObject bookPage;
+    public override void Interact(Furniture furniture)
+    {
+        GameObject bookPage = furniture.transform.Find("Canvas").Find("Image").gameObject;
 
-    public Bookshelf(GameObject bookPage)
-    {
-        this.bookPage = bookPage;
-    }
-    
-    public override void Interact()
-    {
-        bookPage.SetActive(true);
-        Time.timeScale = 0;
+        if (!bookPage.activeSelf)
+        {
+            bookPage.SetActive(true);
+            InputManager.Instance.MoveControl(false);
+        }
+        else
+        {
+            bookPage.SetActive(false);
+            InputManager.Instance.MoveControl(true);
+        }
+        
         Debug.Log("Bookshelf");
     }
 }
@@ -98,7 +86,7 @@ public class Drawer : Furnitures
         spriteRenderer = GameObject.Find("Drawer").GetComponent<SpriteRenderer>();
     }
 
-    public override void Interact()
+    public override void Interact(Furniture furniture)
     {
         if (flashlight == null || !flashlight.activeSelf)
         {
@@ -114,6 +102,12 @@ public class Drawer : Furnitures
             {
                 spriteRenderer.sprite = drawerImages[0];
             }
+        }
+        else
+        {
+            Inventory.instance.AddItem(flashlight.GetComponent<ItemObject>().item);
+            flashlight.SetActive(false);
+            flashlight = null;
         }
         Debug.Log("Drawer");
     }
