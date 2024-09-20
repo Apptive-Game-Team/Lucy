@@ -28,7 +28,7 @@ public class CreatureManager : MonoBehaviour
 
     public List<PathFinder> pathFinders = new List<PathFinder>();
 
-    private void Awake()
+    private void OnEnable()
     {
         ReferenceManager.Instance.SetReferableObject("CreatureManager", this, false);
         mapBuilder = gameObject.GetComponent<MapBuilder>();

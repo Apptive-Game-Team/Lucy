@@ -7,8 +7,9 @@ using SoundSystem;
 public class SoundManager : SingletonObject<SoundManager>
 {
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         if (audioSource == null)
         {
             try

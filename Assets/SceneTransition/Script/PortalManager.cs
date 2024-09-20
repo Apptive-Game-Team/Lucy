@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System;
 
 public class PortalManager : SingletonObject<PortalManager>
 {
@@ -32,9 +33,9 @@ public class PortalManager : SingletonObject<PortalManager>
             {
                 listener.OnSceneChange();
             }
-            catch
+            catch(Exception e)
             {
-
+                Debug.LogWarning(e.Message);
             }
             
         }
