@@ -18,8 +18,8 @@ MonoBehaviour:
   type: 2
   icon: {fileID: 21300000, guid: 2ddf0348701148a4d8a7c6a0f7f146b3, type: 3}
   itemId: 5
-  canStack: 0
-  maxStackAmount: 0
+  canStack: 1
+  maxStackAmount: 1
   consumables:
   - type: 4
     value: 1

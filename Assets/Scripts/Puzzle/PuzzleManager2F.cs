@@ -28,7 +28,6 @@ public class PuzzleManager2F : SingletonObject<PuzzleManager2F>, ISceneChangeLis
     // Start is called before the first frame update
     void ISceneChangeListener.OnSceneChange()
     {
-        print("qkqh");
         bridges = new List<GameObject>(GameObject.FindGameObjectsWithTag("Bridge"));
 
         foreach (GameObject bridge in bridges)

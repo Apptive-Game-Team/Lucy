@@ -16,7 +16,6 @@ public class ItemObject : InteractableObject
     protected override void ActOnTrigger(Collider2D other)
     {
         Inventory.instance.AddItem(item);
-        if (item.itemId == ItemID.FLASHLIGHT) FlashDialogue.FlashDialogueController.Instance.StartDialogueCoroutine();
         Destroy(gameObject);
     }
 }
