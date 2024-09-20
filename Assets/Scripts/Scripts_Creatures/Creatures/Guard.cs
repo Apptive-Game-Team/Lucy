@@ -15,26 +15,36 @@ namespace Creature
             base.Start();
             minSpeed = 1;
             maxSpeed = 2;
-            actions[(int)status].Play();
+            actions[status].Start();
             StartCoroutine(MoveOnPath());
         }
 
-        public override IEnumerator PatrolAction()
+        protected override void PatrolStart()
         {
-            speed = minSpeed;
-            if (transform.position.x == MoveNodes[patrolMoveFlag].X && transform.position.y == MoveNodes[patrolMoveFlag].Y){
+            base.PatrolStart();
+            targetPosition.Set(MoveNodes[patrolMoveFlag].X, MoveNodes[patrolMoveFlag].Y, 0);
+            SetPathToPosition(targetPosition);
+        }
+
+        protected override void PatrolUpdate()
+        {
+            if (isArrived)
+            {
                 patrolMoveFlag++;
                 if (patrolMoveFlag >= MoveNodes.Count)
                 {
                     patrolMoveFlag = 0;
                 }
+                targetPosition.Set(MoveNodes[patrolMoveFlag].X, MoveNodes[patrolMoveFlag].Y, 0);
+                SetPathToPosition(targetPosition);
+                isArrived = false;
             }
-            targetPosition.Set(MoveNodes[patrolMoveFlag].X, MoveNodes[patrolMoveFlag].Y, 0);
-            GetPathToPosition(targetPosition);
+            base.PatrolUpdate();
+        }
 
-            DetectPlayer();
-            yield return new WaitForSeconds(0.1f);
-            actions[(int)status].Play();
+        protected override void Update()
+        {
+            base.Update();
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
