@@ -147,22 +147,13 @@ public class PathFinder
     {
         List<Node> neighbors = new List<Node>();
 
-        for (int x = -1; x <= 1; x++)
-        {
-            for (int y = -1; y <= 1; y++)
+        foreach (Tuple<int, int> direction in directions) { 
+            int checkX = node.X + direction.Item1;
+            int checkY = node.Y + direction.Item2;
+
+            if (checkX - mapOffset.x >= 0 && checkX - mapOffset.x < width && checkY - mapOffset.y >= 0 && checkY - mapOffset.y < height)
             {
-                if (x == 0 && y == 0)
-                {
-                    continue;
-                }
-
-                int checkX = node.X + x;
-                int checkY = node.Y + y;
-
-                if (checkX - mapOffset.x >= 0 && checkX - mapOffset.x < width && checkY - mapOffset.y >= 0 && checkY - mapOffset.y < height)
-                {
-                    neighbors.Add(GetNode(checkX, checkY));
-                }
+                neighbors.Add(GetNode(checkX, checkY));
             }
         }
         return neighbors;
@@ -267,13 +258,9 @@ public class PathFinder
     private void InitDirections()
     {
         directions = new List<Tuple<int, int>>{
-            Tuple.Create(1, 1),
             Tuple.Create(1, 0),
-            Tuple.Create(1, -1),
             Tuple.Create(0, -1),
-            Tuple.Create(-1, -1),
             Tuple.Create(-1, 0),
-            Tuple.Create(-1, 1),
             Tuple.Create(0, 1)
         };
 
