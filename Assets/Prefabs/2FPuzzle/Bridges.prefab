@@ -1839,7 +1839,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 1
-  isOn: 0
 --- !u!1 &595313020735018766
 GameObject:
   m_ObjectHideFlags: 0
@@ -4022,7 +4021,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 2
-  isOn: 0
 --- !u!1 &1259071098386904618
 GameObject:
   m_ObjectHideFlags: 0
@@ -8437,7 +8435,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 3
-  isOn: 0
 --- !u!1 &2640103109536340260
 GameObject:
   m_ObjectHideFlags: 0
@@ -9594,7 +9591,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 3
-  isOn: 0
 --- !u!1 &2738172932444327451
 GameObject:
   m_ObjectHideFlags: 0
@@ -9905,7 +9901,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 1
-  isOn: 0
 --- !u!1 &2844216717908790244
 GameObject:
   m_ObjectHideFlags: 0
@@ -11403,7 +11398,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 1
-  isOn: 0
 --- !u!1 &3051147173743068852
 GameObject:
   m_ObjectHideFlags: 0
@@ -11705,7 +11699,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 2
-  isOn: 0
 --- !u!1 &3108524434411371805
 GameObject:
   m_ObjectHideFlags: 0
@@ -11912,8 +11905,8 @@ Transform:
   - {fileID: 2625132084894056384}
   - {fileID: 8338198857100424389}
   - {fileID: 8985188309647686974}
-  - {fileID: 7189889675486640453}
   - {fileID: 1463287576153287309}
+  - {fileID: 7189889675486640453}
   - {fileID: 4036248439734263011}
   - {fileID: 2636612281131630717}
   - {fileID: 6509028349718541927}
@@ -14002,7 +13995,7 @@ Transform:
   m_GameObject: {fileID: 3849111922253455729}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.419777, y: 9.360728, z: 0.0029429905}
+  m_LocalPosition: {x: 9.419777, y: 9.360726, z: 0.0029429905}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -14113,7 +14106,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 2
-  isOn: 0
 --- !u!1 &3875022883890507632
 GameObject:
   m_ObjectHideFlags: 0
@@ -29292,7 +29284,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 4
-  isOn: 0
 --- !u!1 &7722817138193674936
 GameObject:
   m_ObjectHideFlags: 0
@@ -31304,7 +31295,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 6
-  isOn: 0
 --- !u!1 &8058187088899666300
 GameObject:
   m_ObjectHideFlags: 0
@@ -34513,7 +34503,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 5
-  isOn: 0
 --- !u!1 &8602145872485569517
 GameObject:
   m_ObjectHideFlags: 0
@@ -35679,7 +35668,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 1
-  isOn: 0
 --- !u!1 &9002624235937061301
 GameObject:
   m_ObjectHideFlags: 0
@@ -36330,7 +36318,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 4
-  isOn: 0
 --- !u!1 &9107429918042915534
 GameObject:
   m_ObjectHideFlags: 0
@@ -36468,4 +36455,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bridgeID: 5
-  isOn: 0

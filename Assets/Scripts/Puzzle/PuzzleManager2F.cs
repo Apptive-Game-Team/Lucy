@@ -20,27 +20,24 @@ public class PuzzleManager2F : SingletonObject<PuzzleManager2F>, ISceneChangeLis
     {
         base.Awake();
         InitIsOns();
-
-        PortalManager.Instance.SetSceneChangeListener(this);
         DontDestroyOnLoad(this);
     }
 
+    private void Start()
+    {
+        PortalManager.Instance.SetSceneChangeListener(this);
+    }
     // Start is called before the first frame update
     void ISceneChangeListener.OnSceneChange()
     {
-        print("qkqh");
         bridges = new List<GameObject>(GameObject.FindGameObjectsWithTag("Bridge"));
 
         foreach (GameObject bridge in bridges)
         {
             Bridge_Puzzle2F bridgeComponent = bridge.GetComponent<Bridge_Puzzle2F>();
-            if (isOns[bridgeComponent.bridgeID])
+            if (isOns.ContainsKey(bridgeComponent.bridgeID))
             {
-                bridge.SetActive(true);
-            }
-            else
-            {
-                bridge.SetActive(false);
+                bridge.SetActive(isOns[bridgeComponent.bridgeID]);
             }
         }
     }

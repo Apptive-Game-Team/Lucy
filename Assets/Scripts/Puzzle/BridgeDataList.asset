@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: BridgeDataList
   m_EditorClassIdentifier: 
   bridgeDatas:
+  - bridgeID: 0
   - bridgeID: 1
   - bridgeID: 2
   - bridgeID: 3
   - bridgeID: 4
   - bridgeID: 5
-  - bridgeID: 6
