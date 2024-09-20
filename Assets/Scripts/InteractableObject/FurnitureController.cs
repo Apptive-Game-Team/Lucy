@@ -4,7 +4,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class FurnitureController : SingletonObject<FurnitureController>, IKeyInputListener
+public class FurnitureController : SingletonObject<FurnitureController>
 {
     public Dictionary<FurnitureType, Furnitures> furnitures;
     public GameObject player;
@@ -26,7 +26,6 @@ public class FurnitureController : SingletonObject<FurnitureController>, IKeyInp
             { FurnitureType.Bookshelf, new Bookshelf()},
             { FurnitureType.Drawer, new Drawer(flashlight,drawerImages)}
         };
-        InputManager.Instance.SetKeyListener(this);
     }
 
     //void IKeyInputListener.OnKeyDown(ActionCode action)

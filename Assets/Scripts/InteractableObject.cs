@@ -4,16 +4,14 @@ public abstract class InteractableObject : MonoBehaviour, IKeyInputListener
 {
     public GameObject TextObject;
     private Collider2D other;
-    void Start()
+    protected virtual void Start()
     {
         TextObject.SetActive(false);
         InputManager.Instance.SetKeyListener(this);
-
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
-        print(gameObject.name + "");
         if (other.gameObject.tag.Equals("Player"))
         {
             TextObject.SetActive(true);
@@ -23,7 +21,6 @@ public abstract class InteractableObject : MonoBehaviour, IKeyInputListener
 
     void IKeyInputListener.OnKeyDown(ActionCode action)
     {
-        print("asdf");
         if (action == ActionCode.Interaction && other != null)
         //if (other.gameObject.tag.Equals("Player"))
         {
