@@ -1,12 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 public class PuzzleManager2F : SingletonObject<PuzzleManager2F>, ISceneChangeListener
 {
     [SerializeField] BridgeDataList bridgeDataList;
     private List<GameObject> bridges;
     private float CallBridgeActiveDelay = 1f;
+    private GameObject square;
+    private GameObject player;
     Dictionary<BridgeID, bool> isOns = new Dictionary<BridgeID, bool>();
 
     void InitIsOns()
@@ -31,7 +36,8 @@ public class PuzzleManager2F : SingletonObject<PuzzleManager2F>, ISceneChangeLis
     void ISceneChangeListener.OnSceneChange()
     {
         bridges = new List<GameObject>(GameObject.FindGameObjectsWithTag("Bridge"));
-
+        square = GameObject.Find("Square");
+        player = GameObject.Find("Player");
         foreach (GameObject bridge in bridges)
         {
             Bridge_Puzzle2F bridgeComponent = bridge.GetComponent<Bridge_Puzzle2F>();
@@ -39,6 +45,14 @@ public class PuzzleManager2F : SingletonObject<PuzzleManager2F>, ISceneChangeLis
             {
                 bridge.SetActive(isOns[bridgeComponent.bridgeID]);
             }
+        }
+        if(player.transform.position.x > -40f && SceneManager.GetActiveScene().name == "Puzzle_2F")
+        {
+            square.transform.position = new Vector3(12.06f, 0.13f, 0f);
+        }
+        else if(player.transform.position.x <= -40f && SceneManager.GetActiveScene().name == "Puzzle_2F")
+        {
+            square.transform.position = new Vector3(-92.0f, 0.13f, 0f);
         }
     }
 
