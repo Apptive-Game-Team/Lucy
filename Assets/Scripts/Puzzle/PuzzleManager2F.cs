@@ -7,6 +7,7 @@ public class PuzzleManager2F : SingletonObject<PuzzleManager2F>, ISceneChangeLis
     [SerializeField] BridgeDataList bridgeDataList;
     private List<GameObject> bridges;
     private float CallBridgeActiveDelay = 1f;
+    private GameObject square;
     Dictionary<BridgeID, bool> isOns = new Dictionary<BridgeID, bool>();
 
     void InitIsOns()
@@ -26,6 +27,7 @@ public class PuzzleManager2F : SingletonObject<PuzzleManager2F>, ISceneChangeLis
     private void Start()
     {
         PortalManager.Instance.SetSceneChangeListener(this);
+        square = GameObject.Find("CameraSquare");
     }
     // Start is called before the first frame update
     void ISceneChangeListener.OnSceneChange()
@@ -40,6 +42,7 @@ public class PuzzleManager2F : SingletonObject<PuzzleManager2F>, ISceneChangeLis
                 bridge.SetActive(isOns[bridgeComponent.bridgeID]);
             }
         }
+        square.transform.position = new Vector3(12.1f, -0.1f, 0f);
     }
 
     private IEnumerator CallActivateBridge(BridgeID bridgeID)
