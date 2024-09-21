@@ -16,7 +16,6 @@ namespace Creature
             minSpeed = 1;
             maxSpeed = 2;
             actions[status].Start();
-            StartCoroutine(MoveOnPath());
         }
 
         protected override void PatrolStart()
