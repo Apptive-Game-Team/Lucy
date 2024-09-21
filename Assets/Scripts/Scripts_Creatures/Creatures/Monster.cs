@@ -12,7 +12,6 @@ namespace Creature
             minSpeed = 1;
             maxSpeed = 2;
             actions[status].Start();
-            StartCoroutine(MoveOnPath());
         }
 
         protected override void PatrolUpdate()
@@ -20,7 +19,7 @@ namespace Creature
             base.PatrolUpdate();
             if (path == null || path.Count == 0)
             {
-                SetRandomPath();
+                SetDirectionPath();
             }
         }
 
