@@ -65,6 +65,7 @@ namespace Creature{
             soundTargetMask = LayerMask.GetMask("Door") | LayerMask.GetMask("Player");
             soundDetector.SetTargetMask(soundTargetMask);
             StartCoroutine(CreatureUpdate());
+            StartCoroutine(MoveOnPath());
         }
 
         public IEnumerator AlertedCounter()
@@ -121,10 +122,22 @@ namespace Creature{
 #endif
         }
 
+        protected void SetDirectionPath()
+        {
+            startNode.SetPosition(transform.position.x, transform.position.y);
+            path = creatureManager.pathFinders[(int)pathFinderType].FindDirectionPath(startNode, direction, 5f);
+#if UNITY_EDITOR
+            if (debugMode && path != null)
+                pathLineRenderer.SetPoints(path);
+            else
+                pathLineRenderer.Clear();
+#endif
+        }
+
         protected void SetRandomPath()
         {
             startNode.SetPosition(transform.position.x, transform.position.y);
-            path = creatureManager.pathFinders[(int)pathFinderType].GetRandomPath(startNode, deltaPosition, 5f);
+            path = creatureManager.pathFinders[(int)pathFinderType].FindRandomPath(startNode, direction, 5);
 #if UNITY_EDITOR
             if (debugMode && path != null)
                 pathLineRenderer.SetPoints(path);
@@ -152,7 +165,7 @@ namespace Creature{
                     yield return new WaitForSeconds(TEMP_DELAY);
                     isChasing = false;
                     isArrived = true;
-                    SetRandomPath();
+                    SetDirectionPath();
                     continue;
                 }
 
@@ -269,7 +282,7 @@ namespace Creature{
             detector.setLookingAngle(detector.getLookingAngle() + 10f * Time.deltaTime);
             if (isArrived)
             {
-                SetRandomPath();
+                SetDirectionPath();
                 isArrived = false;
             }
         }
