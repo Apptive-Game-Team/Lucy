@@ -4,24 +4,29 @@ using UnityEngine;
 
 namespace Creature
 {
-    public class Moster : Creature
+    public class Monster : Creature
     {
         protected override void Start()
         {
             base.Start();
             minSpeed = 1;
             maxSpeed = 2;
-            actions[(int)status].Play();
+            actions[status].Start();
             StartCoroutine(MoveOnPath());
         }
 
-        public override IEnumerator PatrolAction()
+        protected override void PatrolUpdate()
         {
-            speed = minSpeed;
-            SetRandomPath();
-            DetectPlayer();
-            yield return new WaitForSeconds(0.1f);
-            actions[(int)status].Play();
+            base.PatrolUpdate();
+            if (path == null || path.Count == 0)
+            {
+                SetRandomPath();
+            }
+        }
+
+        protected override void Update()
+        {
+            base.Update();
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
