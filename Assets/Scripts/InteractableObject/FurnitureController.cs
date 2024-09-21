@@ -1,8 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FurnitureController : SingletonObject<FurnitureController>
 {
@@ -22,20 +22,19 @@ public class FurnitureController : SingletonObject<FurnitureController>
         flashlight.SetActive(false);
         furnitures = new Dictionary<FurnitureType, Furnitures>()
         {
-            { FurnitureType.Cabinet, new Cabinet()},
+            { FurnitureType.Cabinet, new Cabinet(player)},
             { FurnitureType.Bookshelf, new Bookshelf()},
             { FurnitureType.Drawer, new Drawer(flashlight,drawerImages)}
         };
     }
 
-    //void IKeyInputListener.OnKeyDown(ActionCode action)
-    void Update()
+    /*void Update()
     {
         if (!player.activeSelf && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
         {
             player.SetActive(true);
         }
-    }
+    }*/
 }
 
 public abstract class Furnitures
@@ -45,9 +44,32 @@ public abstract class Furnitures
 
 public class Cabinet : Furnitures
 {
+    private GameObject player;
+
+    public Cabinet(GameObject player)
+    {
+        this.player = player;
+    }
+
+    private IEnumerator Reveal()
+    {
+        InputManager.Instance.GetKeyDown(ActionCode.Interaction);
+        yield return new WaitUntil(() =>
+        {
+            if (InputManager.Instance.GetKeyDown(ActionCode.Interaction))
+            {
+                player.SetActive(true);
+                return true;
+            }
+            return false;
+        });
+        yield break;
+    }
+
     public override void Interact(Furniture furniture)
     {
-        GameObject.Find("Player").SetActive(false);
+        player.SetActive(false);
+        FurnitureController.Instance.StartCoroutine(Reveal());
     }
 }
 
@@ -55,7 +77,7 @@ public class Bookshelf : Furnitures
 {
     public override void Interact(Furniture furniture)
     {
-        GameObject bookPage = furniture.transform.Find("Canvas").Find("Image").gameObject;
+        GameObject bookPage = furniture.transform.Find("Canvas").gameObject;
 
         if (!bookPage.activeSelf)
         {
@@ -67,8 +89,6 @@ public class Bookshelf : Furnitures
             bookPage.SetActive(false);
             InputManager.Instance.SetMovementState(true);
         }
-        
-        Debug.Log("Bookshelf");
     }
 }
 
@@ -108,7 +128,6 @@ public class Drawer : Furnitures
             flashlight.SetActive(false);
             flashlight = null;
         }
-        Debug.Log("Drawer");
     }
 }
 
