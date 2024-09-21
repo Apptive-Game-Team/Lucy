@@ -48,6 +48,13 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
 
     void Start()
     {
+        Transform canvas = UIController.Instance.transform.Find("StatCanvas 1");
+        Transform mentalBar = canvas.Find("MentalBar");
+        Transform staminaBar = canvas.Find("StaminaBar");
+        mentalSlider = mentalBar.GetComponent<Slider>();
+        staminaSlider = staminaBar.GetComponent<Slider>();
+        count_Mental = mentalBar.Find("Count_Mental").GetComponent<TextMeshProUGUI>();
+        count_Stamina = staminaBar.Find("Count_Stamina").GetComponent<TextMeshProUGUI>();
         PortalManager.Instance.SetSceneChangeListener(this);
         audioSource = transform.Find("PlayerStatusSoundController").GetComponent<AudioSource>();
         audioSource.clip = SoundManager.Instance.soundSources.GetByName("Heartbeat").Value.sound;

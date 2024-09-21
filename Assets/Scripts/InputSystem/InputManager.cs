@@ -56,6 +56,14 @@ public class InputManager : SingletonObject<InputManager>
         keyActiveFlags[action] = active;
     }
 
+    public void SetMovementState(bool active)
+    {
+        SetKeyActive(ActionCode.MoveUp, active);
+        SetKeyActive(ActionCode.MoveDown, active);
+        SetKeyActive(ActionCode.MoveLeft, active);
+        SetKeyActive(ActionCode.MoveRight, active);
+    }
+
     public bool GetKeyActive(ActionCode action)
     {
         return keyActiveFlags[action];
@@ -83,7 +91,7 @@ public class InputManager : SingletonObject<InputManager>
 
     public Vector3 GetMoveVector()
     {
-        if (Input.GetKey(keyMappings[ActionCode.MoveUp]))
+        if (GetKey(ActionCode.MoveUp))
         {
             if (!directionList.Contains(Vector2.up))
             {
@@ -95,7 +103,7 @@ public class InputManager : SingletonObject<InputManager>
             directionList.Remove(Vector2.up);
         }
 
-        if (Input.GetKey(keyMappings[ActionCode.MoveDown]))
+        if (GetKey(ActionCode.MoveDown))
         {
             if (!directionList.Contains(Vector2.down))
             {
@@ -107,7 +115,7 @@ public class InputManager : SingletonObject<InputManager>
             directionList.Remove(Vector2.down);
         }
 
-        if (Input.GetKey(keyMappings[ActionCode.MoveLeft]))
+        if (GetKey(ActionCode.MoveLeft))
         {
             if (!directionList.Contains(Vector2.left))
             {
@@ -119,7 +127,7 @@ public class InputManager : SingletonObject<InputManager>
             directionList.Remove(Vector2.left);
         }
 
-        if (Input.GetKey(keyMappings[ActionCode.MoveRight]))
+        if (GetKey(ActionCode.MoveRight))
         {
             if (!directionList.Contains(Vector2.right))
             {
