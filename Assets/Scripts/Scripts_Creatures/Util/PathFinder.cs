@@ -180,7 +180,7 @@ public class PathFinder
         return tempNode;
     }
 
-    public List<Node> GetRandomPath(Node startNode, Vector3 direction, float maxDistance = 10f)
+    public List<Node> FindDirectionPath(Node startNode, Vector3 direction, float maxDistance = 10f)
     {
         SortedSet<Node> openSet = new SortedSet<Node>() { startNode };
         HashSet<Node> closedSet = new HashSet<Node>();
@@ -221,6 +221,59 @@ public class PathFinder
         }
 
         return null;
+    }
+
+    public List<Node> FindRandomPath(Node startNode, Vector3 direction , int nodeLen)
+    {
+        List<Node> path = new List<Node>();
+
+        int computingCounter = 0;
+
+        Node lastNode = startNode;
+
+        List<Node> neighbors = GetNeighbors(startNode);
+        System.Random random = new System.Random();
+        int currentDirection = this.directions.FindIndex(t => t.Item1 == Mathf.Sign(direction.x) && t.Item2 == Mathf.Sign(direction.y));
+        for (int i = 0; i < nodeLen; i++)
+        {
+            computingCounter++;
+            if (computingCounter > maxComputing)
+            {
+#if UNITY_EDITOR
+                if (debugMode)
+                    Debug.Log("RandomPath Not Found");
+#endif
+                return null;
+            }
+            int tempRandomNum = random.Next(0, 5);
+
+            if (tempRandomNum == 1)
+            {
+                currentDirection++;
+                if (currentDirection == 8)
+                    currentDirection = 0;
+            }
+            else if (tempRandomNum == 2)
+            {
+                currentDirection--;
+                if (currentDirection == -1)
+                    currentDirection = 7;
+            }
+            Node node = GetNode(
+                directions[currentDirection].Item1 + lastNode.X,
+                directions[currentDirection].Item2 + lastNode.Y
+                );
+            if (!node.IsWalkable)
+            {
+                i--;
+                continue;
+            }
+            lastNode = node;
+            path.Add(node);
+        }
+
+        return path;
+        
     }
 
     private List<Node> RetracePath(Node startNode, Node endNode)
