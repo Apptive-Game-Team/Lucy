@@ -43,9 +43,13 @@ namespace Creature
 
         public void OnDetectedByHandLight(Vector3 handLightPosition)
         {
-            status = CreatureStatus.AVOIDING;
-            actions[status].Start();
-            this.handLightPosition = handLightPosition;
+            if (status != CreatureStatus.AVOIDING)
+            {
+                status = CreatureStatus.AVOIDING;
+                actions[status].Start();
+                this.handLightPosition = handLightPosition;
+
+            }
         }
 
         protected override void Update()
