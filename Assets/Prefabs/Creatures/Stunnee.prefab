@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3468233900034056338}
   - component: {fileID: 295405789999108412}
   - component: {fileID: 6872793763338739811}
+  - component: {fileID: 5614747663246351394}
   m_Layer: 9
   m_Name: Stunnee
   m_TagString: Creature
@@ -381,3 +382,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5614747663246351394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6043423367171264886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05f7cc5580a749aa9565da5bc7baa62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDistance: 10
+  debugMode: 1
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 0
