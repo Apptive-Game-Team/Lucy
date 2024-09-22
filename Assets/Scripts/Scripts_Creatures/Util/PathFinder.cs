@@ -233,7 +233,7 @@ public class PathFinder
 
         List<Node> neighbors = GetNeighbors(startNode);
         System.Random random = new System.Random();
-        int currentDirection = this.directions.FindIndex(t => t.Item1 == Mathf.Sign(direction.x) && t.Item2 == Mathf.Sign(direction.y));
+        int currentDirection = directions.FindIndex(t => t.Item1 == Mathf.Sign(direction.x) && t.Item2 == Mathf.Sign(direction.y));
         for (int i = 0; i < nodeLen; i++)
         {
             computingCounter++;
@@ -250,15 +250,16 @@ public class PathFinder
             if (tempRandomNum == 1)
             {
                 currentDirection++;
-                if (currentDirection == 8)
+                if (currentDirection > 3)
                     currentDirection = 0;
             }
             else if (tempRandomNum == 2)
             {
                 currentDirection--;
-                if (currentDirection == -1)
-                    currentDirection = 7;
             }
+            if (currentDirection < 0)
+                currentDirection = 3;
+
             Node node = GetNode(
                 directions[currentDirection].Item1 + lastNode.X,
                 directions[currentDirection].Item2 + lastNode.Y
