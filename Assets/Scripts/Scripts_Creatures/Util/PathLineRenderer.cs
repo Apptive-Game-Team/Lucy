@@ -9,18 +9,28 @@ public class PathLineRenderer : MonoBehaviour
 
     private Vector3[] points;
 
+    private void Awake()
+    {
+        _lineRenderer = GetComponent<LineRenderer>();
+    }
+
     public void SetPoints(List<Node> path)
     {
         points = new Vector3[path.Count];
-        for (int i = 0; i < path.Count; i++){
+        for (int i = 0; i < path.Count; i++)
+        {
             points[i] = new Vector3(path[i].X, path[i].Y);
         }
         Render();
     }
 
+    public void Clear()
+    {
+        _lineRenderer.positionCount = 0;
+    }
+
     private void Render()
     {
-        _lineRenderer = GetComponent<LineRenderer>();
         _lineRenderer.positionCount = points.Length;
         _lineRenderer.SetPositions(points);
         _lineRenderer.startWidth = 0.1f;

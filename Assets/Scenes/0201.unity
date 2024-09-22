@@ -17045,6 +17045,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Guard
       objectReference: {fileID: 0}
+    - target: {fileID: 4487756712048951882, guid: 57e8ec7b68e9e45ddbd5cc73c25364f2, type: 3}
+      propertyPath: debugMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7200822750370687276, guid: 57e8ec7b68e9e45ddbd5cc73c25364f2, type: 3}
+      propertyPath: debugMode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7200822750370687276, guid: 57e8ec7b68e9e45ddbd5cc73c25364f2, type: 3}
       propertyPath: MoveNodes.Array.size
       value: 5
