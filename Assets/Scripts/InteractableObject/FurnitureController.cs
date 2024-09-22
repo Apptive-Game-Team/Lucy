@@ -45,6 +45,7 @@ public abstract class Furnitures
 public class Cabinet : Furnitures
 {
     private GameObject player;
+    private bool isHidden = false;
 
     public Cabinet(GameObject player)
     {
@@ -63,13 +64,18 @@ public class Cabinet : Furnitures
             }
             return false;
         });
-        yield break;
+        yield return new WaitForSeconds(0.2f);
+        isHidden = false;
     }
 
     public override void Interact(Furniture furniture)
     {
-        player.SetActive(false);
-        FurnitureController.Instance.StartCoroutine(Reveal());
+        if (!isHidden)
+        {
+            player.SetActive(false);
+            isHidden = true;
+            FurnitureController.Instance.StartCoroutine(Reveal());
+        }
     }
 }
 
