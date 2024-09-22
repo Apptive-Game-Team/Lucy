@@ -5,21 +5,6 @@ using static Team6203.Util;
 
 namespace Creature
 {
-
-    public class CreatureAvoidingAction : CreatureAction
-    {
-        Avoider avoider;
-        public CreatureAvoidingAction(Avoider avoider)
-        {
-            this.avoider = avoider;
-        }
-
-        public override void Play()
-        {
-            avoider.StartCoroutine(avoider.AvoidingAction());
-        }
-    }
-
     public class Avoider : Creature
     {
 
@@ -34,9 +19,8 @@ namespace Creature
             minSpeed = 1;
             maxSpeed = 2;
 
-            actions.Add(new CreatureAvoidingAction(this));
-            actions[(int)status].Play();
-            StartCoroutine(MoveOnPath());
+            actions.Add(CreatureStatus.AVOIDING, (AvoidingStart, AvoidingUpdate));
+            actions[status].Start();
         }
 
 
@@ -45,31 +29,11 @@ namespace Creature
             return base.FindPath(x, y);
         }
 
-        protected override void SetRandomPath()
+        public IEnumerator AvoidingCounter()
         {
-            base.SetRandomPath();
-        }
-
-
-        public IEnumerator AvoidingAction()
-        {
-            tempVelocity.Set(transform.position.x - handLightPosition.x, transform.position.y - handLightPosition.y, 0);
-            tempVelocity.Normalize();
-            speed = 4;
-            path = creatureManager.pathFinders[(int)pathFinderType].GetRandomPath(20, tempVelocity, Vector3ToVector3Int(transform.position));
-
             yield return new WaitForSeconds(4);
             status = CreatureStatus.PATROL;
-            actions[(int)status].Play();
-        }
-
-        public override IEnumerator PatrolAction()
-        {
-            speed = minSpeed;
-            SetRandomPath();
-            DetectPlayer();
-            yield return new WaitForSeconds(0.1f);
-            actions[(int)status].Play();
+            actions[status].Start();
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
@@ -80,14 +44,37 @@ namespace Creature
         public void OnDetectedByHandLight(Vector3 handLightPosition)
         {
             status = CreatureStatus.AVOIDING;
+            actions[status].Start();
             this.handLightPosition = handLightPosition;
         }
 
-#if UNITY_EDITOR
         protected override void Update()
         {
             base.Update();
         }
-#endif
+
+        protected override void PatrolUpdate()
+        {
+            base.PursuitUpdate();
+            if (path == null || path.Count == 0)
+            {
+                SetRandomPath();
+            }
+        }
+
+        protected virtual void AvoidingStart()
+        {
+            tempVelocity.Set(transform.position.x - handLightPosition.x, transform.position.y - handLightPosition.y, 0);
+            tempVelocity.Normalize();
+            speed = maxSpeed;
+            startNode.SetPosition(transform.position.x, transform.position.y);
+            path = creatureManager.pathFinders[(int)pathFinderType].FindDirectionPath(startNode, tempVelocity, 5f);
+            StartCoroutine(AvoidingCounter());
+        }
+
+        protected virtual void AvoidingUpdate()
+        {
+            
+        }
     }
 }
