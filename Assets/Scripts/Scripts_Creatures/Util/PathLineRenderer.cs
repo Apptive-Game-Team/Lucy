@@ -9,6 +9,11 @@ public class PathLineRenderer : MonoBehaviour
 
     private Vector3[] points;
 
+    private void Awake()
+    {
+        _lineRenderer = GetComponent<LineRenderer>();
+    }
+
     public void SetPoints(List<Node> path)
     {
         points = new Vector3[path.Count];
@@ -26,7 +31,6 @@ public class PathLineRenderer : MonoBehaviour
 
     private void Render()
     {
-        _lineRenderer = GetComponent<LineRenderer>();
         _lineRenderer.positionCount = points.Length;
         _lineRenderer.SetPositions(points);
         _lineRenderer.startWidth = 0.1f;

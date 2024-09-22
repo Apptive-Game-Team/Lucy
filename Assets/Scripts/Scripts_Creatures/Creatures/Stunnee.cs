@@ -20,8 +20,6 @@ namespace Creature
             actions[status].Start();
         }
 
-
-
         protected virtual void StunStart()
         {
             path = null;
@@ -30,7 +28,7 @@ namespace Creature
 
         protected virtual void StunUpdate()
         {
-
+            
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
