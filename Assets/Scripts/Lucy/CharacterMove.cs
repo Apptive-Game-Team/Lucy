@@ -11,7 +11,7 @@ namespace CharacterCamera
         private Animator Anim;
         public float playerMoveSpeed = 150f;
         private ActorSoundController soundController;
-
+    
         void Awake()
         {
             soundController = transform.Find("FootsoundController").GetComponent<ActorSoundController>();
@@ -58,6 +58,17 @@ namespace CharacterCamera
             
             Anim.SetFloat("MoveX", playerRb.velocity.x);
             Anim.SetFloat("MoveY", playerRb.velocity.y);
+        }
+        public void StopMovement()
+        {
+            playerMoveSpeed = 0f; 
+            Anim.SetFloat("MoveX", 0);
+            Anim.SetFloat("MoveY", 0);
+        }
+
+        public void ResumeMovement()
+        {
+            playerMoveSpeed = 150f;
         }
     }
 }

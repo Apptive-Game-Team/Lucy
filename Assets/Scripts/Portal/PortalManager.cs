@@ -41,12 +41,15 @@ public class PortalManager : SingletonObject<PortalManager>
         }
     }
 
-    public void TransitScene(PortalID portalID)
+    public IEnumerator TransitScene(PortalID portalID)
     {
+        yield return CameraEffector.Instance.FadeOut();
         PortalData portalData = portalDataList.GetPortalDataByID(portalID);
         SceneData sceneData = sceneDataList.GetSceneDataByID(portalData.sceneID);
         SceneManager.LoadScene(sceneData.sceneName);
         StartCoroutine(CallOnSceneChange());
         Character.Instance.transform.position = portalData.destination;
+        StartCoroutine(CameraEffector.Instance.FadeIn());
     }
+
 }

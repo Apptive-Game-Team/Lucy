@@ -9,6 +9,7 @@ namespace Creature
 
         [SerializeField] List<Node> MoveNodes = new List<Node>();
         private int patrolMoveFlag = 0;
+        private bool isPatrolling = true;
 
         protected override void Start()
         {
@@ -50,6 +51,21 @@ namespace Creature
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
             base.OnTriggerEnter2D(collision);
+        }
+
+        public void StopPatrol()
+        {
+            isPatrolling = false;
+            StopAllCoroutines();
+        }
+
+        public void StartPatrol()
+        {
+            if (!isPatrolling)
+            {
+                isPatrolling = true;
+                StartCoroutine(MoveOnPath());
+            }
         }
     }
 }
