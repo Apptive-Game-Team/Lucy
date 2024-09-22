@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneDatas:
   - sceneID: 1
-    sceneName: 0101_09.18
+    sceneName: 0101_Beaver
   - sceneID: 2
-    sceneName: 0102
+    sceneName: 0102_Beaver
   - sceneID: 3
-    sceneName: 0201
+    sceneName: 0201_Beaver
   - sceneID: 4
-    sceneName: Puzzle_2F
+    sceneName: Puzzle_2F_Beaver
   - sceneID: 5
-    sceneName: Maze_3F
+    sceneName: Maze_3F_Beaver

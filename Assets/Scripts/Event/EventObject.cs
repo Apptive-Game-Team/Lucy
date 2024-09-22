@@ -10,7 +10,15 @@ public class EventObject : MonoBehaviour, ISceneChangeListener
     {
         PortalManager.Instance.SetSceneChangeListener(this);
         eventSoundController = GetComponent<EventSoundController>();
-        EventScheduler.Instance.eventObjects.Add("FirstMeetNpcEventObject", this);
+        try
+        {
+            EventScheduler.Instance.eventObjects.Add("FirstMeetNpcEventObject", this);
+        }
+        catch
+        { 
+
+        }
+        
     }
 
     public void PlaySound()

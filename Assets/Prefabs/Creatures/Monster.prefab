@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3058757538923006633}
   - component: {fileID: 4620465033753515404}
   - component: {fileID: 1462442240165831135}
+  - component: {fileID: -6676212678630806952}
   m_Layer: 9
   m_Name: Monster
   m_TagString: Creature
@@ -80,7 +81,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 034bf92c765d84dd19b0adeeedaf919f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5a5074c3ac439fb478f428b36b8ea5b9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -381,3 +382,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-6676212678630806952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5716833242501837917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05f7cc5580a749aa9565da5bc7baa62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDistance: 10
+  debugMode: 1
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 0

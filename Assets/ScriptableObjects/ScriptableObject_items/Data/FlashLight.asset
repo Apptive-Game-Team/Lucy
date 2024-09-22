@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: "\uC190\uC804\uB4F1"
   description: "\uC55E\uC744 \uBC1D\uD790 \uC218 \uC788\uB294 \uC190\uC804\uB4F1\uC774\uB2E4."
   type: 1
-  icon: {fileID: 21300000, guid: 45cfe68fb47a8514f96477d0fb432286, type: 3}
+  icon: {fileID: 21300000, guid: fbba7d7c46ac48242aec23b11215b191, type: 3}
   itemId: 2
   canStack: 0
   maxStackAmount: 0

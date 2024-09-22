@@ -82,9 +82,12 @@ public class CameraEffector : SingletonObject<CameraEffector>
         }
     }
 
+    const float TEMP_WAIT_SECOND = 0.5f;
+
     public IEnumerator FadeOutIn()
     {
         yield return FadeOut();
+        yield return new WaitForSeconds(TEMP_WAIT_SECOND);
         yield return FadeIn();
     }
 
