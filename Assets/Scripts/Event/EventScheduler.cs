@@ -89,8 +89,12 @@ public class EventScheduler : SingletonObject<EventScheduler>
 
     public void UpdateGameEvent()
     {
-        currentGameEvent = (GameEvent)(currentGameEvent + 1);
-        //GameEventFactory.CreateEvent(currentGameEvent).Execute();
+        try
+        {
+            currentGameEvent = (GameEvent)(currentGameEvent + 1);
+            GameEventFactory.CreateEvent(currentGameEvent).Execute();
+        }
+        catch (Exception e) { }
 
     }
 }

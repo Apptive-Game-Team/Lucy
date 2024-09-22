@@ -29,7 +29,7 @@ public class NpcEventController : MonoBehaviour
         blackOutImage = GameObject.Find("blackOut");
         blackOutImageSpriteRenderer = blackOutImage.GetComponent<SpriteRenderer>();
 
-        Npc = GameObject.Find("Npc");
+        Npc = GameObject.Find("NPC");
 
         SetBlackOutImageAlpha(0);
     }
@@ -47,9 +47,7 @@ public class NpcEventController : MonoBehaviour
         playerMoveScript.StopMovement();
         guard.StopPatrol();
         //startdialog
-        //startblackout
         barricade.SetActive(false);
-        StartCoroutine(BlackOutEffect());
         StartCoroutine(WaitAndFinishNpcEvent());
     }
 
@@ -61,25 +59,25 @@ public class NpcEventController : MonoBehaviour
             yield return null;
         }
         yield return new WaitForSeconds(blackOutDelay);
+        Destroy(Npc);
         for (float alpha = 1; alpha >= 0; alpha -= Time.deltaTime / blackOutDelay)
         {
             SetBlackOutImageAlpha(alpha);
             yield return null;
         }
+        FinishNpcEvent();
     }
 
     private IEnumerator WaitAndFinishNpcEvent()
     {
         yield return new WaitForSeconds(npcEventTime);
-        yield return new WaitForSeconds(blackOutDelay);
-        FinishNpcEvent();
+        StartCoroutine(BlackOutEffect());
     }
 
     private void FinishNpcEvent()
     {
         playerMoveScript.ResumeMovement();
         guard.StartPatrol();
-        Destroy(Npc);
         Destroy(this);
     }
 
