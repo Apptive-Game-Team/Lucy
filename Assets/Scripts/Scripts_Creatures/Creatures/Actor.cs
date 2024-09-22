@@ -13,8 +13,8 @@ public class Actor: MonoBehaviour
     protected Vector3 deltaPosition = new Vector3();
     protected const float MOVE_FRAME = 0.05f;
 
-    protected int maxSpeed;
-    protected int minSpeed;
+    protected int maxSpeed = 4;
+    protected int minSpeed = 2;
 
     protected PathFinderType pathFinderType = PathFinderType.DEFAULT;
 
