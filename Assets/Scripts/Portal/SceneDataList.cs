@@ -10,6 +10,8 @@ public enum SceneID
     STAIR_FIRST = 2,
     FLOOR_SECOND = 3,
     PUZZLE_2F = 4,
+    FLOOR_MAZE = 5,
+    ENDING_SCENE_MID_VER = 6,
 }
 
 
