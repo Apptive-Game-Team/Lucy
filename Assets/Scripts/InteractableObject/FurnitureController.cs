@@ -1,111 +1,126 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class FurnitureController : MonoBehaviour, IKeyInputListener
+public class FurnitureController : SingletonObject<FurnitureController>
 {
-    public static FurnitureController Instance { get; private set;}
     public Dictionary<FurnitureType, Furnitures> furnitures;
     public GameObject player;
-    public GameObject bookPage;
-    public GameObject key;
+    public GameObject flashlight;
     public List<Sprite> drawerImages;
 
-    void Awake()
+    protected override void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        base.Awake();
     }
 
     void Start()
     {
-        player = ReferenceManager.Instance.FindGameObjectByName("Player");
+        player = Character.Instance.gameObject;
+        flashlight.SetActive(false);
         furnitures = new Dictionary<FurnitureType, Furnitures>()
         {
-            { FurnitureType.Cabinet, new Cabinet()},
-            { FurnitureType.Bookshelf, new Bookshelf(bookPage)},
-            { FurnitureType.Drawer, new Drawer(key,drawerImages)}
+            { FurnitureType.Cabinet, new Cabinet(player)},
+            { FurnitureType.Bookshelf, new Bookshelf()},
+            { FurnitureType.Drawer, new Drawer(flashlight,drawerImages)}
         };
-        InputManager.Instance.SetKeyListener(this);
     }
 
-    //void IKeyInputListener.OnKeyDown(ActionCode action)
-    void Update()
+    /*void Update()
     {
         if (!player.activeSelf && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
         {
             player.SetActive(true);
         }
-
-        if (bookPage.activeSelf && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
-        {
-            bookPage.SetActive(false);
-            Time.timeScale = 1;
-        }
-    }
+    }*/
 }
 
 public abstract class Furnitures
 {
-    public abstract void Interact();
+    public abstract void Interact(Furniture furniture);
 }
 
 public class Cabinet : Furnitures
 {
-    public override void Interact()
+    private GameObject player;
+    private bool isHidden = false;
+
+    public Cabinet(GameObject player)
     {
-        GameObject.Find("Player").SetActive(false);
+        this.player = player;
+    }
+
+    private IEnumerator Reveal()
+    {
+        InputManager.Instance.GetKeyDown(ActionCode.Interaction);
+        yield return new WaitUntil(() =>
+        {
+            if (InputManager.Instance.GetKeyDown(ActionCode.Interaction))
+            {
+                player.SetActive(true);
+                return true;
+            }
+            return false;
+        });
+        yield return new WaitForSeconds(0.2f);
+        isHidden = false;
+    }
+
+    public override void Interact(Furniture furniture)
+    {
+        if (!isHidden)
+        {
+            player.SetActive(false);
+            isHidden = true;
+            FurnitureController.Instance.StartCoroutine(Reveal());
+        }
     }
 }
 
 public class Bookshelf : Furnitures
 {
-    private GameObject bookPage;
+    public override void Interact(Furniture furniture)
+    {
+        GameObject bookPage = furniture.transform.Find("Canvas").gameObject;
 
-    public Bookshelf(GameObject bookPage)
-    {
-        this.bookPage = bookPage;
-    }
-    
-    public override void Interact()
-    {
-        bookPage.SetActive(true);
-        Time.timeScale = 0;
-        Debug.Log("Bookshelf");
+        if (!bookPage.activeSelf)
+        {
+            bookPage.SetActive(true);
+            InputManager.Instance.SetMovementState(false);
+        }
+        else
+        {
+            bookPage.SetActive(false);
+            InputManager.Instance.SetMovementState(true);
+        }
     }
 }
 
 public class Drawer : Furnitures
 {
-    private GameObject key;
+    private GameObject flashlight;
     private List<Sprite> drawerImages;
     private SpriteRenderer spriteRenderer;
 
-    public Drawer(GameObject key,List<Sprite> drawerImages)
+    public Drawer(GameObject flashlight,List<Sprite> drawerImages)
     {
-        this.key = key;
+        this.flashlight = flashlight;
         this.drawerImages = drawerImages;
         spriteRenderer = GameObject.Find("Drawer").GetComponent<SpriteRenderer>();
     }
 
-    public override void Interact()
+    public override void Interact(Furniture furniture)
     {
-        if (key == null || !key.activeSelf)
+        if (flashlight == null || !flashlight.activeSelf)
         {
             if (spriteRenderer.sprite == drawerImages[0])
             {
                 spriteRenderer.sprite = drawerImages[1];
-                if (key != null)
+                if (flashlight != null)
                 {
-                    key.SetActive(true);
+                    flashlight.SetActive(true);
                 }
             }
             else if (spriteRenderer.sprite == drawerImages[1])
@@ -113,7 +128,12 @@ public class Drawer : Furnitures
                 spriteRenderer.sprite = drawerImages[0];
             }
         }
-        Debug.Log("Drawer");
+        else
+        {
+            Inventory.instance.AddItem(flashlight.GetComponent<ItemObject>().item);
+            flashlight.SetActive(false);
+            flashlight = null;
+        }
     }
 }
 

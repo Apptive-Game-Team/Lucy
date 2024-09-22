@@ -1,13 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using CharacterCamera;
 using TMPro;
-using Unity.Mathematics;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterStat : MonoBehaviour
+public class CharacterStat : MonoBehaviour, ISceneChangeListener
 {
     public static CharacterStat instance;
 
@@ -51,11 +48,23 @@ public class CharacterStat : MonoBehaviour
 
     void Start()
     {
+        Transform canvas = UIController.Instance.transform.Find("StatCanvas 1");
+        Transform mentalBar = canvas.Find("MentalBar");
+        Transform staminaBar = canvas.Find("StaminaBar");
+        mentalSlider = mentalBar.GetComponent<Slider>();
+        staminaSlider = staminaBar.GetComponent<Slider>();
+        count_Mental = mentalBar.Find("Count_Mental").GetComponent<TextMeshProUGUI>();
+        count_Stamina = staminaBar.Find("Count_Stamina").GetComponent<TextMeshProUGUI>();
+        PortalManager.Instance.SetSceneChangeListener(this);
         audioSource = transform.Find("PlayerStatusSoundController").GetComponent<AudioSource>();
         audioSource.clip = SoundManager.Instance.soundSources.GetByName("Heartbeat").Value.sound;
         SetStats();
         UpdateStats();
         mentalCoroutine = StartCoroutine(ReduceMental());
+    }
+
+    void ISceneChangeListener.OnSceneChange()
+    {
         hallucination = ReferenceManager.Instance.FindComponentByName<CameraMove>("MainCamera").hallucination;
         hallucinationSpriteRenderer = hallucination.GetComponent<SpriteRenderer>();
     }
@@ -110,6 +119,8 @@ public class CharacterStat : MonoBehaviour
 
     public IEnumerator ReduceMental()
     {
+        yield return new WaitUntil(() => hallucinationSpriteRenderer != null);
+
         while (curMental > 0)
         {   
             yield return new WaitForSecondsRealtime(delay);
@@ -118,7 +129,7 @@ public class CharacterStat : MonoBehaviour
                 curMental -= reduceAmount;
                 audioSource.pitch = 1 + (float)(((maxMental * MENTAL_WARNING_RATE) - curMental) / (maxMental * MENTAL_WARNING_RATE));
                 float alpha = (float)(((maxMental * MENTAL_WARNING_RATE) - curMental) / (maxMental * MENTAL_WARNING_RATE)) / 3;
-
+                yield return new WaitUntil(() => hallucinationSpriteRenderer != null);
                 Color hallucinationColor = hallucinationSpriteRenderer.color;
                 hallucinationColor.a = alpha;
                 hallucinationSpriteRenderer.color = hallucinationColor;

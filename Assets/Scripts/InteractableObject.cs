@@ -1,12 +1,13 @@
 using UnityEngine;
 
-public abstract class InteractableObject : MonoBehaviour
+public abstract class InteractableObject : MonoBehaviour, IKeyInputListener
 {
     public GameObject TextObject;
-
-    void Start()
+    private Collider2D other;
+    protected virtual void Start()
     {
         TextObject.SetActive(false);
+        InputManager.Instance.SetKeyListener(this);
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
@@ -14,12 +15,14 @@ public abstract class InteractableObject : MonoBehaviour
         if (other.gameObject.tag.Equals("Player"))
         {
             TextObject.SetActive(true);
+            this.other = other;
         }
     }
 
-    protected virtual void OnTriggerStay2D(Collider2D other)
+    void IKeyInputListener.OnKeyDown(ActionCode action)
     {
-        if (other.gameObject.tag.Equals("Player") && InputManager.Instance.GetKeyDown(ActionCode.Interaction))
+        if (action == ActionCode.Interaction && other != null)
+        //if (other.gameObject.tag.Equals("Player"))
         {
             ActOnTrigger(other);
         }
@@ -30,6 +33,7 @@ public abstract class InteractableObject : MonoBehaviour
         if (other.gameObject.tag.Equals("Player"))
         {
             TextObject.SetActive(false);
+            this.other = null;  
         }
     }
 

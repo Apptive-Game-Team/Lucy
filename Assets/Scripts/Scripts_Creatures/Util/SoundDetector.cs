@@ -29,7 +29,7 @@ public class SoundDetector : MonoBehaviour
         foreach(Collider2D target in targets)
         {
             float distance = Vector3.Distance(transform.position, target.transform.position);
-            AudioSource source = target.GetComponent<AudioSource>();
+            AudioSource source = target.GetComponentInChildren<AudioSource>();
 
             if (distance < source.maxDistance && source.isPlaying)
             {
