@@ -8,7 +8,6 @@ namespace Creature
     {
         Detector detector;
         Avoider avoider;
-        Stunnee stunnee;
 
         HandLightSwitch handLightSwitch;
 

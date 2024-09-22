@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 [Serializable]
@@ -147,22 +149,18 @@ public class PathFinder
     {
         List<Node> neighbors = new List<Node>();
 
-        for (int x = -1; x <= 1; x++)
-        {
-            for (int y = -1; y <= 1; y++)
+        foreach (Tuple<int, int> direction in directions) { 
+            int checkX = node.X + direction.Item1;
+            int checkY = node.Y + direction.Item2;
+
+            if (checkX - mapOffset.x >= 0 && checkX - mapOffset.x < width && checkY - mapOffset.y >= 0 && checkY - mapOffset.y < height)
             {
-                if (x == 0 && y == 0)
+                Node tempNode = GetNode(checkX, checkY);
+                if (tempNode.IsWalkable)
                 {
-                    continue;
+                    neighbors.Add(tempNode);
                 }
-
-                int checkX = node.X + x;
-                int checkY = node.Y + y;
-
-                if (checkX - mapOffset.x >= 0 && checkX - mapOffset.x < width && checkY - mapOffset.y >= 0 && checkY - mapOffset.y < height)
-                {
-                    neighbors.Add(GetNode(checkX, checkY));
-                }
+                
             }
         }
         return neighbors;
@@ -182,23 +180,61 @@ public class PathFinder
         return tempNode;
     }
 
-    public List<Node> GetRandomPath(int nodeNum, Vector3 direction, Vector3Int position)
+    public List<Node> FindDirectionPath(Node startNode, Vector3 direction, float maxDistance = 10f)
     {
-        Node lastNode = new Node(true);
+        SortedSet<Node> openSet = new SortedSet<Node>() { startNode };
+        HashSet<Node> closedSet = new HashSet<Node>();
+
+
+        int computingCounter = 0;
+
+        while (openSet.Count > 0 && computingCounter < maxComputing)
+        {
+            computingCounter++;
+            Node currentNode = openSet.Min;
+            openSet.Remove(currentNode);
+            closedSet.Add(currentNode);
+            if (GetRealDistance(startNode, currentNode) > maxDistance)
+            {
+                return RetracePath(startNode, currentNode);
+            }
+
+            foreach (Node neighbor in GetNeighbors(currentNode))
+            {
+                if (closedSet.Contains(neighbor))
+                    continue;
+
+                float gCost = currentNode.GCost + GetDistance(currentNode, neighbor);
+
+                if (!openSet.Contains(neighbor))
+                {
+                    openSet.Add(neighbor);
+                } else if (gCost >= neighbor.GCost)
+                {
+                    continue;
+                }
+
+                neighbor.GCost = (int)gCost;
+                neighbor.HCost = (int) Vector3.Angle(direction, (new Vector3(neighbor.X - startNode.X, neighbor.Y - startNode.Y)).normalized);
+                neighbor.Parent = currentNode;
+            }
+        }
+
+        return null;
+    }
+
+    public List<Node> FindRandomPath(Node startNode, Vector3 direction , int nodeLen)
+    {
         List<Node> path = new List<Node>();
 
         int computingCounter = 0;
 
-        lastNode.SetPosition(position.x, position.y);
+        Node lastNode = startNode;
 
-        List<Node> neighbors = GetNeighbors(new Node(
-                position.x,
-                position.y,
-                true
-            ));
+        List<Node> neighbors = GetNeighbors(startNode);
         System.Random random = new System.Random();
-        int currentDirection = this.directions.FindIndex(t => t.Item1 == Mathf.Sign(direction.x) && t.Item2 == Mathf.Sign(direction.y));
-        for (int i = 0; i<nodeNum; i++)
+        int currentDirection = directions.FindIndex(t => t.Item1 == Mathf.Sign(direction.x) && t.Item2 == Mathf.Sign(direction.y));
+        for (int i = 0; i < nodeLen; i++)
         {
             computingCounter++;
             if (computingCounter > maxComputing)
@@ -206,23 +242,24 @@ public class PathFinder
 #if UNITY_EDITOR
                 if (debugMode)
                     Debug.Log("RandomPath Not Found");
-#endif   
+#endif
                 return null;
             }
             int tempRandomNum = random.Next(0, 5);
-            
+
             if (tempRandomNum == 1)
             {
                 currentDirection++;
-                if (currentDirection == 8)
+                if (currentDirection > 3)
                     currentDirection = 0;
             }
             else if (tempRandomNum == 2)
             {
                 currentDirection--;
-                if (currentDirection == -1)
-                    currentDirection = 7;
             }
+            if (currentDirection < 0)
+                currentDirection = 3;
+
             Node node = GetNode(
                 directions[currentDirection].Item1 + lastNode.X,
                 directions[currentDirection].Item2 + lastNode.Y
@@ -237,6 +274,7 @@ public class PathFinder
         }
 
         return path;
+        
     }
 
     private List<Node> RetracePath(Node startNode, Node endNode)
@@ -257,25 +295,24 @@ public class PathFinder
     {
         int dstX = Math.Abs(nodeA.X - nodeB.X);
         int dstY = Math.Abs(nodeA.Y - nodeB.Y);
-        if (dstX > dstY)
-        {
-            return 14 * dstY + 10 * (dstX - dstY);
-        }
-        return 14 * dstX + 10 * (dstY - dstX);
+        return 10 * (dstX + dstY);
     }
 
     private void InitDirections()
     {
         directions = new List<Tuple<int, int>>{
-            Tuple.Create(1, 1),
             Tuple.Create(1, 0),
-            Tuple.Create(1, -1),
             Tuple.Create(0, -1),
-            Tuple.Create(-1, -1),
             Tuple.Create(-1, 0),
-            Tuple.Create(-1, 1),
             Tuple.Create(0, 1)
         };
 
+    }
+
+    private float GetRealDistance(Node node1, Node node2)
+    {
+        float deltaX = node1.X - node2.X;
+        float deltaY = node1.Y - node2.Y;
+        return (float) Math.Pow(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2), 0.5);
     }
 }

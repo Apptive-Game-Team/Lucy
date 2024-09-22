@@ -5,7 +5,7 @@ using System;
 
 namespace CharacterCamera
 {
-    public class CameraMove : MonoBehaviour
+    public class CameraMove : SingletonObject<CameraMove>, ISceneChangeListener
     {
         public GameObject player;
         public GameObject square;
@@ -23,7 +23,13 @@ namespace CharacterCamera
             hallucination.SetActive(false);
         }
 
-        void Start()
+        protected override void Awake()
+        {
+            base.Awake();
+            PortalManager.Instance.SetSceneChangeListener(this);
+        }
+
+        void ISceneChangeListener.OnSceneChange()
         {
             square = ReferenceManager.Instance.FindGameObjectByName("Square");
             player = Character.Instance.gameObject;
@@ -33,7 +39,6 @@ namespace CharacterCamera
             width = height * Screen.width / Screen.height;
             diffX = MapSize.x/2 - width;
             diffY = MapSize.y/2 - height;
-            
         }
 
         void Update()
