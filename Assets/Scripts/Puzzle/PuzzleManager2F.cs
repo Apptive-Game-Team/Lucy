@@ -46,11 +46,11 @@ public class PuzzleManager2F : SingletonObject<PuzzleManager2F>, ISceneChangeLis
                 bridge.SetActive(isOns[bridgeComponent.bridgeID]);
             }
         }
-        if(player.transform.position.x > -40f && SceneManager.GetActiveScene().name == "Puzzle_2F")
+        if(player.transform.position.x > -40f && SceneManager.GetActiveScene().name == "Puzzle_2F_Beaver")
         {
             square.transform.position = new Vector3(12.06f, 0.13f, 0f);
         }
-        else if(player.transform.position.x <= -40f && SceneManager.GetActiveScene().name == "Puzzle_2F")
+        else if(player.transform.position.x <= -40f && SceneManager.GetActiveScene().name == "Puzzle_2F_Beaver")
         {
             square.transform.position = new Vector3(-92.0f, 0.13f, 0f);
         }
