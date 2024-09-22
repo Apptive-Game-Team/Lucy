@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Creature;
 using CharacterCamera;
+using static NpcDialogueData;
 
 public class NpcEventController : MonoBehaviour
 {
@@ -11,8 +12,11 @@ public class NpcEventController : MonoBehaviour
     private Guard guard;
     private GameObject player;
     private GameObject barricade;
-    private float npcEventTime = 5f;
+    private float npcEventTime = 2f;
     private float blackOutDelay = 3f;
+    [SerializeField] NpcDialogueData npcDialogueData;
+    [SerializeField] string npcType;
+    private bool isAlreadyTalk = false;
     private void Start()
     {
         guardObj = GameObject.Find("Guard");
@@ -24,7 +28,15 @@ public class NpcEventController : MonoBehaviour
 
         Npc = GameObject.Find("NPC");
     }
-
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player") && !isAlreadyTalk)
+        {
+            EventScheduler.Instance.eventObjects["FirstMeetNpcEventObject"].StopSound();
+            NpcDialogueController.Instance.ShowDialogue(npcDialogueData.GetDialogues(npcType));
+            isAlreadyTalk = true;
+        }
+    }
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player")&& player.transform.position.x < -2)
