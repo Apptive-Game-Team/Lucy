@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 881138471329179396}
   - component: {fileID: 9017358307436019994}
   - component: {fileID: 1744955181141753592}
+  - component: {fileID: 6228048080277069801}
   m_Layer: 0
   m_Name: Door
   m_TagString: Door
@@ -130,6 +131,36 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1.5}
   m_EdgeRadius: 0
+--- !u!114 &6228048080277069801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580966493324102487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_ComponentVersion: 1
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_ApplyToSortingLayers: 00000000
+  m_ShapePath:
+  - {x: -0.5, y: -1, z: 0}
+  - {x: -0.5, y: 0.5776396, z: 0}
+  - {x: 0.48637533, y: 0.5776396, z: 0}
+  - {x: 0.5, y: -1, z: 0}
+  m_ShapePathHash: -1416515195
+  m_Mesh: {fileID: 0}
+  m_InstanceId: -54998
+  m_LocalBounds:
+    m_Center: {x: 0, y: -0.21118021, z: 0}
+    m_Extent: {x: 0.5, y: 0.7888198, z: 0}
 --- !u!1 &2901578593480521084
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,7 +320,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TextObject: {fileID: 2901578593480521084}
-  dialogueController: {fileID: 0}
   doorInfo:
     keyId: 0
     DialogueId: 0
