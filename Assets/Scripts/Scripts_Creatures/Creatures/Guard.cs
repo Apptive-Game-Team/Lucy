@@ -9,6 +9,7 @@ namespace Creature
 
         [SerializeField] List<Node> MoveNodes = new List<Node>();
         private int patrolMoveFlag = 0;
+        private bool isPatrolling = true;
 
         protected override void Start()
         {
@@ -21,25 +22,43 @@ namespace Creature
 
         public override IEnumerator PatrolAction()
         {
-            speed = minSpeed;
-            if (transform.position.x == MoveNodes[patrolMoveFlag].X && transform.position.y == MoveNodes[patrolMoveFlag].Y){
-                patrolMoveFlag++;
-                if (patrolMoveFlag >= MoveNodes.Count)
-                {
-                    patrolMoveFlag = 0;
+            if (isPatrolling)
+            {
+                speed = minSpeed;
+                if (transform.position.x == MoveNodes[patrolMoveFlag].X && transform.position.y == MoveNodes[patrolMoveFlag].Y){
+                    patrolMoveFlag++;
+                    if (patrolMoveFlag >= MoveNodes.Count)
+                    {
+                        patrolMoveFlag = 0;
+                    }
                 }
-            }
-            targetPosition.Set(MoveNodes[patrolMoveFlag].X, MoveNodes[patrolMoveFlag].Y, 0);
-            GetPathToPosition(targetPosition);
+                targetPosition.Set(MoveNodes[patrolMoveFlag].X, MoveNodes[patrolMoveFlag].Y, 0);
+                GetPathToPosition(targetPosition);
 
-            DetectPlayer();
-            yield return new WaitForSeconds(0.1f);
-            actions[(int)status].Play();
+                DetectPlayer();
+                yield return new WaitForSeconds(0.1f);
+                actions[(int)status].Play();
+            }
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
             base.OnTriggerEnter2D(collision);
+        }
+
+        public void StopPatrol()
+        {
+            isPatrolling = false;
+            StopAllCoroutines();
+        }
+
+        public void StartPatrol()
+        {
+            if (!isPatrolling)
+            {
+                isPatrolling = true;
+                StartCoroutine(MoveOnPath());
+            }
         }
     }
 }
