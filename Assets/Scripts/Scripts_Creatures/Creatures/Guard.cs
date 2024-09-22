@@ -38,7 +38,8 @@ namespace Creature
                 SetPathToPosition(targetPosition);
                 isArrived = false;
             }
-            base.PatrolUpdate();
+            detector.SetLookingDirection(direction);
+            DetectPlayer();
         }
 
         protected override void Update()
