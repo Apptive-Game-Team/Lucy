@@ -5,7 +5,7 @@ using System;
 
 namespace CharacterCamera
 {
-    public class CameraMove : MonoBehaviour
+    public class CameraMove : SingletonObject<CameraMove>
     {
         public GameObject player;
         public GameObject square;
@@ -21,6 +21,11 @@ namespace CharacterCamera
             ReferenceManager.Instance.SetReferableObject("MainCamera",this,false);
             hallucination = transform.Find("hallucination").gameObject;
             hallucination.SetActive(false);
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
         }
 
         void Start()
