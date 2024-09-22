@@ -3,39 +3,35 @@ using UnityEngine;
 
 namespace Creature
 {
-
-    public class CreatureStunAction : CreatureAction
-    {
-        Stunnee stunnee;
-        public CreatureStunAction(Stunnee stunnee)
-        {
-            this.stunnee = stunnee;
-        }
-
-        public override void Play()
-        {
-            stunnee.StartCoroutine(stunnee.StunnedAction());
-        }
-    }
-
     public class Stunnee : Avoider
     {
 
         protected override void Start()
         {
             base.Start();
-            actions[(int)CreatureStatus.AVOIDING] = new CreatureStunAction(this);
+            actions[CreatureStatus.AVOIDING] = (StunStart, StunUpdate);
         }
 
 
-        public IEnumerator StunnedAction()
+        public IEnumerator StunCounter()
         {
-            path = null;
             yield return new WaitForSeconds(4);
             status = CreatureStatus.PATROL;
-            actions[(int)status].Play();
+            actions[status].Start();
         }
 
+
+
+        protected virtual void StunStart()
+        {
+            path = null;
+            StartCoroutine(StunCounter());
+        }
+
+        protected virtual void StunUpdate()
+        {
+
+        }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
