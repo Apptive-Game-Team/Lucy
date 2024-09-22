@@ -11,7 +11,6 @@ public class NpcEventController : MonoBehaviour
     private Guard guard;
     private GameObject player;
     private GameObject barricade;
-    private CharacterMove playerMoveScript;
     private float npcEventTime = 5f;
     private float blackOutDelay = 3f;
     private void Start()
@@ -20,7 +19,6 @@ public class NpcEventController : MonoBehaviour
         guard = guardObj.GetComponent<Guard>(); 
 
         player = Character.Instance.gameObject;
-        playerMoveScript = player.GetComponent<CharacterMove>();
 
         barricade = GameObject.Find("Barricade");
 
@@ -37,7 +35,7 @@ public class NpcEventController : MonoBehaviour
 
     private void StartNpcEvent()
     {
-        playerMoveScript.StopMovement();
+        InputManager.Instance.SetMovementState(false);
         guard.StopPatrol();
         //startdialog
         barricade.SetActive(false);
@@ -49,12 +47,13 @@ public class NpcEventController : MonoBehaviour
         yield return new WaitForSeconds(npcEventTime);
         yield return CameraEffector.Instance.FadeOut();
         Destroy(Npc);
-        StartCoroutine(CameraEffector.Instance.FadeIn());
+        yield return CameraEffector.Instance.FadeIn();
+        FinishNpcEvent();
     }
 
     private void FinishNpcEvent()
     {
-        playerMoveScript.ResumeMovement();
+        InputManager.Instance.SetMovementState(true);
         guard.StartPatrol();
         Destroy(this);
     }
