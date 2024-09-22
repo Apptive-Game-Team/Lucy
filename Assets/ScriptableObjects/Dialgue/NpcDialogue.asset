@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: NpcDialogue
   m_EditorClassIdentifier: 
   npcDialogues:
-  - npcType: puzzleNpc
+  - npcType: PUZZLENPC
     texts:
-    - text: ...........
-    - text: "\u314E\u3147"
+    - text: "\uB0A0 \uC5EC\uAE30\uC11C \uAEBC\uB0B4\uC918"
+    - text: "\uC717 \uBC29\uC5D0 \uC5F4\uC1E0\uAC00 \uC788\uC744\uAC70\uC57C"

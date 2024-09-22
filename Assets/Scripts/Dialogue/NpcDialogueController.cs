@@ -5,7 +5,7 @@ using TMPro;
 
 public enum NpcType
 {
-    puzzleNpc,
+    PUZZLENPC,
 }
 
 public abstract class NpcDialogues
@@ -23,7 +23,7 @@ public class puzzleNpc : NpcDialogues
 
     public override void Show()
     {
-        NpcDialogueController.Instance.ShowDialogue(npcDialogueData.GetDialogues(NpcType.puzzleNpc.ToString()));
+        NpcDialogueController.Instance.ShowDialogue(npcDialogueData.GetDialogues(NpcType.PUZZLENPC.ToString()));
     }
 }
 
