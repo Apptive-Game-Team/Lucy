@@ -42,10 +42,10 @@ public class FadeOutCameraEffect : CameraEffect
     }
 }
 
-public class CameraEffector : MonoBehaviour
+public class CameraEffector : SingletonObject<CameraEffector>
 {
     Image fadeImage;
-    const float FADE_DURATION = 5f;
+    const float FADE_DURATION = 2f;
 
     List<CameraEffect> cameraEffectList;
 
@@ -54,8 +54,7 @@ public class CameraEffector : MonoBehaviour
 
     private void Start()
     {
-        fadeImage = GetComponent<Image>();
-        StartCoroutine(FadeOut());
+        fadeImage = transform.GetChild(0).GetChild(0).GetComponent<Image>();
     }
 
     public IEnumerator FadeOut()
@@ -69,8 +68,6 @@ public class CameraEffector : MonoBehaviour
             curAlpha = curTime / FADE_DURATION;
             fadeImage.color = new Color(0, 0, 0, curAlpha);
         }
-
-        
     }
     public IEnumerator FadeIn()
     {
@@ -83,6 +80,12 @@ public class CameraEffector : MonoBehaviour
             curAlpha = curTime / FADE_DURATION;
             fadeImage.color = new Color(0, 0, 0, curAlpha);
         }
+    }
+
+    public IEnumerator FadeOutIn()
+    {
+        yield return FadeOut();
+        yield return FadeIn();
     }
 
     public void AddCameraEffect(CameraEffect cameraEffect)
