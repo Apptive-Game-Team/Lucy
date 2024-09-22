@@ -12,12 +12,13 @@ namespace Creature{
         PURSUIT = 1, // 추적
         ALERTED = 2, // 의심
         AVOIDING = 3,
+        STUNNED = 3,
     }
 
     public class Creature : Actor
     {
         private SoundDetector soundDetector;
-        private Detector detector;
+        protected  Detector detector;
 
         protected int[,] map;
 
@@ -162,10 +163,9 @@ namespace Creature{
                 Node node = GetNextNode();
                 if (node == null)
                 {
-                    yield return new WaitForSeconds(TEMP_DELAY);
                     isChasing = false;
                     isArrived = true;
-                    SetDirectionPath();
+                    yield return new WaitWhile(() => path == null || path.Count == 0);
                     continue;
                 }
 
@@ -245,6 +245,10 @@ namespace Creature{
         {
             detector.SetLookingDirection(direction);
             DetectPlayer();
+            if (path == null || path.Count == 0)
+            {
+                SetRandomPath();
+            }
         }
 
         protected virtual void PursuitStart()
