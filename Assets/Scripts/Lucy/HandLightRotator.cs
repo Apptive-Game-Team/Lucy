@@ -34,6 +34,7 @@ public class HandLightRotator : MonoBehaviour, IKeyInputListener
     {
         if (inputManager.isMoveActioncode(action))
         {
+            handlightObject = Character.Instance.transform.Find("HandLight").gameObject;
             Vector3 direction = InputManager.Instance.GetMoveVector();
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             handlightObject.transform.rotation = Quaternion.Euler(0, 0, angle - 90);

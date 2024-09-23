@@ -11,16 +11,20 @@ public class HandLightSwitch : MonoBehaviour
     {
         instance = this;
     }
+
+
     public void TurnOnHandLight()
     {
         if ( FlashLight.instance.battery>=0)
         {
+            handlightObject = Character.Instance.transform.Find("HandLight").gameObject;
             handlightObject.SetActive(true);
         }
     }
 
     public void TurnOffHandLight()
     {
+        handlightObject = Character.Instance.transform.Find("HandLight").gameObject;
         handlightObject.SetActive(false);
     }
 }
