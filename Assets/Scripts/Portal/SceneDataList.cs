@@ -27,11 +27,11 @@ public class SceneData
 public class SceneDataList : ScriptableObject
 {
 
-    //±¸Çö ¿¹Á¤ - ½ÃÀÛ½Ã ·ÎµåµÈ ¾À ¸®½ºÆ®¿¡ ¾À µ¥ÀÌÅÍ ¸®½ºÆ®ÀÇ °¢ ¾À ³×ÀÓÀÌ ´ëÀÀÀÌ µÇ´Â°¡? ¾ÈµÇ¸é ¿¡·¯ ¸Þ¼¼Áö Ãâ·Â
-
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½Û½ï¿½ ï¿½Îµï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´Â°ï¿½? ï¿½ÈµÇ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    [SerializeField]
     public List<SceneData> sceneDatas;
 
-    //°­°Ç¼ºÀÌ ¶³¾îÁü
+    //ï¿½ï¿½ï¿½Ç¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public SceneData GetSceneDataByID(SceneID id)
     {
         SceneData sceneData = sceneDatas.Find(x => x.sceneID == id);

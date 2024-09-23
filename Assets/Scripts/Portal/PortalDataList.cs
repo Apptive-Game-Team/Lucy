@@ -30,10 +30,10 @@ public class PortalData
 [CreateAssetMenu(fileName = "PortalDataList", menuName = "ScriptableObject/New PortalDataList")]
 public class PortalDataList : ScriptableObject
 {
-
+    [SerializeField]
     public List<PortalData> portalDatas;
 
-    //°­°Ç¼ºÀÌ ¶³¾îÁü
+    //ï¿½ï¿½ï¿½Ç¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public PortalData GetPortalDataByID(PortalID id)
     {
         PortalData sceneData = portalDatas.Find(x => x.portalID == id);
