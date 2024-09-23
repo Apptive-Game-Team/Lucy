@@ -11,7 +11,7 @@ public class ItemSlot
     public int quantity;
 }
 
-public class Inventory : MonoBehaviour
+public class Inventory : MonoBehaviour, ISceneChangeListener 
 {
     public ItemSlotUI[] uidSlot;     
     public ItemSlot[] slots;            
@@ -35,9 +35,20 @@ public class Inventory : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        PortalManager.Instance.SetSceneChangeListener(this);
     }
 
-    // Start is called before the first frame update
+    void ISceneChangeListener.OnSceneChange()
+    {
+        GameObject images = ReferenceManager.Instance.FindGameObjectByName("EventImages");
+
+        seperatingImages = new List<Image>()
+        {
+            images.transform.Find("RemoteController1").GetComponent<Image>(),
+            images.transform.Find("RemoteController2").GetComponent<Image>()
+        };
+    }
+
     void Start()
     {
         inventoryWindow.SetActive(false);
