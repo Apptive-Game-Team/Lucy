@@ -7,6 +7,7 @@ public class StartButton : MonoBehaviour
 {
     public void OnButtonClick()
     {
-        SceneManager.LoadScene("Test240819");
+        print("tlqkf");
+        SceneManager.LoadScene("0101");
     }
 }

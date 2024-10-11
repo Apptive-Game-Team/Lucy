@@ -8,30 +8,24 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/HIS/Scenes/Inventory&Item.unity
     guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 1
+  - enabled: 0
     path: Assets/Tilemap_jackupsil/Scenes/Title.unity
     guid: c6cff32063778fc46a421edd330f609b
   - enabled: 0
     path: Assets/JJW/Scenes/Test240819.unity
     guid: 8c8a6b33f5c428844b696b3d693a400e
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/0101.unity
     guid: a03198b187446144b8630e3fa82715a5
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/0102.unity
     guid: 8a671a2c56d1f4647a7a3a992ba3680e
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/0201.unity
     guid: a51bb288dde4d1d4ba7df026e9cc67cc
   - enabled: 1
-    path: Assets/Scenes/Puzzle_2F.unity
-    guid: 5ae242e388c61b94fbe52c10aa35d318
-  - enabled: 1
     path: Assets/Scenes/0101_09.18.unity
     guid: 52be6966e82e5cc4abd8cdd30bf5cb75
-  - enabled: 1
-    path: Assets/Scenes/Maze_3F.unity
-    guid: 8654e4cd583a8a842b384ed0205baeb4
   - enabled: 1
     path: Assets/Scenes/MapSetting_Beaver/0102_Beaver.unity
     guid: 5cc10613f67c1eb4ab50c6e3a25ee3e0
@@ -39,9 +33,15 @@ EditorBuildSettings:
     path: Assets/Scenes/MapSetting_Beaver/0201_Beaver.unity
     guid: 393f82e4cd45a9648a19e3c7e24b5ac5
   - enabled: 1
-    path: Assets/Scenes/MapSetting_Beaver/Maze_3F_Beaver.unity
-    guid: 95c16f4f57bf70c4cb36e5c5e54a3237
-  - enabled: 1
     path: Assets/Scenes/MapSetting_Beaver/Puzzle_2F_Beaver.unity
     guid: e8acdc1c13459aa4cbd93279d3eef0c3
+  - enabled: 1
+    path: Assets/Scenes/MapSetting_Beaver/Maze_3F_Beaver.unity
+    guid: 95c16f4f57bf70c4cb36e5c5e54a3237
+  - enabled: 0
+    path: Assets/Scenes/Puzzle_2F.unity
+    guid: 5ae242e388c61b94fbe52c10aa35d318
+  - enabled: 0
+    path: Assets/Scenes/Maze_3F.unity
+    guid: 8654e4cd583a8a842b384ed0205baeb4
   m_configObjects: {}
