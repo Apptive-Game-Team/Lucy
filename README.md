@@ -1,7 +1,11 @@
 # Lucy
 Lucy (24.08.01 ~) 
+> 공포 어드벤처 게임으로, 플레이어는 어둠 속에서 정신력과 체력을 관리하며 퍼즐을 풀고 생존해야 합니다.
 
-공포 어드벤처 게임으로, 플레이어는 어둠 속에서 정신력과 체력을 관리하며 퍼즐을 풀고 생존해야 합니다.
+## 🎮 Game Play 
+🎮 [Play Lucy on GitHub Pages](https://apptive-game-team.github.io/Lucy/)
+자동 빌드 및 배포는 GitHub Actions를 통해 이루어집니다.  
+자세한 CI/CD 설정 방법은 [CICD_SETUP.md](docs/CICD_SETUP.md)를 참고하세요.
 
 ## 🎮 Game Features
 
