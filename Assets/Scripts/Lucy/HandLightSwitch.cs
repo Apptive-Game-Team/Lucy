@@ -1,26 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
+using invertoryAndItem;
 using UnityEngine;
 
-public class HandLightSwitch : MonoBehaviour
+namespace Lucy
 {
-    [SerializeField] public GameObject handlightObject;
-    public static HandLightSwitch instance;
+    public class HandLightSwitch : MonoBehaviour
+    {
+        [SerializeField] public GameObject handlightObject;
+        public static HandLightSwitch instance;
 
-    private void Awake()
-    {
-        instance = this;
-    }
-    public void TurnOnHandLight()
-    {
-        if ( FlashLight.instance.battery>=0)
+        private void Awake()
         {
-            handlightObject.SetActive(true);
+            instance = this;
         }
-    }
+        public void TurnOnHandLight()
+        {
+            if ( FlashLight.instance.battery>=0)
+            {
+                handlightObject.SetActive(true);
+            }
+        }
 
-    public void TurnOffHandLight()
-    {
-        handlightObject.SetActive(false);
+        public void TurnOffHandLight()
+        {
+            handlightObject.SetActive(false);
+        }
     }
 }

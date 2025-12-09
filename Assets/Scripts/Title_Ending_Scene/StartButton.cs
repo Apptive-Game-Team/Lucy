@@ -1,12 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class StartButton : MonoBehaviour
+namespace Title_Ending_Scene
 {
-    public void OnButtonClick()
+    public class StartButton : MonoBehaviour
     {
-        SceneManager.LoadScene("Test240819");
+        public void OnButtonClick()
+        {
+            SceneManager.LoadScene("Test240819");
+        }
     }
 }

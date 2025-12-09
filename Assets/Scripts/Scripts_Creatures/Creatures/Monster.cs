@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace Creature
+namespace Scripts_Creatures.Creatures
 {
     public class Monster : Creature
     {

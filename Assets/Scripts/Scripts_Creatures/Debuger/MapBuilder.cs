@@ -1,34 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
+using ReferenceSystem;
 using UnityEngine;
 
-public class MapBuilder : MonoBehaviour
+namespace Scripts_Creatures.Debuger
 {
+    public class MapBuilder : MonoBehaviour
+    {
 
-    [SerializeField] GameObject wall;
-    private CreatureManager creatureManager;
+        [SerializeField] GameObject wall;
+        private CreatureManager creatureManager;
 
     
-    void Start()
-    {
-        creatureManager = ReferenceManager.Instance.FindComponentByName<CreatureManager>("CreatureManager");
-        int[,] map = creatureManager.GetMap();
-        Vector3Int mapOffset = creatureManager.GetMapOffset();
-        for (int i = 0; i< map.GetLength(0); i++)
+        void Start()
         {
-            for (int j = 0; j< map.GetLength(1); j++)
+            creatureManager = ReferenceManager.Instance.FindComponentByName<CreatureManager>("CreatureManager");
+            int[,] map = creatureManager.GetMap();
+            Vector3Int mapOffset = creatureManager.GetMapOffset();
+            for (int i = 0; i< map.GetLength(0); i++)
             {
-                if (map[i, j] == 0)
+                for (int j = 0; j< map.GetLength(1); j++)
                 {
-                    MakeWall(i+mapOffset.x, j+mapOffset.y);
-                }
+                    if (map[i, j] == 0)
+                    {
+                        MakeWall(i+mapOffset.x, j+mapOffset.y);
+                    }
                     
+                }
             }
         }
-    }
 
-    void MakeWall(int x, int y)
-    {
-        Instantiate(wall, new Vector3(x, y), Quaternion.identity);
+        void MakeWall(int x, int y)
+        {
+            Instantiate(wall, new Vector3(x, y), Quaternion.identity);
+        }
     }
 }

@@ -1,9 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
+using ScriptableObjects.ScriptableObject_items.Script;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ItemDataList", menuName = "New ItemDataList")]
-public class ItemDataList : ScriptableObject
+namespace Item
 {
-    public List<ItemData> items;
+    [CreateAssetMenu(fileName = "ItemDataList", menuName = "New ItemDataList")]
+    public class ItemDataList : ScriptableObject
+    {
+        public List<ItemData> items;
+    }
 }

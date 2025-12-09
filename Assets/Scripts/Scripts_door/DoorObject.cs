@@ -1,50 +1,58 @@
 using System;
+using invertoryAndItem;
+using ReferenceSystem;
+using ScriptableObjects.ScriptableObject_items.Script;
+using Scripts_Creatures;
+using soundSystem_;
 using UnityEngine;
 
-[System.Serializable]
-public class DoorInfo
+namespace Scripts_door
 {
-    public ItemID keyId;
-    public int DialogueId;
-    public bool isLocked;
-    public bool isOpened;
-
-    public bool CheckCanOpen()
+    [System.Serializable]
+    public class DoorInfo
     {
-        return !isLocked || Array.Exists(Inventory.instance.slots,itemSlot => itemSlot.item.itemId == keyId);
-    }
-}
+        public ItemID keyId;
+        public int DialogueId;
+        public bool isLocked;
+        public bool isOpened;
 
-public class DoorObject : InteractableObject
-{
-    private ToggleableObjectSoundController soundController;
-    private CreatureManager creatureManager;
-    [SerializeField] DoorInfo doorInfo;
-    [SerializeField] GameObject door;
-
-    protected override void ActOnTrigger(Collider2D other)
-    {
-        if (doorInfo.CheckCanOpen())
+        public bool CheckCanOpen()
         {
-            door.SetActive(!door.activeSelf);
-            soundController.PlaySound(door.activeSelf);
-            creatureManager.UpdateMap();
+            return !isLocked || Array.Exists(Inventory.instance.slots,itemSlot => itemSlot.item.itemId == keyId);
         }
     }
 
-    private void Awake()
+    public class DoorObject : InteractableObject
     {
-        soundController = GetComponent<ToggleableObjectSoundController>();
-    }
+        private ToggleableObjectSoundController soundController;
+        private CreatureManager creatureManager;
+        [SerializeField] DoorInfo doorInfo;
+        [SerializeField] GameObject door;
 
-    protected override void Start()
-    {
-        base.Start();
-        creatureManager = ReferenceManager.Instance.FindComponentByName<CreatureManager>("CreatureManager");
-        if(doorInfo.isLocked && doorInfo.keyId == ItemID.NONE)  
+        protected override void ActOnTrigger(Collider2D other)
         {
-            Debug.LogWarning("This Door is Locked, But Has not Key. Please Door");
+            if (doorInfo.CheckCanOpen())
+            {
+                door.SetActive(!door.activeSelf);
+                soundController.PlaySound(door.activeSelf);
+                creatureManager.UpdateMap();
+            }
         }
-        soundController.SetType("Door");
+
+        private void Awake()
+        {
+            soundController = GetComponent<ToggleableObjectSoundController>();
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+            creatureManager = ReferenceManager.Instance.FindComponentByName<CreatureManager>("CreatureManager");
+            if(doorInfo.isLocked && doorInfo.keyId == ItemID.NONE)  
+            {
+                Debug.LogWarning("This Door is Locked, But Has not Key. Please Door");
+            }
+            soundController.SetType("Door");
+        }
     }
 }

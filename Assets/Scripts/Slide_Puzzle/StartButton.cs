@@ -1,33 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SlicePuzzle
+namespace Slide_Puzzle
 {
     public class StartButton : MonoBehaviour
     {
-        public Canvas slicePuzzleCanvas;  // È°¼ºÈ­ÇÒ Canvas
-        public Button startButton;        // Start ¹öÆ°
+        public Canvas slicePuzzleCanvas;  // È°ï¿½ï¿½È­ï¿½ï¿½ Canvas
+        public Button startButton;        // Start ï¿½ï¿½Æ°
 
         void Start()
         {
             if (startButton != null)
             {
-                // Start ¹öÆ°¿¡ Å¬¸¯ ¸®½º³Ê¸¦ Ãß°¡ÇÕ´Ï´Ù.
+                // Start ï¿½ï¿½Æ°ï¿½ï¿½ Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ê¸ï¿½ ï¿½ß°ï¿½ï¿½Õ´Ï´ï¿½.
                 startButton.onClick.AddListener(OnButtonClick);
             }
 
             if (slicePuzzleCanvas != null)
             {
-                // Ã³À½¿¡´Â Canvas¸¦ ºñÈ°¼ºÈ­ÇÕ´Ï´Ù.
+                // Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Canvasï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­ï¿½Õ´Ï´ï¿½.
                 slicePuzzleCanvas.gameObject.SetActive(false);
             }
         }
 
         public void OnButtonClick()
         {
-            // ¹öÆ°ÀÌ Å¬¸¯µÇ¸é Canvas¸¦ È°¼ºÈ­ÇÕ´Ï´Ù.
+            // ï¿½ï¿½Æ°ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ç¸ï¿½ Canvasï¿½ï¿½ È°ï¿½ï¿½È­ï¿½Õ´Ï´ï¿½.
             if (slicePuzzleCanvas != null)
             {
                 slicePuzzleCanvas.gameObject.SetActive(true);

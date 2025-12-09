@@ -1,43 +1,44 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class PathLineRenderer : MonoBehaviour
+namespace Scripts_Creatures.Util
 {
-    private LineRenderer _lineRenderer;
-
-    private Vector3[] points;
-
-    private void Awake()
+    public class PathLineRenderer : MonoBehaviour
     {
-        _lineRenderer = GetComponent<LineRenderer>();
-    }
+        private LineRenderer _lineRenderer;
 
-    public void SetPoints(List<Node> path)
-    {
-        points = new Vector3[path.Count];
-        for (int i = 0; i < path.Count; i++)
+        private Vector3[] points;
+
+        private void Awake()
         {
-            points[i] = new Vector3(path[i].X, path[i].Y);
+            _lineRenderer = GetComponent<LineRenderer>();
         }
-        Render();
-    }
 
-    public void Clear()
-    {
-        _lineRenderer.positionCount = 0;
-    }
-
-    private void Render()
-    {
-        _lineRenderer.positionCount = points.Length;
-        _lineRenderer.SetPositions(points);
-        _lineRenderer.startWidth = 0.1f;
-        _lineRenderer.endWidth = 0.1f;
-        _lineRenderer.material = new Material(Shader.Find("Sprites/Default"))
+        public void SetPoints(List<Node> path)
         {
-            color = Color.red
-        };
+            points = new Vector3[path.Count];
+            for (int i = 0; i < path.Count; i++)
+            {
+                points[i] = new Vector3(path[i].X, path[i].Y);
+            }
+            Render();
+        }
+
+        public void Clear()
+        {
+            _lineRenderer.positionCount = 0;
+        }
+
+        private void Render()
+        {
+            _lineRenderer.positionCount = points.Length;
+            _lineRenderer.SetPositions(points);
+            _lineRenderer.startWidth = 0.1f;
+            _lineRenderer.endWidth = 0.1f;
+            _lineRenderer.material = new Material(Shader.Find("Sprites/Default"))
+            {
+                color = Color.red
+            };
+        }
     }
 }

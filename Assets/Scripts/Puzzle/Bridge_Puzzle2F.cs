@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Bridge_Puzzle2F : MonoBehaviour
+namespace Puzzle
 {
-    [SerializeField] public BridgeID bridgeID;
+    public class Bridge_Puzzle2F : MonoBehaviour
+    {
+        [SerializeField] public BridgeID bridgeID;
+    }
 }

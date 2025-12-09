@@ -1,23 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
+using soundSystem_;
 using UnityEngine;
 
-public class EventSoundController : SoundController
+namespace Event
 {
-    protected override void Awake()
+    public class EventSoundController : SoundController
     {
-        base.Awake();
-    }
+        protected override void Awake()
+        {
+            base.Awake();
+        }
 
-    public void PlaySound(AudioClip audioClip, bool isLoop)
-    {
-        audioSource.clip = audioClip;
-        audioSource.loop = isLoop;
-        audioSource.Play();
-    }
+        public void PlaySound(AudioClip audioClip, bool isLoop)
+        {
+            audioSource.clip = audioClip;
+            audioSource.loop = isLoop;
+            audioSource.Play();
+        }
 
-    public void StopSound()
-    {
-        audioSource.Stop();
+        public void StopSound()
+        {
+            audioSource.Stop();
+        }
     }
 }

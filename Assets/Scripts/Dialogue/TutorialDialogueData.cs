@@ -1,9 +1,8 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
-namespace Tutorial
+namespace Dialogue
 {
 [CreateAssetMenu]
     public class TutorialDialogueData : ScriptableObject

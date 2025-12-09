@@ -1,345 +1,350 @@
+using System.Collections;
+using System.Collections.Generic;
+using Lucy;
+using ScriptableObjects.ScriptableObject_items.Script;
 using TMPro;
 using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
-/// <summary>
-/// Represents a single slot in the inventory containing an item and its quantity.
-/// </summary>
-[System.Serializable]
-public class ItemSlot
+namespace invertoryAndItem
 {
-    public ItemData item;
-    public int quantity;
-}
-
-/// <summary>
-/// Manages the player's inventory system including item storage, equipment, and usage.
-/// Handles item stacking, equipment management, and item-specific effects like flashlight and battery.
-/// </summary>
-public class Inventory : MonoBehaviour
-{
-    public ItemSlotUI[] uidSlot;     
-    public ItemSlot[] slots;            
-
-    public GameObject inventoryWindow;     
-
-    [Header("Selected Item")]
-    private ItemSlot selectedItem;
-    private int selectedItemIndex;
-    public TextMeshProUGUI selectedItemName;
-    public TextMeshProUGUI selectedItemDescription;
-    public GameObject useButton;
-    public GameObject equipButton;
-    public GameObject unEquipButton;
-    public ItemSlot[] curEquipped;
-    public List<Image> seperatingImages;
-
-    public static Inventory instance;
-    public ItemData battery;
-
-    private void Awake()
+    /// <summary>
+    /// Represents a single slot in the inventory containing an item and its quantity.
+    /// </summary>
+    [System.Serializable]
+    public class ItemSlot
     {
-        instance = this;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        inventoryWindow.SetActive(false);
-        slots = new ItemSlot[uidSlot.Length];
-
-        curEquipped = new ItemSlot[100];
-
-        for (int i = 0; i < slots.Length; i++)
-        {
-            slots[i] = new ItemSlot();
-            uidSlot[i].index = i;
-            uidSlot[i].Clear();
-        }
-
-        useButton.SetActive(false);
-        equipButton.SetActive(false);
-        unEquipButton.SetActive(false);
-        for (int i = 0;i < seperatingImages.Count;i++)
-        {
-            seperatingImages[i].gameObject.SetActive(false);
-        }
-        ClearSelectItemWindow();
+        public ItemData item;
+        public int quantity;
     }
 
     /// <summary>
-    /// Adds an item to the inventory, attempting to stack with existing items first.
+    /// Manages the player's inventory system including item storage, equipment, and usage.
+    /// Handles item stacking, equipment management, and item-specific effects like flashlight and battery.
     /// </summary>
-    /// <param name="item">The item to add</param>
-    /// <returns>True if item was successfully added, false if inventory is full</returns>
-    public bool AddItem(ItemData item)
+    public class Inventory : MonoBehaviour
     {
-        if (item.canStack)
+        public ItemSlotUI[] uidSlot;     
+        public ItemSlot[] slots;            
+
+        public GameObject inventoryWindow;     
+
+        [Header("Selected Item")]
+        private ItemSlot selectedItem;
+        private int selectedItemIndex;
+        public TextMeshProUGUI selectedItemName;
+        public TextMeshProUGUI selectedItemDescription;
+        public GameObject useButton;
+        public GameObject equipButton;
+        public GameObject unEquipButton;
+        public ItemSlot[] curEquipped;
+        public List<Image> seperatingImages;
+
+        public static Inventory instance;
+        public ItemData battery;
+
+        private void Awake()
         {
-            ItemSlot slotToStackTo = GetItemStack(item);
-            if (slotToStackTo != null)
+            instance = this;
+        }
+
+        // Start is called before the first frame update
+        void Start()
+        {
+            inventoryWindow.SetActive(false);
+            slots = new ItemSlot[uidSlot.Length];
+
+            curEquipped = new ItemSlot[100];
+
+            for (int i = 0; i < slots.Length; i++)
             {
-                slotToStackTo.quantity++;
+                slots[i] = new ItemSlot();
+                uidSlot[i].index = i;
+                uidSlot[i].Clear();
+            }
+
+            useButton.SetActive(false);
+            equipButton.SetActive(false);
+            unEquipButton.SetActive(false);
+            for (int i = 0;i < seperatingImages.Count;i++)
+            {
+                seperatingImages[i].gameObject.SetActive(false);
+            }
+            ClearSelectItemWindow();
+        }
+
+        /// <summary>
+        /// Adds an item to the inventory, attempting to stack with existing items first.
+        /// </summary>
+        /// <param name="item">The item to add</param>
+        /// <returns>True if item was successfully added, false if inventory is full</returns>
+        public bool AddItem(ItemData item)
+        {
+            if (item.canStack)
+            {
+                ItemSlot slotToStackTo = GetItemStack(item);
+                if (slotToStackTo != null)
+                {
+                    slotToStackTo.quantity++;
+                    UpdateUI();
+                    return true;  
+                }
+            }
+
+            ItemSlot emptySlot = GetEmptySlot();
+
+            if (emptySlot != null)
+            {
+                emptySlot.item = item;
+                emptySlot.quantity = 1;
                 UpdateUI();
                 return true;  
             }
+            return false;
         }
 
-        ItemSlot emptySlot = GetEmptySlot();
-
-        if (emptySlot != null)
+        void UpdateUI()
         {
-            emptySlot.item = item;
-            emptySlot.quantity = 1;
-            UpdateUI();
-            return true;  
-        }
-        return false;
-    }
-
-    void UpdateUI()
-    {
-        for (int i = 0; i < slots.Length; i++)
-        {
-            if (slots[i].item != null)
-                uidSlot[i].Set(slots[i]);
-            else
-                uidSlot[i].Clear();
-        }
-    }
-
-    ItemSlot GetItemStack(ItemData item)
-    {
-        for (int i = 0; i < slots.Length; i++)
-        {
-            if (slots[i].item == item && slots[i].quantity < item.maxStackAmount)
-                return slots[i];
-        }
-        return null;
-    }
-
-    ItemSlot GetEmptySlot()
-    {
-        for (int i = 0; i < slots.Length; i++)
-        {
-            if (slots[i].item == null)
-                return slots[i];
-        }
-        return null;
-    }
-
-    public void SelectItem(int index)
-    {
-        if (slots[index].item == null) return;
-
-        selectedItem = slots[index];
-        selectedItemIndex = index;
-
-        selectedItemName.text = selectedItem.item.displayName;
-        selectedItemDescription.text = selectedItem.item.description;
-        
-        if(selectedItem.item.type == ItemType.CONSUMABLE)
-        {
-            useButton.SetActive(true);
-            equipButton.SetActive(false);
-            unEquipButton.SetActive(false);
-        }
-        if(selectedItem.item.type == ItemType.EQUIPABLE && !uidSlot[index].equipped)
-        {
-            useButton.SetActive(false);
-            equipButton.SetActive(true);
-            unEquipButton.SetActive(false);
-        }
-        if(selectedItem.item.type == ItemType.EQUIPABLE && uidSlot[index].equipped)
-        {
-            useButton.SetActive(false);
-            equipButton.SetActive(false);
-            unEquipButton.SetActive(true);
-        }
-    }
-
-    public void ClearSelectItemWindow()
-    {
-        selectedItem = null;
-        selectedItemName.text = string.Empty;
-        selectedItemDescription.text = string.Empty;
-    }
-
-    public void OnUseButton()
-    {
-        if (selectedItem.item.type == ItemType.CONSUMABLE)
-        {
-            for (int i = 0; i < selectedItem.item.consumables.Length; i++)
+            for (int i = 0; i < slots.Length; i++)
             {
-                switch (selectedItem.item.consumables[i].type)
+                if (slots[i].item != null)
+                    uidSlot[i].Set(slots[i]);
+                else
+                    uidSlot[i].Clear();
+            }
+        }
+
+        ItemSlot GetItemStack(ItemData item)
+        {
+            for (int i = 0; i < slots.Length; i++)
+            {
+                if (slots[i].item == item && slots[i].quantity < item.maxStackAmount)
+                    return slots[i];
+            }
+            return null;
+        }
+
+        ItemSlot GetEmptySlot()
+        {
+            for (int i = 0; i < slots.Length; i++)
+            {
+                if (slots[i].item == null)
+                    return slots[i];
+            }
+            return null;
+        }
+
+        public void SelectItem(int index)
+        {
+            if (slots[index].item == null) return;
+
+            selectedItem = slots[index];
+            selectedItemIndex = index;
+
+            selectedItemName.text = selectedItem.item.displayName;
+            selectedItemDescription.text = selectedItem.item.description;
+        
+            if(selectedItem.item.type == ItemType.CONSUMABLE)
+            {
+                useButton.SetActive(true);
+                equipButton.SetActive(false);
+                unEquipButton.SetActive(false);
+            }
+            if(selectedItem.item.type == ItemType.EQUIPABLE && !uidSlot[index].equipped)
+            {
+                useButton.SetActive(false);
+                equipButton.SetActive(true);
+                unEquipButton.SetActive(false);
+            }
+            if(selectedItem.item.type == ItemType.EQUIPABLE && uidSlot[index].equipped)
+            {
+                useButton.SetActive(false);
+                equipButton.SetActive(false);
+                unEquipButton.SetActive(true);
+            }
+        }
+
+        public void ClearSelectItemWindow()
+        {
+            selectedItem = null;
+            selectedItemName.text = string.Empty;
+            selectedItemDescription.text = string.Empty;
+        }
+
+        public void OnUseButton()
+        {
+            if (selectedItem.item.type == ItemType.CONSUMABLE)
+            {
+                for (int i = 0; i < selectedItem.item.consumables.Length; i++)
                 {
-                    case ConsumableType.Battery:
-                        if (FlashLight.instance.battery <= 0)
-                        {
-                            HandLightSwitch.instance.TurnOnHandLight();
-                            FlashLight.instance.battery += 2;
-                            FlashLight.instance.StartConsumeBattery();
-                            CharacterStat.instance.StopMentalReduce();
-                            FlashLight.instance.UpdateUi();
+                    switch (selectedItem.item.consumables[i].type)
+                    {
+                        case ConsumableType.Battery:
+                            if (FlashLight.instance.battery <= 0)
+                            {
+                                HandLightSwitch.instance.TurnOnHandLight();
+                                FlashLight.instance.battery += 2;
+                                FlashLight.instance.StartConsumeBattery();
+                                CharacterStat.instance.StopMentalReduce();
+                                FlashLight.instance.UpdateUi();
+                                break;
+                            }
+                            else
+                            {
+                                FlashLight.instance.battery += 2;
+                                FlashLight.instance.UpdateUi();
+                                break;
+                            }
+                        case ConsumableType.CurMental:
+                            CharacterStat.instance.curMental += 10;
+                            CharacterStat.instance.UpdateStats();
                             break;
-                        }
-                        else
-                        {
-                            FlashLight.instance.battery += 2;
-                            FlashLight.instance.UpdateUi();
+                        case ConsumableType.MaxMental:
+                            CharacterStat.instance.maxMental += 10;
+                            CharacterStat.instance.curMental += 10;
+                            CharacterStat.instance.UpdateStats();
                             break;
-                        }
-                    case ConsumableType.CurMental:
-                        CharacterStat.instance.curMental += 10;
-                        CharacterStat.instance.UpdateStats();
-                        break;
-                    case ConsumableType.MaxMental:
-                        CharacterStat.instance.maxMental += 10;
-                        CharacterStat.instance.curMental += 10;
-                        CharacterStat.instance.UpdateStats();
-                        break;
+                    }
+                }
+            }
+
+            if (selectedItem.item.itemId == ItemID.RemoteController)
+            {
+                StartCoroutine(GetBatteryEvent(battery));
+            }
+
+            RemoveSelectedItem();
+        }
+        public void OnEquipButton()
+        {
+            if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
+            {
+                Equip(selectedItemIndex); 
+            }
+        }
+
+        /// <summary>
+        /// Handles item-specific side effects when equipping or unequipping.
+        /// For example, flashlight affects light source and mental reduction.
+        /// </summary>
+        /// <param name="itemId">The ID of the item being equipped/unequipped</param>
+        /// <param name="isEquipping">True if equipping, false if unequipping</param>
+        private void HandleItemSpecificEquipLogic(ItemID itemId, bool isEquipping)
+        {
+            if (itemId == ItemID.FLASHLIGHT)
+            {
+                if (isEquipping)
+                {
+                    HandLightSwitch.instance.TurnOnHandLight();
+                    FlashLight.instance.SetUi();
+                    FlashLight.instance.StartConsumeBattery();
+                    CharacterStat.instance.StopMentalReduce();
+                }
+                else
+                {
+                    HandLightSwitch.instance.TurnOffHandLight();
+                    FlashLight.instance.TurnOffUi();
+                    FlashLight.instance.StopConsumeBattery();
+                    CharacterStat.instance.StartMentalReduce();
                 }
             }
         }
 
-        if (selectedItem.item.itemId == ItemID.RemoteController)
+        void Equip(int index)
         {
-            StartCoroutine(GetBatteryEvent(battery));
-        }
+            HandleItemSpecificEquipLogic(slots[index].item.itemId, true);
 
-        RemoveSelectedItem();
-    }
-    public void OnEquipButton()
-    {
-        if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
-        {
-            Equip(selectedItemIndex); 
-        }
-    }
-
-    /// <summary>
-    /// Handles item-specific side effects when equipping or unequipping.
-    /// For example, flashlight affects light source and mental reduction.
-    /// </summary>
-    /// <param name="itemId">The ID of the item being equipped/unequipped</param>
-    /// <param name="isEquipping">True if equipping, false if unequipping</param>
-    private void HandleItemSpecificEquipLogic(ItemID itemId, bool isEquipping)
-    {
-        if (itemId == ItemID.FLASHLIGHT)
-        {
-            if (isEquipping)
+            for (int i = 0; i < curEquipped.Length; i++)
             {
-                HandLightSwitch.instance.TurnOnHandLight();
-                FlashLight.instance.SetUi();
-                FlashLight.instance.StartConsumeBattery();
-                CharacterStat.instance.StopMentalReduce();
-            }
-            else
-            {
-                HandLightSwitch.instance.TurnOffHandLight();
-                FlashLight.instance.TurnOffUi();
-                FlashLight.instance.StopConsumeBattery();
-                CharacterStat.instance.StartMentalReduce();
+                if (curEquipped[i] == null)
+                {
+                    curEquipped[i] = slots[index];
+                    uidSlot[index].equipped = true;
+                    equipButton.SetActive(false);
+                    unEquipButton.SetActive(true);
+                    return;
+                }
             }
         }
-    }
 
-    void Equip(int index)
-    {
-        HandleItemSpecificEquipLogic(slots[index].item.itemId, true);
-
-        for (int i = 0; i < curEquipped.Length; i++)
+        public void OnUnEquipButton()
         {
-            if (curEquipped[i] == null)
+            if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
             {
-                curEquipped[i] = slots[index];
-                uidSlot[index].equipped = true;
-                equipButton.SetActive(false);
-                unEquipButton.SetActive(true);
-                return;
+                UnEquip(selectedItemIndex);
             }
         }
-    }
 
-    public void OnUnEquipButton()
-    {
-        if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
+        void UnEquip(int index)
         {
-            UnEquip(selectedItemIndex);
-        }
-    }
-
-    void UnEquip(int index)
-    {
-        HandleItemSpecificEquipLogic(slots[index].item.itemId, false);
+            HandleItemSpecificEquipLogic(slots[index].item.itemId, false);
         
-        for (int i = 0; i < curEquipped.Length; i++)
-        {
-            if (curEquipped[i] == slots[index])
+            for (int i = 0; i < curEquipped.Length; i++)
             {
-                curEquipped[i] = null;
-                uidSlot[index].equipped = false;
+                if (curEquipped[i] == slots[index])
+                {
+                    curEquipped[i] = null;
+                    uidSlot[index].equipped = false;
 
-                equipButton.SetActive(true);
-                unEquipButton.SetActive(false); 
-                return;
+                    equipButton.SetActive(true);
+                    unEquipButton.SetActive(false); 
+                    return;
+                }
             }
         }
-    }
-    public bool IsItemEquipped(ItemData item)
-    {
-        for (int i = 0; i < curEquipped.Length; i++)
+        public bool IsItemEquipped(ItemData item)
         {
-            if (curEquipped[i] != null && curEquipped[i].item == item)
+            for (int i = 0; i < curEquipped.Length; i++)
             {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void RemoveSelectedItem()
-    {
-        selectedItem.quantity--;    
-        if (selectedItem.quantity <= 0)
-        {
-            if (uidSlot[selectedItemIndex].equipped) UnEquip(selectedItemIndex);
-            selectedItem.item = null;
-            ClearSelectItemWindow();
-        }
-
-        UpdateUI();
-    }
-    public bool HasItems(ItemData item, int quantity)
-    {
-        int totalQuantity = 0;
-
-        for (int i = 0; i < slots.Length; i++)
-        {
-            if (slots[i].item == item)
-            {
-                totalQuantity += slots[i].quantity;
-
-                if (totalQuantity >= quantity)
+                if (curEquipped[i] != null && curEquipped[i].item == item)
+                {
                     return true;
+                }
             }
+            return false;
         }
-        return false;
-    }
-    
-    private IEnumerator GetBatteryEvent(ItemData item)
-    {
-        //inventoryWindow.SetActive(false);
-        Time.timeScale = 0;
-        for (int i = 0; i < seperatingImages.Count; i++)
+
+        private void RemoveSelectedItem()
         {
-            seperatingImages[i].gameObject.SetActive(true);
-            yield return new WaitForSecondsRealtime(2f);
-            seperatingImages[i].gameObject.SetActive(false);
+            selectedItem.quantity--;    
+            if (selectedItem.quantity <= 0)
+            {
+                if (uidSlot[selectedItemIndex].equipped) UnEquip(selectedItemIndex);
+                selectedItem.item = null;
+                ClearSelectItemWindow();
+            }
+
+            UpdateUI();
         }
-        Time.timeScale = 1;
-        AddItem(item);
+        public bool HasItems(ItemData item, int quantity)
+        {
+            int totalQuantity = 0;
+
+            for (int i = 0; i < slots.Length; i++)
+            {
+                if (slots[i].item == item)
+                {
+                    totalQuantity += slots[i].quantity;
+
+                    if (totalQuantity >= quantity)
+                        return true;
+                }
+            }
+            return false;
+        }
+    
+        private IEnumerator GetBatteryEvent(ItemData item)
+        {
+            //inventoryWindow.SetActive(false);
+            Time.timeScale = 0;
+            for (int i = 0; i < seperatingImages.Count; i++)
+            {
+                seperatingImages[i].gameObject.SetActive(true);
+                yield return new WaitForSecondsRealtime(2f);
+                seperatingImages[i].gameObject.SetActive(false);
+            }
+            Time.timeScale = 1;
+            AddItem(item);
+        }
     }
 }

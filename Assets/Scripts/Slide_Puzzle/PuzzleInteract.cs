@@ -1,11 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
-using Microsoft.Unity.VisualStudio.Editor;
-using Unity.VisualScripting;
+using InputSystem;
+using invertoryAndItem;
+using ScriptableObjects.ScriptableObject_items.Script;
 using UnityEngine;
-using static UnityEditor.Progress;
 
-namespace SlicePuzzle
+namespace Slide_Puzzle
 {
     public class PuzzleInteract : InteractableObject
     {
@@ -24,11 +23,11 @@ namespace SlicePuzzle
             }
             else
             {
-                Destroy(this);
+                Object.Destroy(this);
             }
         }
 
-        private void Start()
+        protected override void Start()
         {
             text.SetActive(false);
             slicePuzzleCanvas.gameObject.SetActive(false);

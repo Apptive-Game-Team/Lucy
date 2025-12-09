@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Creature
+namespace Scripts_Creatures.Creatures
 {
     public class Stunnee : Avoider
     {

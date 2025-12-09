@@ -1,8 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
+using Lucy;
+using Scripts_Creatures.Creatures;
+using Scripts_Creatures.Util;
 using UnityEngine;
 
-namespace Creature
+namespace Scripts_Creatures
 {
     public class HandLight : MonoBehaviour
     {

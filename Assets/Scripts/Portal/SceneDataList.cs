@@ -1,41 +1,43 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum SceneID
+namespace Portal
 {
-    NONE = 0,
-    FLOOR_FIRST = 1,
-    STAIR_FIRST = 2,
-    FLOOR_SECOND = 3,
-    PUZZLE_2F = 4,
-    FLOOR_MAZE = 5,
-    ENDING_SCENE_MID_VER = 6,
-}
-
-
-[Serializable]
-public class SceneData
-{
-    public SceneID sceneID;
-    public string sceneName;
-
-}
-
-[CreateAssetMenu(fileName = "SceneDataList", menuName = "ScriptableObject/New SceneDataList")]
-public class SceneDataList : ScriptableObject
-{
-
-    //±¸Çö ¿¹Á¤ - ½ÃÀÛ½Ã ·ÎµåµÈ ¾À ¸®½ºÆ®¿¡ ¾À µ¥ÀÌÅÍ ¸®½ºÆ®ÀÇ °¢ ¾À ³×ÀÓÀÌ ´ëÀÀÀÌ µÇ´Â°¡? ¾ÈµÇ¸é ¿¡·¯ ¸Þ¼¼Áö Ãâ·Â
-
-    public List<SceneData> sceneDatas;
-
-    //°­°Ç¼ºÀÌ ¶³¾îÁü
-    public SceneData GetSceneDataByID(SceneID id)
+    public enum SceneID
     {
-        SceneData sceneData = sceneDatas.Find(x => x.sceneID == id);
-        if (sceneData == null) Debug.LogErrorFormat("There's No Scene! Please Check SceneDataList!");
-        return sceneData;
+        NONE = 0,
+        FLOOR_FIRST = 1,
+        STAIR_FIRST = 2,
+        FLOOR_SECOND = 3,
+        PUZZLE_2F = 4,
+        FLOOR_MAZE = 5,
+        ENDING_SCENE_MID_VER = 6,
+    }
+
+
+    [Serializable]
+    public class SceneData
+    {
+        public SceneID sceneID;
+        public string sceneName;
+
+    }
+
+    [CreateAssetMenu(fileName = "SceneDataList", menuName = "ScriptableObject/New SceneDataList")]
+    public class SceneDataList : ScriptableObject
+    {
+
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½Û½ï¿½ ï¿½Îµï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´Â°ï¿½? ï¿½ÈµÇ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+
+        public List<SceneData> sceneDatas;
+
+        //ï¿½ï¿½ï¿½Ç¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        public SceneData GetSceneDataByID(SceneID id)
+        {
+            SceneData sceneData = sceneDatas.Find(x => x.sceneID == id);
+            if (sceneData == null) Debug.LogErrorFormat("There's No Scene! Please Check SceneDataList!");
+            return sceneData;
+        }
     }
 }

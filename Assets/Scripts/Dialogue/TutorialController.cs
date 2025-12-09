@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Tutorial
+namespace Dialogue
 {
     public class TutorialController : MonoBehaviour
     {

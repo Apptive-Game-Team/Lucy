@@ -1,43 +1,44 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using SoundSystem;
+using InputSystem;
 
-public enum UISound{
-    BUTTON_CLICK=0,
-}
-
-public class UISoundController : SoundController, IKeyInputListener
+namespace soundSystem_
 {
-    private List<SoundSource> soundSources = new List<SoundSource>();
-
-    protected override void Awake()
-    {
-        base.Awake();
+    public enum UISound{
+        BUTTON_CLICK=0,
     }
 
-    private void Start()
+    public class UISoundController : SoundController, IKeyInputListener
     {
-        InitSoundSources();
-        InputManager.Instance.SetKeyListener(this);
-    }
+        private readonly List<SoundSource> soundSources = new List<SoundSource>();
 
-    public void PlayButton(UISound uISound)
-    {
-        audioSource.clip = soundSources[(int)uISound].sound;
-        audioSource.Play();
-    }
-
-    private void InitSoundSources()
-    {
-        soundSources.Add(SoundManager.Instance.soundSources.GetByName("ButtonSound").Value);
-    }
-
-    void IKeyInputListener.OnKeyDown(ActionCode action)
-    {
-        if (action == ActionCode.SelectClick || action == ActionCode.OpenInventory)
+        protected override void Awake()
         {
-            PlayButton(UISound.BUTTON_CLICK);
+            base.Awake();
+        }
+
+        private void Start()
+        {
+            InitSoundSources();
+            InputManager.Instance.SetKeyListener(this);
+        }
+
+        public void PlayButton(UISound uISound)
+        {
+            audioSource.clip = soundSources[(int)uISound].sound;
+            audioSource.Play();
+        }
+
+        private void InitSoundSources()
+        {
+            soundSources.Add(SoundManager.Instance.soundSources.GetByName("ButtonSound").Value);
+        }
+
+        void IKeyInputListener.OnKeyDown(ActionCode action)
+        {
+            if (action == ActionCode.SelectClick || action == ActionCode.OpenInventory)
+            {
+                PlayButton(UISound.BUTTON_CLICK);
+            }
         }
     }
 }

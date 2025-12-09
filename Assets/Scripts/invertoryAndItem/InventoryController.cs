@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class InventoryController : SingletonObject<InventoryController>
+namespace invertoryAndItem
 {
-    protected override void Awake()
+    public class InventoryController : SingletonObject<InventoryController>
     {
-        base.Awake();
+        protected override void Awake()
+        {
+            base.Awake();
+        }
     }
 }

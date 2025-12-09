@@ -1,9 +1,8 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
-namespace SoundSystem
+namespace soundSystem_
 {
     [Serializable]
     public struct SoundSource

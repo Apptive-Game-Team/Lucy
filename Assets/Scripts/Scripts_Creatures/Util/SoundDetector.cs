@@ -1,77 +1,78 @@
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
-public class SoundDetector : MonoBehaviour
+namespace Scripts_Creatures.Util
 {
-    [SerializeField]
-    private float maxDistance = 10f;
-
-    [SerializeField] bool debugMode = true;
-
-    [SerializeField] LayerMask targetMask;
-
-    List<Collider2D> hitTargetList = new List<Collider2D>();
-
-    Vector3? targetPosition;
-
-    public void SetTargetMask(LayerMask targetMask)
+    public class SoundDetector : MonoBehaviour
     {
-        this.targetMask = targetMask;
-    }
+        [SerializeField]
+        private float maxDistance = 10f;
 
-    public List<Collider2D> Detect()
-    {
-        Collider2D[] targets = FindNearColliders();
-        hitTargetList.Clear();
+        [SerializeField] bool debugMode = true;
 
-        foreach(Collider2D target in targets)
+        [SerializeField] LayerMask targetMask;
+
+        readonly List<Collider2D> hitTargetList = new List<Collider2D>();
+
+        Vector3? targetPosition;
+
+        public void SetTargetMask(LayerMask targetMask)
         {
-            float distance = Vector3.Distance(transform.position, target.transform.position);
-            AudioSource source = target.GetComponentInChildren<AudioSource>();
-
-            if (distance < source.maxDistance && source.isPlaying)
-            {
-                hitTargetList.Add(target);
-            }
+            this.targetMask = targetMask;
         }
+
+        public List<Collider2D> Detect()
+        {
+            Collider2D[] targets = FindNearColliders();
+            hitTargetList.Clear();
+
+            foreach(Collider2D target in targets)
+            {
+                float distance = Vector3.Distance(transform.position, target.transform.position);
+                AudioSource source = target.GetComponentInChildren<AudioSource>();
+
+                if (distance < source.maxDistance && source.isPlaying)
+                {
+                    hitTargetList.Add(target);
+                }
+            }
 
 #if UNITY_EDITOR
-        if (debugMode)
-        {
-            print("sound detector found " + hitTargetList.Count + " target");
-        }
+            if (debugMode)
+            {
+                print("sound detector found " + hitTargetList.Count + " target");
+            }
 #endif
-        return hitTargetList;
-    }
+            return hitTargetList;
+        }
 
-    private Collider2D[] FindNearColliders()
-    {
-        Collider2D[] targets = Physics2D.OverlapCircleAll(
+        private Collider2D[] FindNearColliders()
+        {
+            Collider2D[] targets = Physics2D.OverlapCircleAll(
                 transform.position,
                 maxDistance,
                 targetMask
             );
 
-        return targets;
-    }
+            return targets;
+        }
 
-    private void OnDrawGizmos()
-    {
-        if (debugMode)
+        private void OnDrawGizmos()
         {
-            Gizmos.color = Color.red;
-            Vector3 myPos = transform.position;
-            Gizmos.DrawWireSphere(myPos, maxDistance);
-
-            if (targetPosition.HasValue)
+            if (debugMode)
             {
-                Debug.DrawLine(
-                 transform.position,
-                 targetPosition.Value,
-                 Color.red
-                 );
+                Gizmos.color = Color.red;
+                Vector3 myPos = transform.position;
+                Gizmos.DrawWireSphere(myPos, maxDistance);
+
+                if (targetPosition.HasValue)
+                {
+                    Debug.DrawLine(
+                        transform.position,
+                        targetPosition.Value,
+                        Color.red
+                    );
+                }
             }
         }
     }

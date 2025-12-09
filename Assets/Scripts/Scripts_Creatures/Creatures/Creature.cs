@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Creature;
+using Scripts_Creatures.Util;
 using UnityEngine;
-using static Team6203.Util;
+using static Scripts_Creatures.Util.Util;
 
-namespace Creature{
+namespace Scripts_Creatures.Creatures{
     /// <summary>
     /// States representing the creature's current behavior pattern.
     /// </summary>

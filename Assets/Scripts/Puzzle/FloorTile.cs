@@ -1,24 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
+using invertoryAndItem;
 using UnityEngine;
 
-public class FloorTile : MonoBehaviour
+namespace Puzzle
 {
-    private void OnTriggerEnter2D(Collider2D other)
+    public class FloorTile : MonoBehaviour
     {
-        if(other.CompareTag("Player"))
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            FlashLight.instance.consumeAmount = 1;
-            CharacterStat.instance.reduceAmount = 10;
+            if(other.CompareTag("Player"))
+            {
+                FlashLight.instance.consumeAmount = 1;
+                CharacterStat.instance.reduceAmount = 10;
+            }
         }
-    }
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
+        private void OnTriggerExit2D(Collider2D other)
         {
-            FlashLight.instance.consumeAmount = 3;
-            CharacterStat.instance.reduceAmount = 30;
+            if (other.CompareTag("Player"))
+            {
+                FlashLight.instance.consumeAmount = 3;
+                CharacterStat.instance.reduceAmount = 30;
+            }
         }
     }
 }

@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace SlicePuzzle
+namespace Slide_Puzzle
 {
     public class CloseButton : MonoBehaviour
     {
@@ -11,7 +8,7 @@ namespace SlicePuzzle
 
         public void OnButtonClick()
         {
-            // ¹öÆ°ÀÌ Å¬¸¯µÇ¸é Canvas¸¦ È°¼ºÈ­ÇÕ´Ï´Ù.
+            // ï¿½ï¿½Æ°ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ç¸ï¿½ Canvasï¿½ï¿½ È°ï¿½ï¿½È­ï¿½Õ´Ï´ï¿½.
             if (slicePuzzleCanvas != null)
             {
                 slicePuzzleCanvas.gameObject.SetActive(false);

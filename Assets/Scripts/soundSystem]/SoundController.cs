@@ -1,18 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using UnityEngine;
 
-public class SoundController : MonoBehaviour
+namespace soundSystem_
 {
-    protected AudioSource audioSource;
-
-    protected virtual void Awake()
+    public class SoundController : MonoBehaviour
     {
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
+        protected AudioSource audioSource;
+
+        protected virtual void Awake()
         {
-            throw new Exception("Audio Source is not found");
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                throw new Exception("Audio Source is not found");
+            }
         }
     }
 }

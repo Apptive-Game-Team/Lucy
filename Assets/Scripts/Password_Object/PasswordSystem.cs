@@ -1,84 +1,86 @@
-using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
-public class PasswordSystem : MonoBehaviour
+namespace Password_Object
 {
-    [SerializeField] private string currentPassword = "";
-
-    private string password = "";
-
-    PasswordObject passwordObject;
-
-    Canvas passwordCanvas;
-
-    TMP_Text text;
-
-    [SerializeField] List<Button> buttons;
-
-    private void Awake()
+    public class PasswordSystem : MonoBehaviour
     {
-        text = gameObject.GetComponentInChildren<TMP_Text>();
-        passwordCanvas = gameObject.GetComponentInChildren<Canvas>();
-    }
+        [SerializeField] private string currentPassword = "";
 
-    void Start()
-    {
-        InitButtonsOnClick();
-        passwordCanvas.gameObject.SetActive(false);
-    }
+        private string password = "";
 
-    private void OnEnable()
-    {
-        currentPassword = "";
-        text.SetText(currentPassword);
-    }
+        PasswordObject passwordObject;
 
-    public void ClosePasswordPage()
-    {
-        passwordCanvas.gameObject.SetActive(false);
-    }
+        Canvas passwordCanvas;
 
-    public void SetPassword(string password, PasswordObject passwordObject)
-    {
-        this.passwordObject = passwordObject;
-        passwordCanvas.gameObject.SetActive(true);
-        this.password = password;
-        currentPassword = "";
-        text.SetText(currentPassword);
-    }
+        TMP_Text text;
 
-    private void InitButtonsOnClick()
-    {
-        for (int i = 0; i < 10; i++) {
-            int index = i;
-            buttons[i].onClick.AddListener(() =>
-            {
-                currentPassword += index.ToString();
-                text.SetText(currentPassword);
-                
-            });
+        [SerializeField] List<Button> buttons;
+
+        private void Awake()
+        {
+            text = gameObject.GetComponentInChildren<TMP_Text>();
+            passwordCanvas = gameObject.GetComponentInChildren<Canvas>();
         }
 
-        buttons[10].onClick.AddListener(() =>
+        void Start()
+        {
+            InitButtonsOnClick();
+            passwordCanvas.gameObject.SetActive(false);
+        }
+
+        private void OnEnable()
         {
             currentPassword = "";
             text.SetText(currentPassword);
-        });
+        }
 
-        buttons[11].onClick.AddListener(() =>
+        public void ClosePasswordPage()
         {
-            if (password == currentPassword)
-            {
-                passwordObject.Unlock();
-                passwordCanvas.gameObject.SetActive(false);
-            } else
+            passwordCanvas.gameObject.SetActive(false);
+        }
+
+        public void SetPassword(string password, PasswordObject passwordObject)
+        {
+            this.passwordObject = passwordObject;
+            passwordCanvas.gameObject.SetActive(true);
+            this.password = password;
+            currentPassword = "";
+            text.SetText(currentPassword);
+        }
+
+        private void InitButtonsOnClick()
+        {
+            for (int i = 0; i < 10; i++) {
+                int index = i;
+                buttons[i].onClick.AddListener(() =>
+                {
+                    currentPassword += index.ToString();
+                    text.SetText(currentPassword);
+                
+                });
+            }
+
+            buttons[10].onClick.AddListener(() =>
             {
                 currentPassword = "";
                 text.SetText(currentPassword);
-            }
-        });
+            });
+
+            buttons[11].onClick.AddListener(() =>
+            {
+                if (password == currentPassword)
+                {
+                    passwordObject.Unlock();
+                    passwordCanvas.gameObject.SetActive(false);
+                } else
+                {
+                    currentPassword = "";
+                    text.SetText(currentPassword);
+                }
+            });
+        }
     }
 }

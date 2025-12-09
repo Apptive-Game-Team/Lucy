@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Scripts_Creatures.Util;
 using UnityEngine;
-using static Team6203.Util;
 
-namespace Creature
+namespace Scripts_Creatures.Creatures
 {
     public class Avoider : Creature
     {

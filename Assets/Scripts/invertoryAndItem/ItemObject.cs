@@ -1,22 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+using ScriptableObjects.ScriptableObject_items.Script;
 using UnityEngine;
 
-public class ItemObject : InteractableObject
+namespace invertoryAndItem
 {
-    public ItemData item;
-    public GameObject Text;
-
-    protected override void Start()
+    public class ItemObject : InteractableObject
     {
-        base.Start();
-        Text.SetActive(false);
-    }
+        public ItemData item;
+        public GameObject Text;
 
-    protected override void ActOnTrigger(Collider2D other)
-    {
-        Inventory.instance.AddItem(item);
-        Destroy(gameObject);
+        protected override void Start()
+        {
+            base.Start();
+            Text.SetActive(false);
+        }
+
+        protected override void ActOnTrigger(Collider2D other)
+        {
+            Inventory.instance.AddItem(item);
+            Object.Destroy(gameObject);
+        }
     }
 }

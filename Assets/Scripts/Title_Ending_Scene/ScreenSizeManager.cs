@@ -1,37 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ScreenSizeManager : MonoBehaviour
+namespace Title_Ending_Scene
 {
-    public int titleWidth = 1080;
-    public int titleHeight = 1080;
-    public int defaultWidth = 1920;
-    public int defaultHeight = 1080;
-    public bool fullscreen = false;
-
-    void Start()
+    public class ScreenSizeManager : MonoBehaviour
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        public int titleWidth = 1080;
+        public int titleHeight = 1080;
+        public int defaultWidth = 1920;
+        public int defaultHeight = 1080;
+        public bool fullscreen = false;
 
-        OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
-    }
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name == "Title")
+        void Start()
         {
-            Screen.SetResolution(titleWidth, titleHeight, fullscreen);
-        }
-        else
-        {
-            Screen.SetResolution(defaultWidth, defaultHeight, fullscreen);
-        }
-    }
+            SceneManager.sceneLoaded += OnSceneLoaded;
 
-    void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+            OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+        }
+
+        void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (scene.name == "Title")
+            {
+                Screen.SetResolution(titleWidth, titleHeight, fullscreen);
+            }
+            else
+            {
+                Screen.SetResolution(defaultWidth, defaultHeight, fullscreen);
+            }
+        }
+
+        void OnDestroy()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
     }
 }

@@ -1,46 +1,46 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
-using SoundSystem;
+using UnityEngine;
 
-public class SoundManager : SingletonObject<SoundManager>
+namespace soundSystem_
 {
-
-    protected override void Awake()
+    public class SoundManager : SingletonObject<SoundManager>
     {
-        base.Awake();
-        if (audioSource == null)
+
+        protected override void Awake()
         {
-            try
+            base.Awake();
+            if (audioSource == null)
             {
-                audioSource = gameObject.GetComponent<AudioSource>();
-            } catch
-            {
-                throw new Exception("AudioSource is not found");
+                try
+                {
+                    audioSource = gameObject.GetComponent<AudioSource>();
+                } catch
+                {
+                    throw new Exception("AudioSource is not found");
+                }
             }
         }
-    }
 
-    [SerializeField]
-    public SoundSources soundSources;
+        [SerializeField]
+        public SoundSources soundSources;
 
-    [SerializeField]
-    private AudioSource audioSource;
+        [SerializeField]
+        private AudioSource audioSource;
 
-    private void Start()
-    {
-        PlayBackgroundMusic("HorrorStrange");
-    }
+        private void Start()
+        {
+            PlayBackgroundMusic("HorrorStrange");
+        }
 
-    public void PlayBackgroundMusic(string name)
-    {
-        audioSource.clip = soundSources.GetByName(name).Value.sound;
-        audioSource.Play();
-    }
+        public void PlayBackgroundMusic(string name)
+        {
+            audioSource.clip = soundSources.GetByName(name).Value.sound;
+            audioSource.Play();
+        }
 
-    public void StopBackgroundMusic()
-    {
-        audioSource.Stop();
+        public void StopBackgroundMusic()
+        {
+            audioSource.Stop();
+        }
     }
 }

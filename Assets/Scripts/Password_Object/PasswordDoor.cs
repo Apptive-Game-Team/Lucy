@@ -1,47 +1,52 @@
+using InputSystem;
+using Scripts_door;
 using UnityEngine;
 
-public class PasswordDoor : PasswordObject
+namespace Password_Object
 {
-    public GameObject Text;
-
-    [SerializeField] DoorInfo doorInfo;
-    [SerializeField] GameObject door;
-
-    public override void Unlock()
+    public class PasswordDoor : PasswordObject
     {
-        base.Unlock();
-        doorInfo.isLocked = false;
-        door.SetActive(!door.activeSelf);
-    }
+        public GameObject Text;
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.tag.Equals("Player"))
+        [SerializeField] DoorInfo doorInfo;
+        [SerializeField] GameObject door;
+
+        public override void Unlock()
         {
-            Text.SetActive(true);
+            base.Unlock();
+            doorInfo.isLocked = false;
+            door.SetActive(!door.activeSelf);
         }
-    }
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.gameObject.tag.Equals("Player"))
+
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            if (InputManager.Instance.GetKeyDown(ActionCode.Interaction))
+            if (other.gameObject.tag.Equals("Player"))
             {
-                if (!doorInfo.isLocked)
+                Text.SetActive(true);
+            }
+        }
+        private void OnTriggerStay2D(Collider2D other)
+        {
+            if (other.gameObject.tag.Equals("Player"))
+            {
+                if (InputManager.Instance.GetKeyDown(ActionCode.Interaction))
                 {
-                    door.SetActive(!door.activeSelf);
-                } else 
-                {
-                    OpenPasswordPage();
+                    if (!doorInfo.isLocked)
+                    {
+                        door.SetActive(!door.activeSelf);
+                    } else 
+                    {
+                        OpenPasswordPage();
+                    }
                 }
             }
         }
-    }
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.gameObject.tag.Equals("Player"))
+        private void OnTriggerExit2D(Collider2D other)
         {
-            Text.SetActive(false);
+            if (other.gameObject.tag.Equals("Player"))
+            {
+                Text.SetActive(false);
+            }
         }
     }
 }

@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Character : SingletonObject<Character>
+namespace Portal
 {
-    protected override void Awake()
+    public class Character : SingletonObject<Character>
     {
-        base.Awake();
+        protected override void Awake()
+        {
+            base.Awake();
+        }
     }
 }

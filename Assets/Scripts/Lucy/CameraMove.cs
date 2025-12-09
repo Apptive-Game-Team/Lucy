@@ -1,9 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using Portal;
+using ReferenceSystem;
+using UnityEngine;
 
-namespace CharacterCamera
+namespace Lucy
 {
     public class CameraMove : SingletonObject<CameraMove>, ISceneChangeListener
     {

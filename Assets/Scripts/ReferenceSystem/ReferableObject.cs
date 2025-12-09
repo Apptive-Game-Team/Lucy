@@ -1,11 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ReferableObject : MonoBehaviour
+namespace ReferenceSystem
 {
-    protected virtual void Awake()
+    public class ReferableObject : MonoBehaviour
     {
-        ReferenceManager.Instance.SetReferableObject(gameObject.name, this, false);
+        protected virtual void Awake()
+        {
+            ReferenceManager.Instance.SetReferableObject(gameObject.name, this, false);
+        }
     }
 }

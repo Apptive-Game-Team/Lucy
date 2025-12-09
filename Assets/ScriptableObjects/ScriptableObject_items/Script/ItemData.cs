@@ -1,57 +1,58 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public enum ItemType
+namespace ScriptableObjects.ScriptableObject_items.Script
 {
-    NONE,
-    EQUIPABLE,
-    CONSUMABLE,
-    KEY,
-}
+    public enum ItemType
+    {
+        NONE,
+        EQUIPABLE,
+        CONSUMABLE,
+        KEY,
+    }
 
-public enum ConsumableType
-{
-    Stamina,
-    Battery,
-    CurMental,
-    MaxMental,
-    RemoteController
-}
+    public enum ConsumableType
+    {
+        Stamina,
+        Battery,
+        CurMental,
+        MaxMental,
+        RemoteController
+    }
 
-public enum ItemID
-{
-    NONE,
-    BATTERY,
-    FLASHLIGHT,
-    CANDY,
-    DOLL,
-    RemoteController,
-    KEY_3F
-}
+    public enum ItemID
+    {
+        NONE,
+        BATTERY,
+        FLASHLIGHT,
+        CANDY,
+        DOLL,
+        RemoteController,
+        KEY_3F
+    }
 
-[Serializable]
-public class ConsumableItemData
-{
-    public ConsumableType type;
-    public float value;
-}
+    [Serializable]
+    public class ConsumableItemData
+    {
+        public ConsumableType type;
+        public float value;
+    }
 
-[CreateAssetMenu(fileName = "Item", menuName = "New Item")]
-public class ItemData : ScriptableObject
-{
-    [Header("Info")]
-    public string displayName;
-    public string description;
-    public ItemType type;
-    public Sprite icon;
-    public ItemID itemId;
+    [CreateAssetMenu(fileName = "Item", menuName = "New Item")]
+    public class ItemData : ScriptableObject
+    {
+        [Header("Info")]
+        public string displayName;
+        public string description;
+        public ItemType type;
+        public Sprite icon;
+        public ItemID itemId;
 
-    [Header("Stacking")]
-    public bool canStack;
-    public int maxStackAmount;
+        [Header("Stacking")]
+        public bool canStack;
+        public int maxStackAmount;
 
-    [Header("Consumable")]
-    public ConsumableItemData[] consumables;
+        [Header("Consumable")]
+        public ConsumableItemData[] consumables;
+    }
 }

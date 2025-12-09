@@ -1,63 +1,65 @@
-using System.Collections;
-using System.Collections.Generic;
+using InputSystem;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class InventoryToggleManager : MonoBehaviour, IKeyInputListener
+namespace invertoryAndItem
 {
-    [Header("Events")]
-    public UnityEvent onOpenInventory;
-    public UnityEvent onCloseInventory;
-
-    public GameObject inventoryWindow;
-
-    public GameObject useButton;
-    public GameObject equipButton;
-    public GameObject unEquipButton;
-
-    private InputManager inputManager;
-
-    private void Start()
+    public class InventoryToggleManager : MonoBehaviour, IKeyInputListener
     {
-        inputManager = InputManager.Instance;
-        inputManager.SetKeyListener(this);
-    }
+        [Header("Events")]
+        public UnityEvent onOpenInventory;
+        public UnityEvent onCloseInventory;
 
-    public void ToggleInventory()
-    {
-        bool isActive = inventoryWindow.activeSelf;
+        public GameObject inventoryWindow;
 
-        if (isActive)
+        public GameObject useButton;
+        public GameObject equipButton;
+        public GameObject unEquipButton;
+
+        private InputManager inputManager;
+
+        private void Start()
         {
-            CloseInventory();
+            inputManager = InputManager.Instance;
+            inputManager.SetKeyListener(this);
         }
-        else
+
+        public void ToggleInventory()
         {
-            OpenInventory();
+            bool isActive = inventoryWindow.activeSelf;
+
+            if (isActive)
+            {
+                CloseInventory();
+            }
+            else
+            {
+                OpenInventory();
+            }
         }
-    }
 
-    public void OpenInventory()
-    {
-        inventoryWindow.SetActive(true);
-        onOpenInventory?.Invoke();
-    }
-
-    public void CloseInventory()
-    {
-        Inventory.instance.ClearSelectItemWindow();
-        inventoryWindow.SetActive(false);
-        onCloseInventory?.Invoke();
-        useButton.SetActive(false);
-        equipButton.SetActive(false);
-        unEquipButton.SetActive(false);
-    }
-
-    void IKeyInputListener.OnKeyDown(ActionCode action)
-    {
-        if (action == ActionCode.OpenInventory)
+        public void OpenInventory()
         {
-            ToggleInventory();
+            inventoryWindow.SetActive(true);
+            onOpenInventory?.Invoke();
+        }
+
+        public void CloseInventory()
+        {
+            Inventory.instance.ClearSelectItemWindow();
+            inventoryWindow.SetActive(false);
+            onCloseInventory?.Invoke();
+            useButton.SetActive(false);
+            equipButton.SetActive(false);
+            unEquipButton.SetActive(false);
+        }
+
+        void IKeyInputListener.OnKeyDown(ActionCode action)
+        {
+            if (action == ActionCode.OpenInventory)
+            {
+                ToggleInventory();
+            }
         }
     }
 }

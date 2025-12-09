@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Team6203
+namespace Scripts_Creatures.Util
 {
     public class Util
     {

@@ -1,9 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using InputSystem;
+using soundSystem_;
 using UnityEngine;
 
-namespace CharacterCamera
+namespace Lucy
 {
     public class CharacterMove : MonoBehaviour
     {

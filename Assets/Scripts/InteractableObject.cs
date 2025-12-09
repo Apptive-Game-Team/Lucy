@@ -1,3 +1,4 @@
+using InputSystem;
 using UnityEngine;
 
 public abstract class InteractableObject : MonoBehaviour, IKeyInputListener
