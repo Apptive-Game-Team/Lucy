@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+/// <summary>
+/// Action codes representing different player inputs in the game.
+/// </summary>
 public enum ActionCode
 {
     Interaction,
@@ -14,6 +17,11 @@ public enum ActionCode
     SelectClick,
 }
 
+/// <summary>
+/// Centralized input management system that handles key bindings, input detection,
+/// and notifies registered listeners of key events.
+/// Supports key remapping and enables/disables specific actions dynamically.
+/// </summary>
 public class InputManager : SingletonObject<InputManager>
 {
     private const float KEY_LISTENER_DELAY = 0.05f;

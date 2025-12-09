@@ -4,6 +4,9 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
+/// <summary>
+/// Represents a single slot in the inventory containing an item and its quantity.
+/// </summary>
 [System.Serializable]
 public class ItemSlot
 {
@@ -11,6 +14,10 @@ public class ItemSlot
     public int quantity;
 }
 
+/// <summary>
+/// Manages the player's inventory system including item storage, equipment, and usage.
+/// Handles item stacking, equipment management, and item-specific effects like flashlight and battery.
+/// </summary>
 public class Inventory : MonoBehaviour
 {
     public ItemSlotUI[] uidSlot;     
@@ -62,6 +69,11 @@ public class Inventory : MonoBehaviour
         ClearSelectItemWindow();
     }
 
+    /// <summary>
+    /// Adds an item to the inventory, attempting to stack with existing items first.
+    /// </summary>
+    /// <param name="item">The item to add</param>
+    /// <returns>True if item was successfully added, false if inventory is full</returns>
     public bool AddItem(ItemData item)
     {
         if (item.canStack)
@@ -207,16 +219,36 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles item-specific side effects when equipping or unequipping.
+    /// For example, flashlight affects light source and mental reduction.
+    /// </summary>
+    /// <param name="itemId">The ID of the item being equipped/unequipped</param>
+    /// <param name="isEquipping">True if equipping, false if unequipping</param>
+    private void HandleItemSpecificEquipLogic(ItemID itemId, bool isEquipping)
+    {
+        if (itemId == ItemID.FLASHLIGHT)
+        {
+            if (isEquipping)
+            {
+                HandLightSwitch.instance.TurnOnHandLight();
+                FlashLight.instance.SetUi();
+                FlashLight.instance.StartConsumeBattery();
+                CharacterStat.instance.StopMentalReduce();
+            }
+            else
+            {
+                HandLightSwitch.instance.TurnOffHandLight();
+                FlashLight.instance.TurnOffUi();
+                FlashLight.instance.StopConsumeBattery();
+                CharacterStat.instance.StartMentalReduce();
+            }
+        }
+    }
+
     void Equip(int index)
     {
-
-        if (slots[index].item.itemId == ItemID.FLASHLIGHT)
-        {
-            HandLightSwitch.instance.TurnOnHandLight();
-            FlashLight.instance.SetUi();
-            FlashLight.instance.StartConsumeBattery();
-            CharacterStat.instance.StopMentalReduce();
-        }
+        HandleItemSpecificEquipLogic(slots[index].item.itemId, true);
 
         for (int i = 0; i < curEquipped.Length; i++)
         {
@@ -229,8 +261,6 @@ public class Inventory : MonoBehaviour
                 return;
             }
         }
-
-        
     }
 
     public void OnUnEquipButton()
@@ -243,13 +273,8 @@ public class Inventory : MonoBehaviour
 
     void UnEquip(int index)
     {
-        if (slots[index].item.itemId == ItemID.FLASHLIGHT)
-        {
-            HandLightSwitch.instance.TurnOffHandLight();
-            FlashLight.instance.TurnOffUi();
-            FlashLight.instance.StopConsumeBattery();
-            CharacterStat.instance.StartMentalReduce();
-        }
+        HandleItemSpecificEquipLogic(slots[index].item.itemId, false);
+        
         for (int i = 0; i < curEquipped.Length; i++)
         {
             if (curEquipped[i] == slots[index])
@@ -267,7 +292,7 @@ public class Inventory : MonoBehaviour
     {
         for (int i = 0; i < curEquipped.Length; i++)
         {
-            if (curEquipped[i].item == item)
+            if (curEquipped[i] != null && curEquipped[i].item == item)
             {
                 return true;
             }

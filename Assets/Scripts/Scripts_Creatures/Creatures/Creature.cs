@@ -6,15 +6,23 @@ using UnityEngine;
 using static Team6203.Util;
 
 namespace Creature{
+    /// <summary>
+    /// States representing the creature's current behavior pattern.
+    /// </summary>
     public enum CreatureStatus
     {
-        PATROL = 0, // 기본
-        PURSUIT = 1, // 추적
-        ALERTED = 2, // 의심
-        AVOIDING = 3,
-        STUNNED = 3,
+        PATROL = 0,    // 순찰 - 기본 상태로 랜덤하게 맵을 돌아다님
+        PURSUIT = 1,   // 추적 - 플레이어를 감지하고 추적 중
+        ALERTED = 2,   // 경계 - 플레이어를 놓쳤으나 주변을 경계하며 탐색
+        AVOIDING = 3,  // 회피 - 특정 크리처가 빛을 피함
+        STUNNED = 3,   // 기절 - 일시적으로 행동 불가
     }
 
+    /// <summary>
+    /// Base class for all creatures in the game.
+    /// Implements AI behaviors including patrol, pursuit, and alert states.
+    /// Uses A* pathfinding to navigate the map and detect the player through vision and sound.
+    /// </summary>
     public class Creature : Actor
     {
         private SoundDetector soundDetector;
@@ -79,6 +87,11 @@ namespace Creature{
             alertedCounterCoroutine = null;
         }
 
+        /// <summary>
+        /// Detects the player using both vision and sound detection.
+        /// Transitions to PURSUIT state when player is detected.
+        /// Transitions to ALERTED state when player is lost during pursuit.
+        /// </summary>
         protected void DetectPlayer()
         {
 #if UNITY_EDITOR
@@ -87,10 +100,12 @@ namespace Creature{
                 Debug.Log(gameObject.name + " | " + this.name + " : Detecting Player...");
             }
 #endif
+            // Combine vision and sound detection results
             List<Collider2D> detectedPlayerCollider = ConcatenateListWithoutDuplicates(detector.DetectByView(), soundDetector.Detect());
 
             if (detectedPlayerCollider.Count > 0)
             {
+                // Player detected - start pursuit
                 Vector3 detectedPlayerPosition = detectedPlayerCollider[0].transform.position;
                 if (!targetPosition.Equals(detectedPlayerPosition))
                 {
@@ -101,6 +116,7 @@ namespace Creature{
                 actions[status].Start();
             } else if (status.Equals(CreatureStatus.PURSUIT) && !isChasing)
             { 
+                // Player lost during pursuit - become alerted
                 status = CreatureStatus.ALERTED;
                 actions[status].Start();
                 if (alertedCounterCoroutine != null)
@@ -112,6 +128,10 @@ namespace Creature{
             }
         }
 
+        /// <summary>
+        /// Calculates and sets a path to the specified target position using A* pathfinding.
+        /// </summary>
+        /// <param name="targetPosition">The world position to path to</param>
         protected void SetPathToPosition(Vector3 targetPosition)
         {
             path = FindPath(targetPosition.x, targetPosition.y);
@@ -123,6 +143,10 @@ namespace Creature{
 #endif
         }
 
+        /// <summary>
+        /// Sets a path in the creature's current facing direction for a specified distance.
+        /// Used during ALERTED state to search in the last known direction.
+        /// </summary>
         protected void SetDirectionPath()
         {
             startNode.SetPosition(transform.position.x, transform.position.y);
@@ -135,6 +159,10 @@ namespace Creature{
 #endif
         }
 
+        /// <summary>
+        /// Generates a random path for patrol behavior.
+        /// Ensures creatures move naturally during PATROL state.
+        /// </summary>
         protected void SetRandomPath()
         {
             startNode.SetPosition(transform.position.x, transform.position.y);

@@ -5,12 +5,20 @@ using System;
 using UnityEngine.Rendering.Universal;
 using static Team6203.Util;
 
+/// <summary>
+/// Types of pathfinders used by different creature behaviors.
+/// </summary>
 public enum PathFinderType
 {
-    DEFAULT=0,
-    AVOIDER=1,
+    DEFAULT=0,  // Standard pathfinding - considers walls and doors
+    AVOIDER=1,  // Avoider pathfinding - also avoids light sources
 }
 
+/// <summary>
+/// Manages all creatures in the scene and provides pathfinding services.
+/// Builds and maintains map data from tilemaps, applying doors and lights as obstacles.
+/// Provides different pathfinder instances for different creature types.
+/// </summary>
 public class CreatureManager : MonoBehaviour
 {
     private int[,] map;
@@ -115,6 +123,11 @@ public class CreatureManager : MonoBehaviour
         pathFinders[(int)PathFinderType.AVOIDER].SetMap(GetDoorAndLightAppliedMap());
     }
 
+    /// <summary>
+    /// Returns a map with doors marked as walkable (0).
+    /// Caches result and only recalculates when doors change.
+    /// Used by DEFAULT pathfinder type.
+    /// </summary>
     public int[,] GetDoorAppliedMap()
     {
         GameObject[] doors = GameObject.FindGameObjectsWithTag("Door");
@@ -135,6 +148,11 @@ public class CreatureManager : MonoBehaviour
         return doorAppliedMap;
     }
 
+    /// <summary>
+    /// Returns a map with both doors and active lights marked as walkable/unwalkable.
+    /// Light areas are marked as obstacles for AVOIDER pathfinder.
+    /// Caches result and only recalculates when doors or lights change.
+    /// </summary>
     public int[,] GetDoorAndLightAppliedMap()
     {
         GetDoorAppliedMap();
@@ -168,16 +186,16 @@ public class CreatureManager : MonoBehaviour
 
         foreach (GameObject door in doors)
         {
-            try
+            int x = (int)door.transform.position.x - mapOffset.x;
+            int y = (int)Math.Floor(door.transform.position.y) - mapOffset.y;
+            
+            if (x >= 0 && x < doorAppliedMap.GetLength(0) && y >= 0 && y < doorAppliedMap.GetLength(1))
             {
-                doorAppliedMap[
-                    (int) door.transform.position.x - mapOffset.x,
-                    (int) Math.Floor(door.transform.position.y) - mapOffset.y
-                    ] = 0;
+                doorAppliedMap[x, y] = 0;
             }
-            catch
+            else
             {
-                continue;
+                Debug.LogWarning($"Door position ({x}, {y}) is out of map bounds");
             }
         }
     }
@@ -191,37 +209,38 @@ public class CreatureManager : MonoBehaviour
         foreach (GameObject spotLight in spotLights)
         {
             Light2D light = spotLight.GetComponentInChildren<Light2D>();
-            if (!light.gameObject.activeSelf)
+            if (light == null || !light.gameObject.activeSelf)
             {
                 continue;
             }
-            List<(int, int)> points;
-            try
-            {
-                points = PointsInCircle(
+            
+            List<(int, int)> points = PointsInCircle(
                 (int)spotLight.transform.position.x,
                 (int)spotLight.transform.position.y,
                 (int)light.pointLightOuterRadius);
-            }
-            catch
-            {
-                continue;
-            }
-
 
             foreach ((int, int) point in points)
             {
-                try
+                int x = point.Item1 - mapOffset.x;
+                int y = point.Item2 - mapOffset.y;
+                
+                if (x >= 0 && x < doorAndlightAppliedMap.GetLength(0) && y >= 0 && y < doorAndlightAppliedMap.GetLength(1))
                 {
-                    doorAndlightAppliedMap[point.Item1 - mapOffset.x, point.Item2 - mapOffset.y] = 0;
+                    doorAndlightAppliedMap[x, y] = 0;
                 }
-                catch { }
-
             }
-
         }
     }
 
+    /// <summary>
+    /// Calculates all integer coordinate points within a circular radius.
+    /// Used to determine which map cells are affected by a light source.
+    /// Uses the circle equation: (x-cx)² + (y-cy)² ≤ r²
+    /// </summary>
+    /// <param name="cx">Center x coordinate</param>
+    /// <param name="cy">Center y coordinate</param>
+    /// <param name="radius">Radius of the circle</param>
+    /// <returns>List of (x, y) coordinates within the circle</returns>
     public List<(int, int)> PointsInCircle(int cx, int cy, int radius)
     {
         List<(int, int)> points = new List<(int, int)>();
