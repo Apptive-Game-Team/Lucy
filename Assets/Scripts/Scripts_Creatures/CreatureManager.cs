@@ -168,16 +168,16 @@ public class CreatureManager : MonoBehaviour
 
         foreach (GameObject door in doors)
         {
-            try
+            int x = (int)door.transform.position.x - mapOffset.x;
+            int y = (int)Math.Floor(door.transform.position.y) - mapOffset.y;
+            
+            if (x >= 0 && x < doorAppliedMap.GetLength(0) && y >= 0 && y < doorAppliedMap.GetLength(1))
             {
-                doorAppliedMap[
-                    (int) door.transform.position.x - mapOffset.x,
-                    (int) Math.Floor(door.transform.position.y) - mapOffset.y
-                    ] = 0;
+                doorAppliedMap[x, y] = 0;
             }
-            catch
+            else
             {
-                continue;
+                Debug.LogWarning($"Door position ({x}, {y}) is out of map bounds");
             }
         }
     }
@@ -191,34 +191,26 @@ public class CreatureManager : MonoBehaviour
         foreach (GameObject spotLight in spotLights)
         {
             Light2D light = spotLight.GetComponentInChildren<Light2D>();
-            if (!light.gameObject.activeSelf)
+            if (light == null || !light.gameObject.activeSelf)
             {
                 continue;
             }
-            List<(int, int)> points;
-            try
-            {
-                points = PointsInCircle(
+            
+            List<(int, int)> points = PointsInCircle(
                 (int)spotLight.transform.position.x,
                 (int)spotLight.transform.position.y,
                 (int)light.pointLightOuterRadius);
-            }
-            catch
-            {
-                continue;
-            }
-
 
             foreach ((int, int) point in points)
             {
-                try
+                int x = point.Item1 - mapOffset.x;
+                int y = point.Item2 - mapOffset.y;
+                
+                if (x >= 0 && x < doorAndlightAppliedMap.GetLength(0) && y >= 0 && y < doorAndlightAppliedMap.GetLength(1))
                 {
-                    doorAndlightAppliedMap[point.Item1 - mapOffset.x, point.Item2 - mapOffset.y] = 0;
+                    doorAndlightAppliedMap[x, y] = 0;
                 }
-                catch { }
-
             }
-
         }
     }
 

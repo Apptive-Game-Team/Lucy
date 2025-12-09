@@ -207,16 +207,30 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    private void HandleItemSpecificEquipLogic(ItemID itemId, bool isEquipping)
+    {
+        if (itemId == ItemID.FLASHLIGHT)
+        {
+            if (isEquipping)
+            {
+                HandLightSwitch.instance.TurnOnHandLight();
+                FlashLight.instance.SetUi();
+                FlashLight.instance.StartConsumeBattery();
+                CharacterStat.instance.StopMentalReduce();
+            }
+            else
+            {
+                HandLightSwitch.instance.TurnOffHandLight();
+                FlashLight.instance.TurnOffUi();
+                FlashLight.instance.StopConsumeBattery();
+                CharacterStat.instance.StartMentalReduce();
+            }
+        }
+    }
+
     void Equip(int index)
     {
-
-        if (slots[index].item.itemId == ItemID.FLASHLIGHT)
-        {
-            HandLightSwitch.instance.TurnOnHandLight();
-            FlashLight.instance.SetUi();
-            FlashLight.instance.StartConsumeBattery();
-            CharacterStat.instance.StopMentalReduce();
-        }
+        HandleItemSpecificEquipLogic(slots[index].item.itemId, true);
 
         for (int i = 0; i < curEquipped.Length; i++)
         {
@@ -229,8 +243,6 @@ public class Inventory : MonoBehaviour
                 return;
             }
         }
-
-        
     }
 
     public void OnUnEquipButton()
@@ -243,13 +255,8 @@ public class Inventory : MonoBehaviour
 
     void UnEquip(int index)
     {
-        if (slots[index].item.itemId == ItemID.FLASHLIGHT)
-        {
-            HandLightSwitch.instance.TurnOffHandLight();
-            FlashLight.instance.TurnOffUi();
-            FlashLight.instance.StopConsumeBattery();
-            CharacterStat.instance.StartMentalReduce();
-        }
+        HandleItemSpecificEquipLogic(slots[index].item.itemId, false);
+        
         for (int i = 0; i < curEquipped.Length; i++)
         {
             if (curEquipped[i] == slots[index])
