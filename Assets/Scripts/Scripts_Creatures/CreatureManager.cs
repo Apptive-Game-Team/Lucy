@@ -5,12 +5,20 @@ using System;
 using UnityEngine.Rendering.Universal;
 using static Team6203.Util;
 
+/// <summary>
+/// Types of pathfinders used by different creature behaviors.
+/// </summary>
 public enum PathFinderType
 {
-    DEFAULT=0,
-    AVOIDER=1,
+    DEFAULT=0,  // Standard pathfinding - considers walls and doors
+    AVOIDER=1,  // Avoider pathfinding - also avoids light sources
 }
 
+/// <summary>
+/// Manages all creatures in the scene and provides pathfinding services.
+/// Builds and maintains map data from tilemaps, applying doors and lights as obstacles.
+/// Provides different pathfinder instances for different creature types.
+/// </summary>
 public class CreatureManager : MonoBehaviour
 {
     private int[,] map;
@@ -115,6 +123,11 @@ public class CreatureManager : MonoBehaviour
         pathFinders[(int)PathFinderType.AVOIDER].SetMap(GetDoorAndLightAppliedMap());
     }
 
+    /// <summary>
+    /// Returns a map with doors marked as walkable (0).
+    /// Caches result and only recalculates when doors change.
+    /// Used by DEFAULT pathfinder type.
+    /// </summary>
     public int[,] GetDoorAppliedMap()
     {
         GameObject[] doors = GameObject.FindGameObjectsWithTag("Door");
@@ -135,6 +148,11 @@ public class CreatureManager : MonoBehaviour
         return doorAppliedMap;
     }
 
+    /// <summary>
+    /// Returns a map with both doors and active lights marked as walkable/unwalkable.
+    /// Light areas are marked as obstacles for AVOIDER pathfinder.
+    /// Caches result and only recalculates when doors or lights change.
+    /// </summary>
     public int[,] GetDoorAndLightAppliedMap()
     {
         GetDoorAppliedMap();
@@ -214,6 +232,15 @@ public class CreatureManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Calculates all integer coordinate points within a circular radius.
+    /// Used to determine which map cells are affected by a light source.
+    /// Uses the circle equation: (x-cx)² + (y-cy)² ≤ r²
+    /// </summary>
+    /// <param name="cx">Center x coordinate</param>
+    /// <param name="cy">Center y coordinate</param>
+    /// <param name="radius">Radius of the circle</param>
+    /// <returns>List of (x, y) coordinates within the circle</returns>
     public List<(int, int)> PointsInCircle(int cx, int cy, int radius)
     {
         List<(int, int)> points = new List<(int, int)>();
@@ -221,7 +248,7 @@ public class CreatureManager : MonoBehaviour
         int xMin = (int)Math.Ceiling((decimal)cx - radius);
         int xMax = (int)Math.Floor((decimal)cx + radius);
         int yMin = (int)Math.Ceiling((decimal)cy - radius);
-        int yMax = (int)Math.Floor((decimal)cy + radius);
+        int yMax = (int)Math.Floor((decimal)cx + radius);
 
         for (int x = xMin; x <= xMax; x++)
         {
