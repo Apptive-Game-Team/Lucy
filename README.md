@@ -1,6 +1,12 @@
 # Lucy
 Lucy (24.08.01 ~) 
 
+## Play Online
+🎮 [Play Lucy on GitHub Pages](https://apptive-game-team.github.io/Lucy/)
+
+자동 빌드 및 배포는 GitHub Actions를 통해 이루어집니다.  
+자세한 CI/CD 설정 방법은 [CICD_SETUP.md](docs/CICD_SETUP.md)를 참고하세요.
+
 ## commit convention
 
 |태그|설명|
