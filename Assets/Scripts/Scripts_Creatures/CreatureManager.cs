@@ -248,7 +248,7 @@ public class CreatureManager : MonoBehaviour
         int xMin = (int)Math.Ceiling((decimal)cx - radius);
         int xMax = (int)Math.Floor((decimal)cx + radius);
         int yMin = (int)Math.Ceiling((decimal)cy - radius);
-        int yMax = (int)Math.Floor((decimal)cx + radius);
+        int yMax = (int)Math.Floor((decimal)cy + radius);
 
         for (int x = xMin; x <= xMax; x++)
         {

@@ -60,6 +60,73 @@ Assets/Scripts/
 └── Password_Object/         # 비밀번호 오브젝트
 ```
 
+## 💡 Code Examples
+
+### Using the Singleton Pattern
+```csharp
+// Accessing a singleton manager
+InputManager.Instance.SetMovementState(true);
+PortalManager.Instance.SetSceneChangeListener(this);
+
+// Creating a custom singleton
+public class MyManager : SingletonObject<MyManager> {
+    protected override void Awake() {
+        base.Awake();
+        // Your initialization code
+    }
+}
+```
+
+### Scene Change Listener
+```csharp
+public class MyScript : MonoBehaviour, ISceneChangeListener {
+    void Start() {
+        // Register to receive scene change notifications
+        PortalManager.Instance.SetSceneChangeListener(this);
+    }
+    
+    void ISceneChangeListener.OnSceneChange() {
+        // Handle scene change
+        Debug.Log("Scene changed!");
+    }
+}
+```
+
+### Managing Character Stats
+```csharp
+// Reduce stamina when running
+CharacterStat.instance.ChangeStamina(-10);
+
+// Stop mental reduction when equipped with flashlight
+CharacterStat.instance.StopMentalReduce();
+
+// Check if player can run
+if (CharacterStat.instance.canRun) {
+    // Enable running
+}
+```
+
+### Adding Items to Inventory
+```csharp
+// Add item to inventory
+bool success = Inventory.instance.AddItem(itemData);
+if (success) {
+    Debug.Log("Item added successfully");
+}
+
+// Check if item is equipped
+bool isEquipped = Inventory.instance.IsItemEquipped(flashlightItem);
+```
+
+### Registering Objects with ReferenceManager
+```csharp
+// Register an object for global access
+ReferenceManager.Instance.SetReferableObject("MainCamera", cameraComponent, false);
+
+// Find object by key
+CameraMove camera = ReferenceManager.Instance.FindComponentByName<CameraMove>("MainCamera");
+```
+
 ## commit convention
 
 |태그|설명|
