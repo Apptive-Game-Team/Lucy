@@ -1,6 +1,61 @@
 # Lucy
 Lucy (24.08.01 ~) 
 
+공포 어드벤처 게임으로, 플레이어는 어둠 속에서 정신력과 체력을 관리하며 퍼즐을 풀고 생존해야 합니다.
+
+## 🎮 Game Features
+
+- **정신력(Mental) 시스템**: 어둠 속에서 정신력이 감소하며, 낮은 정신력 상태에서는 환각 효과가 나타남
+- **체력(Stamina) 시스템**: 달리기 시 소모되며, 일정 수치 이하로 떨어지면 달리기 불가
+- **인벤토리 시스템**: 아이템 수집, 장착, 사용 기능
+- **포털 시스템**: 씬 전환 및 플레이어 위치 이동
+- **크리처 AI**: 다양한 행동 패턴을 가진 몬스터 (Guard, Avoider, Stunnee)
+- **퍼즐 시스템**: 다양한 상호작용 가능한 퍼즐
+
+## 🏗️ Architecture Overview
+
+### Core Systems
+
+#### 1. Singleton Pattern (`SingletonObject<T>`)
+게임의 핵심 매니저들은 싱글톤 패턴을 사용하여 씬 전환 시에도 유지됩니다:
+- `InputManager`: 입력 관리 및 키 바인딩
+- `PortalManager`: 씬 전환 및 포털 관리
+- `ReferenceManager`: 게임 오브젝트 참조 관리
+- `SoundManager`: 사운드 재생 관리
+- `CreatureManager`: 크리처 AI 및 맵 관리
+
+#### 2. Event System
+- `ISceneChangeListener`: 씬 변경 이벤트 리스너 인터페이스
+- `IKeyInputListener`: 키 입력 이벤트 리스너 인터페이스
+- `EventScheduler`: 게임 이벤트 스케줄링
+
+#### 3. Player Systems
+- **CharacterStat**: 플레이어의 정신력과 체력 관리
+- **CharacterMove**: 플레이어 이동 및 애니메이션
+- **Inventory**: 아이템 인벤토리 관리
+
+#### 4. AI & Pathfinding
+- **CreatureManager**: 맵 데이터 관리 및 경로 탐색
+- **PathFinder**: A* 기반 경로 탐색 알고리즘
+- **Creature**: 다양한 AI 행동 패턴 (추격, 회피, 기절 등)
+
+### Directory Structure
+
+```
+Assets/Scripts/
+├── Lucy/                    # 플레이어 관련 스크립트
+├── InputSystem/             # 입력 관리 시스템
+├── Portal/                  # 씬 전환 및 포털
+├── ReferenceSystem/         # 참조 관리 시스템
+├── soundSystem]/            # 사운드 시스템
+├── Scripts_Creatures/       # 크리처 AI
+├── invertoryAndItem/        # 인벤토리 및 아이템
+├── Puzzle/                  # 퍼즐 시스템
+├── Dialogue/                # 대화 시스템
+├── Event/                   # 이벤트 시스템
+└── Password_Object/         # 비밀번호 오브젝트
+```
+
 ## commit convention
 
 |태그|설명|
