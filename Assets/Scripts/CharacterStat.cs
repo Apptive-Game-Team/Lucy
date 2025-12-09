@@ -27,6 +27,8 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
 
     private AudioSource audioSource;
     private const float MENTAL_WARNING_RATE = 0.5f;
+    private const float STAMINA_RECOVERY_THRESHOLD = 50f;
+    private const float SPOTLIGHT_EFFECT_DURATION = 2f;
 
     [SerializeField] private bool isOnLight = false;
 
@@ -81,22 +83,6 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
         staminaSlider.value = curStamina/maxStamina;
         count_Stamina.text = string.Format("{0}/{1}", Mathf.FloorToInt(curStamina), maxStamina);
         count_Mental.text = string.Format("{0}/{1}", Mathf.FloorToInt(curMental), maxMental);
-        /*if (mentalSlider.value <= 0)
-        {
-            mentalSlider.gameObject.SetActive(false);
-        }
-        else
-        {
-            mentalSlider.gameObject.SetActive(true);
-        }
-        if(staminaSlider.value <= 0)
-        {
-            staminaSlider.gameObject.SetActive(false);
-        }
-        else
-        {
-            staminaSlider.gameObject.SetActive(true);
-        }*/
     }
     public void ChangeStamina(int n)
     {
@@ -110,7 +96,7 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
             curStamina = 0;
             canRun = false;
         }
-        if (curStamina >= 50)
+        if (curStamina >= STAMINA_RECOVERY_THRESHOLD)
         {
             canRun = true;
         }
@@ -180,7 +166,7 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
 
     IEnumerator OnLightCounter()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(SPOTLIGHT_EFFECT_DURATION);
         isOnLight = false;
         onLightCounter = null;
     }

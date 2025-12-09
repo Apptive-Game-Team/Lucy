@@ -267,7 +267,7 @@ public class Inventory : MonoBehaviour
     {
         for (int i = 0; i < curEquipped.Length; i++)
         {
-            if (curEquipped[i].item == item)
+            if (curEquipped[i] != null && curEquipped[i].item == item)
             {
                 return true;
             }

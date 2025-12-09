@@ -11,6 +11,12 @@ namespace CharacterCamera
         private Animator Anim;
         public float playerMoveSpeed = 150f;
         private ActorSoundController soundController;
+        
+        private const float RUN_SPEED_MULTIPLIER = 1.5f;
+        private const float RUN_ANIMATION_SPEED = 1.5f;
+        private const float NORMAL_ANIMATION_SPEED = 1f;
+        private const int STAMINA_DRAIN_RATE = -10;
+        private const int STAMINA_RECOVERY_RATE = 5;
     
         void Awake()
         {
@@ -25,20 +31,20 @@ namespace CharacterCamera
             bool isMoving = direction.magnitude > 0;
             if (Input.GetKey(KeyCode.LeftShift) && CharacterStat.instance.curStamina!=0 && CharacterStat.instance.canRun && isMoving)
             {
-                playerRb.velocity = direction.normalized * playerMoveSpeed * Time.deltaTime * 1.5f;    
-                Anim.speed = 1.5f;
+                playerRb.velocity = direction.normalized * playerMoveSpeed * Time.deltaTime * RUN_SPEED_MULTIPLIER;    
+                Anim.speed = RUN_ANIMATION_SPEED;
                 CharacterStat.instance.isRun = true;
                 if(CharacterStat.instance.curStamina >= 0)
                 {
-                    CharacterStat.instance.ChangeStamina(-10);
+                    CharacterStat.instance.ChangeStamina(STAMINA_DRAIN_RATE);
                 }
             }
             else
             {
                 playerRb.velocity = direction.normalized * playerMoveSpeed * Time.deltaTime;
-                Anim.speed = 1f;
+                Anim.speed = NORMAL_ANIMATION_SPEED;
                 CharacterStat.instance.isRun = false;
-                CharacterStat.instance.ChangeStamina(+5);
+                CharacterStat.instance.ChangeStamina(STAMINA_RECOVERY_RATE);
             }
 
             if (isMoving)

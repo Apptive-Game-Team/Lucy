@@ -43,6 +43,19 @@ public class ReferenceManager : SingletonObject<ReferenceManager>
 
     public GameObject FindGameObjectByName(string key)
     {
-        return indexToComponents[keyToIndex[key]].gameObject;
+        if (!keyToIndex.ContainsKey(key))
+        {
+            Debug.LogWarning($"Key '{key}' not found in ReferenceManager");
+            return null;
+        }
+        
+        MonoBehaviour component = indexToComponents[keyToIndex[key]];
+        if (component == null)
+        {
+            Debug.LogWarning($"Component for key '{key}' is null");
+            return null;
+        }
+        
+        return component.gameObject;
     }
 }

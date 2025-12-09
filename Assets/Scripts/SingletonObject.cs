@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
 public class SingletonObject<T> : MonoBehaviour where T : MonoBehaviour
@@ -14,7 +11,10 @@ public class SingletonObject<T> : MonoBehaviour where T : MonoBehaviour
             if (_instance == null)
             {
                 _instance = FindObjectOfType<T>();
-                DontDestroyOnLoad(_instance.gameObject);
+                if (_instance != null)
+                {
+                    DontDestroyOnLoad(_instance.gameObject);
+                }
             }
 
             return _instance;
