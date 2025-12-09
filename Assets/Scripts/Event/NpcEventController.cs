@@ -15,7 +15,6 @@ namespace Event
         private GameObject player;
         private GameObject barricade;
         private readonly float npcEventTime = 2f;
-        private float blackOutDelay = 3f;
         [SerializeField] NpcDialogueData npcDialogueData;
         [SerializeField] string npcType;
         private bool isAlreadyTalk = false;
