@@ -67,7 +67,7 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
         count_Stamina = staminaBar.Find("Count_Stamina").GetComponent<TextMeshProUGUI>();
         PortalManager.Instance.SetSceneChangeListener(this);
         audioSource = transform.Find("PlayerStatusSoundController").GetComponent<AudioSource>();
-        audioSource.clip = SoundManager.Instance.soundSources.GetByName("Heartbeat").Value.sound;
+        audioSource.clip = SoundManager.Instance.soundSources.GetClipByName("Heartbeat");
         SetStats();
         UpdateStats();
         mentalCoroutine = StartCoroutine(ReduceMental());
@@ -124,6 +124,15 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
     }
 
     /// <summary>
+    /// Adds to mental, clamped to [0, maxMental], and refreshes the UI.
+    /// </summary>
+    public void ChangeMental(float amount)
+    {
+        curMental = Mathf.Clamp(curMental + amount, 0, maxMental);
+        UpdateStats();
+    }
+
+    /// <summary>
     /// Coroutine that continuously reduces mental stat when player is in darkness.
     /// Triggers hallucination effects (visual overlay and heartbeat audio) when mental drops below warning threshold.
     /// </summary>
@@ -131,16 +140,18 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
     {
         yield return new WaitUntil(() => hallucinationSpriteRenderer != null);
 
-        while (curMental > 0)
-        {   
+        // Loops forever: quitting at curMental == 0 left the drain permanently dead
+        // once mental was restored by an item.
+        while (true)
+        {
             yield return new WaitForSecondsRealtime(delay);
-            if (!isOnLight)
+            if (!isOnLight && curMental > 0)
             {
-                curMental -= reduceAmount;
+                ChangeMental(-reduceAmount);
                 // Increase heartbeat pitch as mental decreases
                 audioSource.pitch = 1 + (float)(((maxMental * MENTAL_WARNING_RATE) - curMental) / (maxMental * MENTAL_WARNING_RATE));
                 // Gradually increase hallucination overlay opacity
-                float alpha = (float)(((maxMental * MENTAL_WARNING_RATE) - curMental) / (maxMental * MENTAL_WARNING_RATE)) / 3;
+                float alpha = Mathf.Clamp01((((maxMental * MENTAL_WARNING_RATE) - curMental) / (maxMental * MENTAL_WARNING_RATE)) / 3);
                 yield return new WaitUntil(() => hallucinationSpriteRenderer != null);
                 Color hallucinationColor = hallucinationSpriteRenderer.color;
                 hallucinationColor.a = alpha;

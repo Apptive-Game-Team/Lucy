@@ -111,11 +111,17 @@ namespace Interactable
         {
             this.flashlight = flashlight;
             this.drawerImages = drawerImages;
-            spriteRenderer = GameObject.Find("Drawer").GetComponent<SpriteRenderer>();
+            GameObject drawer = GameObject.Find("Drawer");
+            spriteRenderer = drawer == null ? null : drawer.GetComponent<SpriteRenderer>();
         }
 
         public override void Interact(Furniture furniture)
         {
+            if (spriteRenderer == null || drawerImages.Count < 2)
+            {
+                return;
+            }
+
             if (flashlight == null || !flashlight.activeSelf)
             {
                 if (spriteRenderer.sprite == drawerImages[0])

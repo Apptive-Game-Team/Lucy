@@ -10,6 +10,7 @@ namespace Lucy
         private Rigidbody2D playerRb;
         private Animator Anim;
         public float playerMoveSpeed = 150f;
+        private float resumeMoveSpeed = 150f;
         private ActorSoundController soundController;
         
         private const float RUN_SPEED_MULTIPLIER = 1.5f;
@@ -23,6 +24,7 @@ namespace Lucy
             soundController = transform.Find("FootsoundController").GetComponent<ActorSoundController>();
             playerRb = GetComponent<Rigidbody2D>();
             Anim = GetComponent<Animator>();
+            resumeMoveSpeed = playerMoveSpeed;
         }
 
         void FixedUpdate()
@@ -67,14 +69,19 @@ namespace Lucy
         }
         public void StopMovement()
         {
-            playerMoveSpeed = 0f; 
+            if (playerMoveSpeed > 0f)
+            {
+                // Remember the inspector value instead of resuming at a hardcoded 150.
+                resumeMoveSpeed = playerMoveSpeed;
+            }
+            playerMoveSpeed = 0f;
             Anim.SetFloat("MoveX", 0);
             Anim.SetFloat("MoveY", 0);
         }
 
         public void ResumeMovement()
         {
-            playerMoveSpeed = 150f;
+            playerMoveSpeed = resumeMoveSpeed;
         }
     }
 }

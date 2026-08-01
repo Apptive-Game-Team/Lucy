@@ -48,6 +48,11 @@ namespace Puzzle
                     bridge.SetActive(isOns[bridgeComponent.bridgeID]);
                 }
             }
+            if (player == null || square == null)
+            {
+                return;
+            }
+
             if(player.transform.position.x > -40f && SceneManager.GetActiveScene().name == "Puzzle_2F_Beaver")
             {
                 square.transform.position = new Vector3(12.06f, 0.13f, 0f);
@@ -61,6 +66,11 @@ namespace Puzzle
         private IEnumerator CallActivateBridge(BridgeID bridgeID)
         {
             yield return new WaitForSeconds(CallBridgeActiveDelay);
+            isOns[bridgeID] = true;
+            if (bridges == null)
+            {
+                yield break;
+            }
             foreach (GameObject bridge in bridges)
             {
                 Bridge_Puzzle2F bridgeComponent = bridge.GetComponent<Bridge_Puzzle2F>();

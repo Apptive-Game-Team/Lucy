@@ -173,6 +173,11 @@ namespace invertoryAndItem
 
         public void OnUseButton()
         {
+            if (selectedItem == null || selectedItem.item == null)
+            {
+                return;
+            }
+
             if (selectedItem.item.type == ItemType.CONSUMABLE)
             {
                 for (int i = 0; i < selectedItem.item.consumables.Length; i++)
@@ -180,29 +185,23 @@ namespace invertoryAndItem
                     switch (selectedItem.item.consumables[i].type)
                     {
                         case ConsumableType.Battery:
-                            if (FlashLight.instance.battery <= 0)
+                            bool wasEmpty = FlashLight.instance.battery <= 0;
+                            FlashLight.instance.battery += 2;
+                            if (wasEmpty)
                             {
+                                // Order matters: the switch refuses to turn on with an empty battery.
                                 HandLightSwitch.instance.TurnOnHandLight();
-                                FlashLight.instance.battery += 2;
                                 FlashLight.instance.StartConsumeBattery();
                                 CharacterStat.instance.StopMentalReduce();
-                                FlashLight.instance.UpdateUi();
-                                break;
                             }
-                            else
-                            {
-                                FlashLight.instance.battery += 2;
-                                FlashLight.instance.UpdateUi();
-                                break;
-                            }
+                            FlashLight.instance.UpdateUi();
+                            break;
                         case ConsumableType.CurMental:
-                            CharacterStat.instance.curMental += 10;
-                            CharacterStat.instance.UpdateStats();
+                            CharacterStat.instance.ChangeMental(10);
                             break;
                         case ConsumableType.MaxMental:
                             CharacterStat.instance.maxMental += 10;
-                            CharacterStat.instance.curMental += 10;
-                            CharacterStat.instance.UpdateStats();
+                            CharacterStat.instance.ChangeMental(10);
                             break;
                     }
                 }
@@ -217,7 +216,7 @@ namespace invertoryAndItem
         }
         public void OnEquipButton()
         {
-            if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
+            if (selectedItem?.item != null && selectedItem.item.type == ItemType.EQUIPABLE)
             {
                 Equip(selectedItemIndex); 
             }
@@ -269,7 +268,7 @@ namespace invertoryAndItem
 
         public void OnUnEquipButton()
         {
-            if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
+            if (selectedItem?.item != null && selectedItem.item.type == ItemType.EQUIPABLE)
             {
                 UnEquip(selectedItemIndex);
             }
@@ -311,7 +310,12 @@ namespace invertoryAndItem
             {
                 if (uidSlot[selectedItemIndex].equipped) UnEquip(selectedItemIndex);
                 selectedItem.item = null;
+                selectedItem.quantity = 0;
                 ClearSelectItemWindow();
+                // Leaving the buttons up let the player use an item that no longer exists.
+                useButton.SetActive(false);
+                equipButton.SetActive(false);
+                unEquipButton.SetActive(false);
             }
 
             UpdateUI();

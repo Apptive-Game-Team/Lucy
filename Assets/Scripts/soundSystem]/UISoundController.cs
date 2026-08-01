@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using InputSystem;
+using UnityEngine;
 
 namespace soundSystem_
 {
@@ -9,7 +10,7 @@ namespace soundSystem_
 
     public class UISoundController : SoundController, IKeyInputListener
     {
-        private readonly List<SoundSource> soundSources = new List<SoundSource>();
+        private readonly List<AudioClip> clips = new List<AudioClip>();
 
         protected override void Awake()
         {
@@ -24,13 +25,17 @@ namespace soundSystem_
 
         public void PlayButton(UISound uISound)
         {
-            audioSource.clip = soundSources[(int)uISound].sound;
+            if ((int)uISound >= clips.Count || clips[(int)uISound] == null)
+            {
+                return;
+            }
+            audioSource.clip = clips[(int)uISound];
             audioSource.Play();
         }
 
         private void InitSoundSources()
         {
-            soundSources.Add(SoundManager.Instance.soundSources.GetByName("ButtonSound").Value);
+            clips.Add(SoundManager.Instance.soundSources.GetClipByName("ButtonSound"));
         }
 
         void IKeyInputListener.OnKeyDown(ActionCode action)

@@ -7,11 +7,9 @@ namespace Dialogue
         [SerializeField] string npcType;
         [SerializeField] NpcDialogueData npcDialogueData;
 
-        protected override void OnTriggerEnter2D(Collider2D other)
-        {
-            NpcDialogueController.Instance.ShowDialogue(npcDialogueData.GetDialogues(npcType));
-        }
-
+        // OnTriggerEnter2D is left to the base class: it shows the prompt and stores the
+        // collider ActOnTrigger needs. Overriding it skipped both and fired the dialogue
+        // on walk-in instead of on the interaction key.
         protected override void ActOnTrigger(Collider2D other)
         {
             NpcDialogueController.Instance.ShowDialogue(npcDialogueData.GetDialogues(npcType));

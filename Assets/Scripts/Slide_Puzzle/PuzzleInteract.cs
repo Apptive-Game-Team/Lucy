@@ -29,6 +29,9 @@ namespace Slide_Puzzle
 
         protected override void Start()
         {
+            // Without base.Start() this never registered as a key listener,
+            // so ActOnTrigger was never called and the puzzle could not be opened.
+            base.Start();
             text.SetActive(false);
             slicePuzzleCanvas.gameObject.SetActive(false);
             clearPuzzleImage.SetActive(false);
@@ -44,12 +47,11 @@ namespace Slide_Puzzle
 
         protected override void OnTriggerEnter2D(Collider2D other)
         {
-            if (!isClear)
+            // base tracks the collider that ActOnTrigger needs.
+            base.OnTriggerEnter2D(other);
+            if (!isClear && other.gameObject.tag.Equals("Player"))
             {
-                if (other.gameObject.tag.Equals("Player"))
-                {
-                    text.SetActive(true);
-                }
+                text.SetActive(true);
             }
         }
 

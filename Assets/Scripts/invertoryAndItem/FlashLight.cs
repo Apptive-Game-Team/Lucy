@@ -38,47 +38,19 @@ namespace invertoryAndItem
             TurnOffUi();
         }
 
-        void Update()
-        {
-
-        }
-
         public void SetUi()
         {
-            for (int i = 0; i < activeBatteries.Length; i++)
-            {
-                if (i < battery)
-                {
-                    activeBatteries[i].gameObject.SetActive(true);
-                    inactiveBatteries[i].gameObject.SetActive(false);
-                }
-                else
-                {
-                    activeBatteries[i].gameObject.SetActive(false);
-                    inactiveBatteries[i].gameObject.SetActive(true);
-                }
-            }
+            UpdateUi();
         }
 
         public void UpdateUi()
         {
-            for (int i = 0; i < activeBatteries.Length; i++)
+            int count = Mathf.Min(activeBatteries.Length, inactiveBatteries.Length);
+            for (int i = 0; i < count; i++)
             {
-                if (i < battery)
-                {
-                    activeBatteries[i].gameObject.SetActive(true);
-                    inactiveBatteries[i].gameObject.SetActive(false);
-                }
-                else
-                {
-                    activeBatteries[i].gameObject.SetActive(false);
-                    inactiveBatteries[i].gameObject.SetActive(true);
-                }
-            }
-
-            if (battery <= 0)
-            {
-
+                bool isCharged = i < battery;
+                activeBatteries[i].gameObject.SetActive(isCharged);
+                inactiveBatteries[i].gameObject.SetActive(!isCharged);
             }
         }
 
@@ -105,7 +77,10 @@ namespace invertoryAndItem
             if (battery <= 0)
             {
                 battery = 0;
-                StopConsumeBattery();
+                UpdateUi();
+                // This coroutine is finishing anyway - calling StopConsumeBattery() here
+                // stopped itself mid-way, so just drop the handle.
+                batteryCoroutine = null;
                 CharacterStat.instance.StartMentalReduce();
                 HandLightSwitch.instance.TurnOffHandLight();
             }

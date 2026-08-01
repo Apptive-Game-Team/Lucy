@@ -22,13 +22,17 @@ namespace Scripts_Creatures.Creatures
         protected override void PatrolStart()
         {
             base.PatrolStart();
+            if (MoveNodes.Count == 0)
+            {
+                return;
+            }
             targetPosition.Set(MoveNodes[patrolMoveFlag].X, MoveNodes[patrolMoveFlag].Y, 0);
             SetPathToPosition(targetPosition);
         }
 
         protected override void PatrolUpdate()
         {
-            if (isArrived)
+            if (isArrived && MoveNodes.Count > 0)
             {
                 patrolMoveFlag++;
                 if (patrolMoveFlag >= MoveNodes.Count)
@@ -55,8 +59,19 @@ namespace Scripts_Creatures.Creatures
 
         public void StopPatrol()
         {
+            if (!isPatrolling)
+            {
+                return;
+            }
             isPatrolling = false;
-            StopAllCoroutines();
+            // StopAllCoroutines also killed CreatureUpdate, which StartPatrol never restarted,
+            // leaving the guard brain-dead after the NPC event.
+            if (moveOnPathCoroutine != null)
+            {
+                StopCoroutine(moveOnPathCoroutine);
+                moveOnPathCoroutine = null;
+            }
+            path = null;
         }
 
         public void StartPatrol()
@@ -64,7 +79,7 @@ namespace Scripts_Creatures.Creatures
             if (!isPatrolling)
             {
                 isPatrolling = true;
-                StartCoroutine(MoveOnPath());
+                moveOnPathCoroutine = StartCoroutine(MoveOnPath());
             }
         }
     }
