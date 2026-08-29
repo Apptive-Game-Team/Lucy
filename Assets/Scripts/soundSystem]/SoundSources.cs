@@ -42,6 +42,21 @@ namespace soundSystem_
             return null;
         }
 
+        /// <summary>
+        /// Clip for a sound name, or null with a warning when it is missing.
+        /// Callers used to do GetByName(name).Value, which throws on an unknown name.
+        /// </summary>
+        public AudioClip GetClipByName(string name)
+        {
+            SoundSource? source = GetByName(name);
+            if (source == null)
+            {
+                Debug.LogWarning($"Sound '{name}' not found in SoundSources");
+                return null;
+            }
+            return source.Value.sound;
+        }
+
         public SoundSource? GetById(int id)
         {
             foreach (SoundSource source in soundSources)

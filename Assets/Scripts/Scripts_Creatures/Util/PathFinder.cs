@@ -40,6 +40,16 @@ namespace Scripts_Creatures.Util
             {
                 compare = HCost.CompareTo(other.HCost);
             }
+            // Tie-break on coordinates: SortedSet treats compare == 0 as "same element",
+            // so equal-cost nodes on different tiles were being dropped from the open set.
+            if (compare == 0)
+            {
+                compare = X.CompareTo(other.X);
+            }
+            if (compare == 0)
+            {
+                compare = Y.CompareTo(other.Y);
+            }
             return compare;
         }
 
@@ -127,16 +137,19 @@ namespace Scripts_Creatures.Util
                         continue;
                     }
                     int newMovementCostToNeighbor = currentNode.GCost + GetDistance(currentNode, neighbor);
-                    if (newMovementCostToNeighbor < neighbor.GCost || !openSet.Contains(neighbor))
+                    bool isInOpenSet = openSet.Contains(neighbor);
+                    if (newMovementCostToNeighbor < neighbor.GCost || !isInOpenSet)
                     {
+                        // Costs are the sort key, so the node has to leave the set before
+                        // they change - mutating it in place corrupts the SortedSet.
+                        if (isInOpenSet)
+                        {
+                            openSet.Remove(neighbor);
+                        }
                         neighbor.GCost = newMovementCostToNeighbor;
                         neighbor.HCost = GetDistance(neighbor, endNode);
                         neighbor.Parent = currentNode;
-
-                        if (!openSet.Contains(neighbor))
-                        {
-                            openSet.Add(neighbor);
-                        }
+                        openSet.Add(neighbor);
                     }
                 }
             }
@@ -168,6 +181,10 @@ namespace Scripts_Creatures.Util
         private Node GetNode(int x, int y)
         {
             Node tempNode;
+            if (x - mapOffset.x < 0 || x - mapOffset.x >= width || y - mapOffset.y < 0 || y - mapOffset.y >= height)
+            {
+                return null;
+            }
             if (this.nodes[x - mapOffset.x, y - mapOffset.y] == null)
             {
                 tempNode = new Node(x, y, map[x - mapOffset.x, y - mapOffset.y] == 1);
@@ -204,18 +221,21 @@ namespace Scripts_Creatures.Util
                         continue;
 
                     float gCost = currentNode.GCost + GetDistance(currentNode, neighbor);
+                    bool isInOpenSet = openSet.Contains(neighbor);
 
-                    if (!openSet.Contains(neighbor))
-                    {
-                        openSet.Add(neighbor);
-                    } else if (gCost >= neighbor.GCost)
+                    if (isInOpenSet && gCost >= neighbor.GCost)
                     {
                         continue;
+                    }
+                    if (isInOpenSet)
+                    {
+                        openSet.Remove(neighbor);
                     }
 
                     neighbor.GCost = (int)gCost;
                     neighbor.HCost = (int) Vector3.Angle(direction, (new Vector3(neighbor.X - startNode.X, neighbor.Y - startNode.Y)).normalized);
                     neighbor.Parent = currentNode;
+                    openSet.Add(neighbor);
                 }
             }
 
@@ -230,9 +250,14 @@ namespace Scripts_Creatures.Util
 
             Node lastNode = startNode;
 
-            List<Node> neighbors = GetNeighbors(startNode);
             System.Random random = new System.Random();
-            int currentDirection = directions.FindIndex(t => t.Item1 == Mathf.Sign(direction.x) && t.Item2 == Mathf.Sign(direction.y));
+            // Mathf.Sign(0) is 1, so signs never matched an axis-aligned direction here.
+            int currentDirection = directions.FindIndex(
+                t => t.Item1 == Mathf.RoundToInt(direction.x) && t.Item2 == Mathf.RoundToInt(direction.y));
+            if (currentDirection < 0)
+            {
+                currentDirection = 0;
+            }
             for (int i = 0; i < nodeLen; i++)
             {
                 computingCounter++;
@@ -263,7 +288,7 @@ namespace Scripts_Creatures.Util
                     directions[currentDirection].Item1 + lastNode.X,
                     directions[currentDirection].Item2 + lastNode.Y
                 );
-                if (!node.IsWalkable)
+                if (node == null || !node.IsWalkable)
                 {
                     i--;
                     continue;
@@ -281,7 +306,7 @@ namespace Scripts_Creatures.Util
             List<Node> path = new List<Node>();
             Node currentNode = endNode;
 
-            while (currentNode != startNode)
+            while (currentNode != null && currentNode != startNode)
             {
                 path.Add(currentNode);
                 currentNode = currentNode.Parent;

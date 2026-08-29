@@ -5,15 +5,12 @@ namespace Puzzle
     public class PuzzleSwitch2F : MonoBehaviour
     {
         [SerializeField] BridgeID bridgeID;
-        private GameObject player;
-        // Start is called before the first frame update
-        void Start()
-        {
-            player = GameObject.Find("Player");
-        }
+
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.gameObject == player)
+            // Tag instead of GameObject.Find("Player"): the name lookup missed the player
+            // whenever the collider sat on a child object or the object was named differently.
+            if (other.CompareTag("Player"))
             {
                 PuzzleManager2F.Instance.ActivateBridge(bridgeID);
             }

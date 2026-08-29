@@ -21,7 +21,7 @@ namespace Event
         private void Start()
         {
             guardObj = GameObject.Find("Guard");
-            guard = guardObj.GetComponent<Guard>(); 
+            guard = guardObj == null ? null : guardObj.GetComponent<Guard>();
 
             player = Character.Instance.gameObject;
 
@@ -33,7 +33,10 @@ namespace Event
         {
             if (other.CompareTag("Player") && !isAlreadyTalk)
             {
-                EventScheduler.Instance.eventObjects["FirstMeetNpcEventObject"].StopSound();
+                if (EventScheduler.Instance.eventObjects.TryGetValue("FirstMeetNpcEventObject", out EventObject eventObject))
+                {
+                    eventObject.StopSound();
+                }
                 NpcDialogueController.Instance.ShowDialogue(npcDialogueData.GetDialogues(npcType));
                 isAlreadyTalk = true;
             }
@@ -49,9 +52,15 @@ namespace Event
         private void StartNpcEvent()
         {
             InputManager.Instance.SetMovementState(false);
-            guard.StopPatrol();
+            if (guard != null)
+            {
+                guard.StopPatrol();
+            }
             //startdialog
-            barricade.SetActive(false);
+            if (barricade != null)
+            {
+                barricade.SetActive(false);
+            }
             StartCoroutine(WaitAndFinishNpcEvent());
         }
 
@@ -67,7 +76,10 @@ namespace Event
         private void FinishNpcEvent()
         {
             InputManager.Instance.SetMovementState(true);
-            guard.StartPatrol();
+            if (guard != null)
+            {
+                guard.StartPatrol();
+            }
             Destroy(this);
         }
     }

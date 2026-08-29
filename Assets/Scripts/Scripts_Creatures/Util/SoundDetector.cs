@@ -30,6 +30,10 @@ namespace Scripts_Creatures.Util
             {
                 float distance = Vector3.Distance(transform.position, target.transform.position);
                 AudioSource source = target.GetComponentInChildren<AudioSource>();
+                if (source == null)
+                {
+                    continue;
+                }
 
                 if (distance < source.maxDistance && source.isPlaying)
                 {

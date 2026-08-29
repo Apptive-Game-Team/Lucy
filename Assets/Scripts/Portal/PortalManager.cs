@@ -19,6 +19,8 @@ namespace Portal
 
         private readonly List<ISceneChangeListener> listeners = new List<ISceneChangeListener>();
 
+        private bool isTransiting;
+
         private void Start()
         {
             DontDestroyOnLoad(this);
@@ -31,7 +33,10 @@ namespace Portal
         /// <param name="listener">The listener to register</param>
         public void SetSceneChangeListener(ISceneChangeListener listener)
         {
-            listeners.Add(listener);
+            if (!listeners.Contains(listener))
+            {
+                listeners.Add(listener);
+            }
         }
 
         /// <summary>
@@ -41,8 +46,17 @@ namespace Portal
         private IEnumerator CallOnSceneChange()
         {
             yield return new WaitForSeconds(CALL_LISTENER_DELAY);
-            foreach (ISceneChangeListener listener in listeners)
+            // Backwards: listeners destroyed by the scene load are dropped here, and a listener
+            // registering another one during the callback cannot invalidate the iteration.
+            for (int i = listeners.Count - 1; i >= 0; i--)
             {
+                ISceneChangeListener listener = listeners[i];
+                if (listener == null || (listener is MonoBehaviour behaviour && behaviour == null))
+                {
+                    listeners.RemoveAt(i);
+                    continue;
+                }
+
                 try
                 {
                     listener.OnSceneChange();
@@ -51,7 +65,7 @@ namespace Portal
                 {
                     Debug.LogWarning(e.Message);
                 }
-            
+
             }
         }
 
@@ -62,13 +76,21 @@ namespace Portal
         /// <param name="portalID">The ID of the portal to use for transition</param>
         public IEnumerator TransitScene(PortalID portalID)
         {
-            yield return CameraEffector.Instance.FadeOut();
             PortalData portalData = portalDataList.GetPortalDataByID(portalID);
-            SceneData sceneData = sceneDataList.GetSceneDataByID(portalData.sceneID);
+            SceneData sceneData = portalData == null ? null : sceneDataList.GetSceneDataByID(portalData.sceneID);
+            if (sceneData == null || isTransiting)
+            {
+                yield break;
+            }
+            isTransiting = true;
+
+            yield return CameraEffector.Instance.FadeOut();
             SceneManager.LoadScene(sceneData.sceneName);
+            yield return null; // LoadScene only takes effect at the end of the frame
             StartCoroutine(CallOnSceneChange());
             Character.Instance.transform.position = portalData.destination;
-            StartCoroutine(CameraEffector.Instance.FadeIn());
+            yield return CameraEffector.Instance.FadeIn();
+            isTransiting = false;
         }
 
     }

@@ -15,7 +15,7 @@ namespace Scripts_Creatures.Creatures{
         PURSUIT = 1,   // 추적 - 플레이어를 감지하고 추적 중
         ALERTED = 2,   // 경계 - 플레이어를 놓쳤으나 주변을 경계하며 탐색
         AVOIDING = 3,  // 회피 - 특정 크리처가 빛을 피함
-        STUNNED = 3,   // 기절 - 일시적으로 행동 불가
+        STUNNED = 4,   // 기절 - 일시적으로 행동 불가
     }
 
     /// <summary>
@@ -41,6 +41,8 @@ namespace Scripts_Creatures.Creatures{
         protected CreatureStatus status;
 
         private Coroutine alertedCounterCoroutine;
+
+        protected Coroutine moveOnPathCoroutine;
 
         private LayerMask soundTargetMask;
 
@@ -74,7 +76,7 @@ namespace Scripts_Creatures.Creatures{
             soundTargetMask = LayerMask.GetMask("Door") | LayerMask.GetMask("Player");
             soundDetector.SetTargetMask(soundTargetMask);
             StartCoroutine(CreatureUpdate());
-            StartCoroutine(MoveOnPath());
+            moveOnPathCoroutine = StartCoroutine(MoveOnPath());
         }
 
         public IEnumerator AlertedCounter()
@@ -253,7 +255,20 @@ namespace Scripts_Creatures.Creatures{
             while (true)
             {
                 yield return new WaitForSecondsRealtime(ACTION_DELAY);
-                actions[status].Update();
+                // An unhandled status or a throwing action used to kill this coroutine,
+                // freezing the creature for the rest of the run.
+                if (!actions.ContainsKey(status))
+                {
+                    continue;
+                }
+                try
+                {
+                    actions[status].Update();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning(e);
+                }
             }
         }
 

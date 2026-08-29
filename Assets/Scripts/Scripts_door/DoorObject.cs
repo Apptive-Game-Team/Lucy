@@ -18,7 +18,10 @@ namespace Scripts_door
 
         public bool CheckCanOpen()
         {
-            return !isLocked || Array.Exists(Inventory.instance.slots,itemSlot => itemSlot.item.itemId == keyId);
+            // itemSlot.item is null on every empty slot - checking it first avoids a crash
+            // whenever a locked door is used with a non-full inventory.
+            return !isLocked || Array.Exists(Inventory.instance.slots,
+                itemSlot => itemSlot.item != null && itemSlot.item.itemId == keyId);
         }
     }
 
@@ -35,7 +38,10 @@ namespace Scripts_door
             {
                 door.SetActive(!door.activeSelf);
                 soundController.PlaySound(door.activeSelf);
-                creatureManager.UpdateMap();
+                if (creatureManager != null)
+                {
+                    creatureManager.UpdateMap();
+                }
             }
         }
 

@@ -28,7 +28,7 @@ namespace soundSystem_
         {
             walkSounds = soundManager.soundSources.GetSoundSourcesByNameContain("Walk");
             runSounds = soundManager.soundSources.GetSoundSourcesByNameContain("Run");
-            footstepSoundCount = Mathf.Min(walkSounds.Count, walkSounds.Count);
+            footstepSoundCount = Mathf.Min(walkSounds.Count, runSounds.Count);
         }
 
         IEnumerator FootSoundPlay()
@@ -49,6 +49,10 @@ namespace soundSystem_
         public void StartFootstepSoundPlay(bool isRun)
         {
             _isRun = isRun;
+            if (footstepSoundCount == 0)
+            {
+                return;
+            }
             if (_footstepSoundCoroutine == null)
             {
                 _footstepSoundCoroutine = StartCoroutine(FootSoundPlay());

@@ -45,14 +45,24 @@ namespace Scripts_Creatures
         {
             ReferenceManager.Instance.SetReferableObject("CreatureManager", this, false);
             mapBuilder = gameObject.GetComponent<MapBuilder>();
-            tilemaps.Add(GameObject.Find("Floor_tilemap").GetComponent<Tilemap>());
-            //tilemaps.Add(GameObject.Find("Furniture_grid").GetComponent<Tilemap>());
+
+            GameObject floorTilemap = GameObject.Find("Floor_tilemap");
+            if (floorTilemap == null)
+            {
+                Debug.LogWarning("Floor_tilemap not found - creature pathfinding is disabled in this scene");
+                return;
+            }
+
+            // OnEnable runs again on every re-enable: rebuild instead of appending duplicates.
+            tilemaps.Clear();
+            tilemaps.Add(floorTilemap.GetComponent<Tilemap>());
             InitMap();
             InitPathFinders();
         }
 
         void InitPathFinders()
         {
+            pathFinders.Clear();
             pathFinders.Add(new PathFinder(GetDoorAppliedMap(), mapOffset, debugMode));
             pathFinders.Add(new PathFinder(GetDoorAndLightAppliedMap(), mapOffset, debugMode));
         }
@@ -106,7 +116,7 @@ namespace Scripts_Creatures
                     int offsetAppliedX = position.x - mapOffset.x;
                     int offsetAppliedY = position.y - mapOffset.y;
 
-                    if (offsetAppliedX > 0 && offsetAppliedX < map.GetLength(0) && offsetAppliedY > 0 && offsetAppliedY < map.GetLength(1))
+                    if (offsetAppliedX >= 0 && offsetAppliedX < map.GetLength(0) && offsetAppliedY >= 0 && offsetAppliedY < map.GetLength(1))
                     {
                         if (!isReversed && tileBase != null)
                         {
@@ -124,6 +134,10 @@ namespace Scripts_Creatures
 
         public void UpdateMap()
         {
+            if (pathFinders.Count < 2)
+            {
+                return;
+            }
             pathFinders[(int)PathFinderType.DEFAULT].SetMap(GetDoorAppliedMap());
             pathFinders[(int)PathFinderType.AVOIDER].SetMap(GetDoorAndLightAppliedMap());
         }

@@ -5,93 +5,54 @@ using UnityEngine.UI;
 
 namespace Portal
 {
-    public enum CameraEffectType
-    {
-        NONE,
-        FADE_OUT,
-        FADE_IN,
-    }
-
-    public interface ICameraEffect
-    {
-        void OnEffect();
-    }
-
-    public abstract class CameraEffect : ICameraEffect
-    {
-
-        public CameraEffectType cameraEffectType;
-        protected float duration;
-
-        public CameraEffect(CameraEffectType type, float second)
-        {
-            cameraEffectType = type;
-            duration = second;
-        }
-
-        public void OnEffect()
-        {
-            throw new System.NotImplementedException();
-        }
-    }
-
-    public class FadeOutCameraEffect : CameraEffect
-    {
-        public FadeOutCameraEffect(CameraEffectType type, float second) : base(type, second)
-        {
-        }
-    }
-
     public class CameraEffector : SingletonObject<CameraEffector>
     {
         Image fadeImage;
         const float FADE_DURATION = 2f;
-
-        List<CameraEffect> cameraEffectList;
-
-        float curTime = 0;
-        float curAlpha = 0;
 
         private void Start()
         {
             fadeImage = transform.GetChild(0).GetChild(0).GetComponent<Image>();
         }
 
+        // unscaledDeltaTime: dialogues and puzzles set timeScale to 0, which used to make
+        // a fade never finish and hang the scene transition on a black screen.
         public IEnumerator FadeOut()
         {
-            curTime = 0;
+            float curTime = 0;
 
             while (curTime < FADE_DURATION)
             {
                 yield return null;
-                curTime += Time.deltaTime;
-                curAlpha = curTime / FADE_DURATION;
-                fadeImage.color = new Color(0, 0, 0, curAlpha);
+                curTime += Time.unscaledDeltaTime;
+                SetFadeAlpha(curTime / FADE_DURATION);
             }
         }
         public IEnumerator FadeIn()
         {
-            curTime = FADE_DURATION;
+            float curTime = FADE_DURATION;
 
             while (curTime > 0)
             {
                 yield return null;
-                curTime -= Time.deltaTime;
-                curAlpha = curTime / FADE_DURATION;
-                fadeImage.color = new Color(0, 0, 0, curAlpha);
+                curTime -= Time.unscaledDeltaTime;
+                SetFadeAlpha(curTime / FADE_DURATION);
             }
+        }
+
+        private void SetFadeAlpha(float alpha)
+        {
+            if (fadeImage == null)
+            {
+                return;
+            }
+            fadeImage.color = new Color(0, 0, 0, Mathf.Clamp01(alpha));
         }
 
         public IEnumerator FadeOutIn()
         {
             yield return FadeOut();
             yield return FadeIn();
-        }
-
-        public void AddCameraEffect(CameraEffect cameraEffect)
-        {
-            cameraEffectList.Add(cameraEffect);
-            cameraEffect.OnEffect();
         }
 
     }

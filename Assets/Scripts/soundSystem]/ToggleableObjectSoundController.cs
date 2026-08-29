@@ -13,8 +13,8 @@ namespace soundSystem_
 
         public void SetType(string type)
         {
-            audioClips[0] = SoundManager.Instance.soundSources.GetByName(type + "Close").Value.sound;
-            audioClips[1] = SoundManager.Instance.soundSources.GetByName(type + "Open").Value.sound;
+            audioClips[0] = SoundManager.Instance.soundSources.GetClipByName(type + "Close");
+            audioClips[1] = SoundManager.Instance.soundSources.GetClipByName(type + "Open");
         }
 
         public void PlaySound(bool isOpen)

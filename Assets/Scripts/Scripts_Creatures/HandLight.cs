@@ -27,14 +27,10 @@ namespace Scripts_Creatures
                 List<Collider2D> targets = detector.DetectByView();
                 foreach (Collider2D target in targets)
                 {
-                    try
+                    avoider = target.GetComponent<Avoider>();
+                    if (avoider != null)
                     {
-                        avoider = target.GetComponent<Avoider>();
                         avoider.OnDetectedByHandLight(transform.position);
-                    }
-                    catch
-                    {
-                        continue;
                     }
                 }
             }

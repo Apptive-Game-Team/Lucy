@@ -21,8 +21,9 @@ namespace Password_Object
 
         private void Awake()
         {
-            text = gameObject.GetComponentInChildren<TMP_Text>();
-            passwordCanvas = gameObject.GetComponentInChildren<Canvas>();
+            // includeInactive: the password canvas is disabled most of the time.
+            text = gameObject.GetComponentInChildren<TMP_Text>(true);
+            passwordCanvas = gameObject.GetComponentInChildren<Canvas>(true);
         }
 
         void Start()
@@ -53,6 +54,12 @@ namespace Password_Object
 
         private void InitButtonsOnClick()
         {
+            if (buttons.Count < 12)
+            {
+                Debug.LogError("PasswordSystem needs 12 buttons: 0-9, clear, confirm");
+                return;
+            }
+
             for (int i = 0; i < 10; i++) {
                 int index = i;
                 buttons[i].onClick.AddListener(() =>
@@ -71,7 +78,7 @@ namespace Password_Object
 
             buttons[11].onClick.AddListener(() =>
             {
-                if (password == currentPassword)
+                if (password == currentPassword && passwordObject != null)
                 {
                     passwordObject.Unlock();
                     passwordCanvas.gameObject.SetActive(false);

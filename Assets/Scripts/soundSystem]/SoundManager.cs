@@ -11,10 +11,9 @@ namespace soundSystem_
             base.Awake();
             if (audioSource == null)
             {
-                try
-                {
-                    audioSource = gameObject.GetComponent<AudioSource>();
-                } catch
+                // GetComponent returns null instead of throwing, so the old try/catch never fired.
+                audioSource = gameObject.GetComponent<AudioSource>();
+                if (audioSource == null)
                 {
                     throw new Exception("AudioSource is not found");
                 }
@@ -34,7 +33,12 @@ namespace soundSystem_
 
         public void PlayBackgroundMusic(string name)
         {
-            audioSource.clip = soundSources.GetByName(name).Value.sound;
+            AudioClip clip = soundSources.GetClipByName(name);
+            if (clip == null)
+            {
+                return;
+            }
+            audioSource.clip = clip;
             audioSource.Play();
         }
 

@@ -14,7 +14,7 @@ namespace Lucy
         }
         public void TurnOnHandLight()
         {
-            if ( FlashLight.instance.battery>=0)
+            if (FlashLight.instance.battery > 0)
             {
                 handlightObject.SetActive(true);
             }

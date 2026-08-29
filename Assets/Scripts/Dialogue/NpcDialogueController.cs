@@ -53,6 +53,12 @@ namespace Dialogue
         void ISceneChangeListener.OnSceneChange()
         {
             dialogueImages =  ReferenceManager.Instance.FindComponentByName<ReferableObject>("DialogueImages");
+            if (dialogueImages == null)
+            {
+                Debug.LogWarning("DialogueImages not registered - dialogue is disabled in this scene");
+                dialogueImage = null;
+                return;
+            }
 
             dialogueImage = dialogueImages.transform.Find("DialogueBackground").gameObject;
             dialogueCharacter = dialogueImages.transform.Find("LucyDialogueImage").gameObject;
@@ -66,9 +72,21 @@ namespace Dialogue
             };
         }
 
+        private Coroutine displayCoroutine;
+
         public void ShowDialogue(string[] dialogues, float delayBetweenDialogues = 1.5f) // 두 문장 이상 출력
         {
-            StartCoroutine(DisplayDialogues(dialogues, delayBetweenDialogues));
+            // A null array (unknown npcType) used to throw inside the coroutine with
+            // timeScale already at 0, freezing the game for good.
+            if (dialogues == null || dialogues.Length == 0 || dialogueImage == null)
+            {
+                return;
+            }
+            if (displayCoroutine != null)
+            {
+                return;
+            }
+            displayCoroutine = StartCoroutine(DisplayDialogues(dialogues, delayBetweenDialogues));
         }
 
         public void ShowDialogue(string dialogue) // 한 문장 출력
@@ -92,6 +110,7 @@ namespace Dialogue
             dialogueImage.SetActive(false);
             dialogueCharacter.SetActive(false);
             Time.timeScale = 1f;
+            displayCoroutine = null;
         }
 
         private IEnumerator TypeDialogue(string dialogue)

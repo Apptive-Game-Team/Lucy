@@ -16,8 +16,12 @@ namespace invertoryAndItem
 
         protected override void ActOnTrigger(Collider2D other)
         {
-            Inventory.instance.AddItem(item);
-            Object.Destroy(gameObject);
+            // Only remove the pickup if it actually made it into the inventory,
+            // otherwise a full inventory silently deletes the item.
+            if (Inventory.instance.AddItem(item))
+            {
+                Object.Destroy(gameObject);
+            }
         }
     }
 }

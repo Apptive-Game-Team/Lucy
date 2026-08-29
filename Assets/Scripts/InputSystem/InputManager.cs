@@ -32,6 +32,7 @@ namespace InputSystem
 
         private readonly Dictionary<ActionCode, bool> keyDownBools = new Dictionary<ActionCode, bool>();
         private readonly Dictionary<ActionCode, bool> keyDownBoolsForListener = new Dictionary<ActionCode, bool>();
+        private readonly Dictionary<ActionCode, bool> keyUpBoolsForListener = new Dictionary<ActionCode, bool>();
         private readonly Dictionary<ActionCode, Coroutine> keyDownCounterCoroutine = new Dictionary<ActionCode, Coroutine>();
         private readonly Dictionary<ActionCode, bool> keyActiveFlags = new Dictionary<ActionCode, bool>();
         private readonly Dictionary<ActionCode, KeyCode> keyMappings = new Dictionary<ActionCode, KeyCode>()
@@ -55,9 +56,15 @@ namespace InputSystem
             return (int)action >= (int)ActionCode.MoveUp && (int)action <= (int)ActionCode.MoveLeft;
         }
 
+        protected override void Awake()
+        {
+            base.Awake();
+            // Init in Awake: other scripts read key states from their own Start().
+            InitKeyDownDictionarys();
+        }
+
         private void Start()
         {
-            InitKeyDownDictionarys();
             StartCoroutine(CallListenersCoroutine());
         }
 
@@ -194,6 +201,13 @@ namespace InputSystem
                         }
                         keyDownCounterCoroutine[action] = StartCoroutine(KeyDownCounter(action));
                     }
+
+                    // GetKeyUp is only true for a single frame, so it has to be latched here
+                    // instead of polled from CallListenersCoroutine.
+                    if (Input.GetKeyUp(keyMappings[action]))
+                    {
+                        keyUpBoolsForListener[action] = true;
+                    }
                 }
             }
 
@@ -201,7 +215,15 @@ namespace InputSystem
 
         public void SetKeyListener(IKeyInputListener listener)
         {
-            inputListeners.Add(listener);
+            if (!inputListeners.Contains(listener))
+            {
+                inputListeners.Add(listener);
+            }
+        }
+
+        public void RemoveKeyListener(IKeyInputListener listener)
+        {
+            inputListeners.Remove(listener);
         }
 
         private void InitKeyDownDictionarys()
@@ -212,6 +234,7 @@ namespace InputSystem
                 keyDownCounterCoroutine.Add(action, null);
                 keyActiveFlags.Add(action, true);
                 keyDownBoolsForListener.Add(action, false);
+                keyUpBoolsForListener.Add(action, false);
             }
         }
 
@@ -233,8 +256,10 @@ namespace InputSystem
                         {
                             CallOnKeyListeners(action);
                         }
-                        else if (Input.GetKeyUp(keyMappings[action]))
+
+                        if (keyUpBoolsForListener[action])
                         {
+                            keyUpBoolsForListener[action] = false;
                             CallOnKeyUpListeners(action);
                         }
                     }
@@ -244,31 +269,47 @@ namespace InputSystem
         }
 
 
+        /// <summary>
+        /// Calls every registered listener, dropping the ones whose GameObject was destroyed
+        /// (scene change) and swallowing listener exceptions.
+        /// Without this a single dead listener kills CallListenersCoroutine and all input stops.
+        /// Iterates backwards so removals and registrations during the call are safe.
+        /// </summary>
+        private void CallListeners(ActionCode action, Action<IKeyInputListener> call)
+        {
+            for (int i = inputListeners.Count - 1; i >= 0; i--)
+            {
+                IKeyInputListener listener = inputListeners[i];
+                if (listener == null || (listener is MonoBehaviour behaviour && behaviour == null))
+                {
+                    inputListeners.RemoveAt(i);
+                    continue;
+                }
+
+                try
+                {
+                    call(listener);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning(e);
+                }
+            }
+        }
+
         private void CallOnKeyListeners(ActionCode action)
         {
-            foreach (IKeyInputListener listener in inputListeners)
-            {
-                listener.OnKey(action);
-
-            }
+            CallListeners(action, listener => listener.OnKey(action));
         }
 
         private void CallOnKeyDownListeners(ActionCode action)
         {
-            foreach (IKeyInputListener listener in inputListeners)
-            {
-                listener.OnKeyDown(action);
-
-            }
+            CallListeners(action, listener => listener.OnKeyDown(action));
         }
 
         private void CallOnKeyUpListeners(ActionCode action)
         {
-            foreach (IKeyInputListener listener in inputListeners)
-            {
-                listener.OnKeyUp(action);
-
-            }
+            CallListeners(action, listener => listener.OnKeyUp(action));
         }
     }
 }

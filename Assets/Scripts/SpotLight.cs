@@ -31,9 +31,15 @@ public class SpotLight : MonoBehaviour
             targets = detector.DetectByView();
             foreach (Collider2D target in targets)
             {
-                if (target.CompareTag("Player"))
+                if (!target.CompareTag("Player"))
                 {
-                    target.gameObject.GetComponent<CharacterStat>().OnSpotLight();
+                    continue;
+                }
+                // CharacterStat can sit on a parent of the collider.
+                CharacterStat characterStat = target.GetComponentInParent<CharacterStat>();
+                if (characterStat != null)
+                {
+                    characterStat.OnSpotLight();
                 }
             }
         } 

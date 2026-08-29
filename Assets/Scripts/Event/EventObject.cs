@@ -12,12 +12,13 @@ namespace Event
         {
             PortalManager.Instance.SetSceneChangeListener(this);
             eventSoundController = GetComponent<EventSoundController>();
-            EventScheduler.Instance.eventObjects.Add("FirstMeetNpcEventObject", this);
+            // Indexer, not Add: a second EventObject (or a scene reload) threw on a duplicate key.
+            EventScheduler.Instance.eventObjects["FirstMeetNpcEventObject"] = this;
         }
 
         public void PlaySound()
         {
-            eventSoundController.PlaySound(SoundManager.Instance.soundSources.GetByName("OpenTheDoor2").Value.sound, true);
+            eventSoundController.PlaySound(SoundManager.Instance.soundSources.GetClipByName("OpenTheDoor2"), true);
         }
         public void StopSound()
         {

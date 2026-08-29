@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Interactable
@@ -8,7 +9,15 @@ namespace Interactable
 
         protected override void ActOnTrigger(Collider2D other)
         {
-            FurnitureController.Instance.furnitures[furniture.furnitureType].Interact(this);
+            Dictionary<FurnitureType, Furnitures> furnitures = FurnitureController.Instance.furnitures;
+            if (furniture == null || furnitures == null)
+            {
+                return;
+            }
+            if (furnitures.TryGetValue(furniture.furnitureType, out Furnitures target))
+            {
+                target.Interact(this);
+            }
         }
     }
 }
