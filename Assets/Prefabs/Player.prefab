@@ -550,7 +550,7 @@ MonoBehaviour:
   maxMental: 100
   curStamina: 0
   maxStamina: 100
-  reduceAmount: 10
+  reduceAmount: 2
   isOnLight: 0
   isRun: 0
   canRun: 1

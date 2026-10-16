@@ -42,10 +42,35 @@ namespace invertoryAndItem
 
         public static Inventory instance;
         public ItemData battery;
+        private bool separating;
 
         private void Awake()
         {
+            if (instance != null && instance != this)
+            {
+                // Inventory lives on its own canvas. Remove the duplicate UI, not just this component.
+                // Disable its external toggle listeners too, so they cannot reopen a destroyed window.
+                foreach (var toggle in FindObjectsOfType<InventoryToggleManager>(true))
+                {
+                    if (toggle.inventoryWindow != gameObject) continue;
+                    toggle.enabled = false;
+                    Destroy(toggle);
+                }
+                gameObject.SetActive(false);
+                Destroy(gameObject);
+                return;
+            }
             instance = this;
+        }
+
+        private void OnDestroy() { if (instance == this) instance = null; }
+
+        private void OnDisable()
+        {
+            separating = false;
+            if (seperatingImages == null) return;
+            foreach (var image in seperatingImages)
+                if (image != null) image.gameObject.SetActive(false);
         }
 
         // Start is called before the first frame update
@@ -71,6 +96,7 @@ namespace invertoryAndItem
                 seperatingImages[i].gameObject.SetActive(false);
             }
             ClearSelectItemWindow();
+            Lucy.Presentation.HospitalInventoryView.Attach(this);
         }
 
         /// <summary>
@@ -80,6 +106,7 @@ namespace invertoryAndItem
         /// <returns>True if item was successfully added, false if inventory is full</returns>
         public bool AddItem(ItemData item)
         {
+            if (item == null || slots == null) return false;
             if (item.canStack)
             {
                 ItemSlot slotToStackTo = GetItemStack(item);
@@ -136,6 +163,7 @@ namespace invertoryAndItem
 
         public void SelectItem(int index)
         {
+            if (separating || slots == null || index < 0 || index >= slots.Length) return;
             if (slots[index].item == null) return;
 
             selectedItem = slots[index];
@@ -143,6 +171,9 @@ namespace invertoryAndItem
 
             selectedItemName.text = selectedItem.item.displayName;
             selectedItemDescription.text = selectedItem.item.description;
+            useButton.SetActive(false);
+            equipButton.SetActive(false);
+            unEquipButton.SetActive(false);
         
             if(selectedItem.item.type == ItemType.CONSUMABLE)
             {
@@ -167,57 +198,59 @@ namespace invertoryAndItem
         public void ClearSelectItemWindow()
         {
             selectedItem = null;
+            useButton.SetActive(false);
+            equipButton.SetActive(false);
+            unEquipButton.SetActive(false);
             selectedItemName.text = string.Empty;
             selectedItemDescription.text = string.Empty;
         }
 
         public void OnUseButton()
         {
-            if (selectedItem.item.type == ItemType.CONSUMABLE)
-            {
-                for (int i = 0; i < selectedItem.item.consumables.Length; i++)
-                {
-                    switch (selectedItem.item.consumables[i].type)
-                    {
-                        case ConsumableType.Battery:
-                            if (FlashLight.instance.battery <= 0)
-                            {
-                                HandLightSwitch.instance.TurnOnHandLight();
-                                FlashLight.instance.battery += 2;
-                                FlashLight.instance.StartConsumeBattery();
-                                CharacterStat.instance.StopMentalReduce();
-                                FlashLight.instance.UpdateUi();
-                                break;
-                            }
-                            else
-                            {
-                                FlashLight.instance.battery += 2;
-                                FlashLight.instance.UpdateUi();
-                                break;
-                            }
-                        case ConsumableType.CurMental:
-                            CharacterStat.instance.curMental += 10;
-                            CharacterStat.instance.UpdateStats();
-                            break;
-                        case ConsumableType.MaxMental:
-                            CharacterStat.instance.maxMental += 10;
-                            CharacterStat.instance.curMental += 10;
-                            CharacterStat.instance.UpdateStats();
-                            break;
-                    }
-                }
-            }
-
+            if (separating || Lucy.Presentation.GameSession.BlocksGameplayInput || selectedItem == null ||
+                selectedItem.item == null || selectedItem.item.type != ItemType.CONSUMABLE) return;
             if (selectedItem.item.itemId == ItemID.RemoteController)
             {
-                StartCoroutine(GetBatteryEvent(battery));
+                // A single remote frees its own slot; stacked remotes need space for the reward.
+                if (battery == null || (selectedItem.quantity > 1 && GetEmptySlot() == null &&
+                    (!battery.canStack || GetItemStack(battery) == null))) return;
+                RemoveSelectedItem();
+                AddItem(battery);
+                StartCoroutine(GetBatteryEvent());
+                return;
             }
-
-            RemoveSelectedItem();
+            bool applied = false;
+            var stats = CharacterStat.instance;
+            var effects = selectedItem.item.consumables;
+            if (effects == null) return;
+            foreach (var effect in effects)
+            {
+                if (effect == null || effect.value <= 0) continue;
+                switch (effect.type)
+                {
+                    case ConsumableType.Battery:
+                        if (FlashLight.instance != null) applied |= FlashLight.instance.Refill(Mathf.CeilToInt(effect.value));
+                        break;
+                    case ConsumableType.CurMental:
+                        if (stats != null && stats.curMental < stats.maxMental)
+                        { stats.curMental += effect.value; applied = true; }
+                        break;
+                    case ConsumableType.MaxMental:
+                        if (stats != null)
+                        { stats.maxMental += effect.value; stats.curMental += effect.value; applied = true; }
+                        break;
+                    case ConsumableType.Stamina:
+                        if (stats != null && stats.curStamina < stats.maxStamina)
+                        { stats.curStamina += effect.value; applied = true; }
+                        break;
+                }
+            }
+            if (stats != null) stats.UpdateStats();
+            if (applied) RemoveSelectedItem();
         }
         public void OnEquipButton()
         {
-            if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
+            if (!separating && !Lucy.Presentation.GameSession.BlocksGameplayInput && selectedItem != null && selectedItem.item != null && selectedItem.item.type == ItemType.EQUIPABLE)
             {
                 Equip(selectedItemIndex); 
             }
@@ -231,14 +264,14 @@ namespace invertoryAndItem
         /// <param name="isEquipping">True if equipping, false if unequipping</param>
         private void HandleItemSpecificEquipLogic(ItemID itemId, bool isEquipping)
         {
-            if (itemId == ItemID.FLASHLIGHT)
+            if (itemId == ItemID.FLASHLIGHT && FlashLight.instance != null && HandLightSwitch.instance != null && CharacterStat.instance != null)
             {
                 if (isEquipping)
                 {
                     HandLightSwitch.instance.TurnOnHandLight();
                     FlashLight.instance.SetUi();
                     FlashLight.instance.StartConsumeBattery();
-                    CharacterStat.instance.StopMentalReduce();
+                    if (FlashLight.instance.battery > 0) CharacterStat.instance.StopMentalReduce();
                 }
                 else
                 {
@@ -252,6 +285,7 @@ namespace invertoryAndItem
 
         void Equip(int index)
         {
+            if (uidSlot[index].equipped) return;
             HandleItemSpecificEquipLogic(slots[index].item.itemId, true);
 
             for (int i = 0; i < curEquipped.Length; i++)
@@ -269,7 +303,7 @@ namespace invertoryAndItem
 
         public void OnUnEquipButton()
         {
-            if (selectedItem != null && selectedItem.item.type == ItemType.EQUIPABLE)
+            if (!separating && !Lucy.Presentation.GameSession.BlocksGameplayInput && selectedItem != null && selectedItem.item != null && selectedItem.item.type == ItemType.EQUIPABLE)
             {
                 UnEquip(selectedItemIndex);
             }
@@ -294,6 +328,7 @@ namespace invertoryAndItem
         }
         public bool IsItemEquipped(ItemData item)
         {
+            if (item == null || curEquipped == null) return false;
             for (int i = 0; i < curEquipped.Length; i++)
             {
                 if (curEquipped[i] != null && curEquipped[i].item == item)
@@ -333,18 +368,17 @@ namespace invertoryAndItem
             return false;
         }
     
-        private IEnumerator GetBatteryEvent(ItemData item)
+        private IEnumerator GetBatteryEvent()
         {
-            //inventoryWindow.SetActive(false);
-            Time.timeScale = 0;
-            for (int i = 0; i < seperatingImages.Count; i++)
+            separating = true;
+            foreach (var image in seperatingImages)
             {
-                seperatingImages[i].gameObject.SetActive(true);
-                yield return new WaitForSecondsRealtime(2f);
-                seperatingImages[i].gameObject.SetActive(false);
+                if (image == null) continue;
+                image.gameObject.SetActive(true);
+                yield return new WaitForSeconds(1f);
+                image.gameObject.SetActive(false);
             }
-            Time.timeScale = 1;
-            AddItem(item);
+            separating = false;
         }
     }
 }

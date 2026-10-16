@@ -11,13 +11,13 @@ namespace invertoryAndItem
         protected override void Start()
         {
             base.Start();
-            Text.SetActive(false);
+            if (Text != null) Text.SetActive(false);
         }
 
         protected override void ActOnTrigger(Collider2D other)
         {
-            Inventory.instance.AddItem(item);
-            Object.Destroy(gameObject);
+            if (Inventory.instance != null && Inventory.instance.AddItem(item))
+                Object.Destroy(gameObject);
         }
     }
 }

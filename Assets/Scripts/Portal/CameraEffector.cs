@@ -64,9 +64,9 @@ namespace Portal
             while (curTime < FADE_DURATION)
             {
                 yield return null;
-                curTime += Time.deltaTime;
+                curTime += Time.unscaledDeltaTime;
                 curAlpha = curTime / FADE_DURATION;
-                fadeImage.color = new Color(0, 0, 0, curAlpha);
+                if (fadeImage != null) fadeImage.color = new Color(0, 0, 0, Mathf.Clamp01(curAlpha));
             }
         }
         public IEnumerator FadeIn()
@@ -76,9 +76,9 @@ namespace Portal
             while (curTime > 0)
             {
                 yield return null;
-                curTime -= Time.deltaTime;
+                curTime -= Time.unscaledDeltaTime;
                 curAlpha = curTime / FADE_DURATION;
-                fadeImage.color = new Color(0, 0, 0, curAlpha);
+                if (fadeImage != null) fadeImage.color = new Color(0, 0, 0, Mathf.Clamp01(curAlpha));
             }
         }
 

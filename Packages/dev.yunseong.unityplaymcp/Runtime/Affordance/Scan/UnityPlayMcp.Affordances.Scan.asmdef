@@ -1,0 +1,16 @@
+{
+  "name": "UnityPlayMcp.Affordances.Scan",
+  "rootNamespace": "UnityPlayMcp.Affordances.Scan",
+  "references": [
+    "UnityPlayMcp.Affordances.Runtime"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

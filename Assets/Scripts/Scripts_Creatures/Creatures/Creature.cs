@@ -47,6 +47,18 @@ namespace Scripts_Creatures.Creatures{
         private const float ACTION_DELAY = 0.5f;
         private const float TEMP_DELAY = 0.01f;
         private const float ALERT_TIME = 10f;
+        private const float ARRIVAL_GRACE_SECONDS = 8f;
+        private const float ARRIVAL_DEPARTURE_DISTANCE = 1.5f;
+        private float arrivalGraceRemaining = ARRIVAL_GRACE_SECONDS;
+        private Vector2 arrivalPosition;
+        private bool capturedArrivalPosition;
+        private bool leftArrivalPosition;
+
+        // Each newly loaded enemy waits for the player to leave the arrival area before
+        // starting its eight-second grace period. Reading at the entrance stays safe.
+        public float ArrivalGraceRemaining => arrivalGraceRemaining;
+        private bool IsArrivalProtected => arrivalGraceRemaining > 0f ||
+            (Portal.PortalManager.Instance != null && Portal.PortalManager.Instance.IsTransitioning);
 
         protected bool isArrived = false;
 
@@ -60,17 +72,26 @@ namespace Scripts_Creatures.Creatures{
         protected override void Awake()
         {
             base.Awake();
+            detector = GetComponent<Detector>();
+            if (detector == null) detector = gameObject.AddComponent<Detector>();
+            soundDetector = GetComponent<SoundDetector>();
+            if (soundDetector == null) soundDetector = gameObject.AddComponent<SoundDetector>();
             InitActions();
         }
 
         protected override void Start()
         {
             base.Start();
+            if (creatureManager == null || !creatureManager.HasNavigationMap)
+            {
+                Debug.LogWarning($"Creature {name} has no navigation floor in this scene; roaming is disabled.", this);
+                enabled = false;
+                return;
+            }
             status = CreatureStatus.PATROL;
             pathLineRenderer = GetComponent<PathLineRenderer>();
             detector = GetComponent<Detector>();
             detector.SetTargetMask(LayerMask.GetMask("Player"));
-            soundDetector = GetComponent<SoundDetector>();
             soundTargetMask = LayerMask.GetMask("Door") | LayerMask.GetMask("Player");
             soundDetector.SetTargetMask(soundTargetMask);
             StartCoroutine(CreatureUpdate());
@@ -94,6 +115,7 @@ namespace Scripts_Creatures.Creatures{
         /// </summary>
         protected void DetectPlayer()
         {
+            if (IsArrivalProtected) return;
 #if UNITY_EDITOR
             if (debugMode)
             {
@@ -136,9 +158,9 @@ namespace Scripts_Creatures.Creatures{
         {
             path = FindPath(targetPosition.x, targetPosition.y);
 #if UNITY_EDITOR
-            if (debugMode && path != null)
+            if (pathLineRenderer != null && debugMode && path != null)
                 pathLineRenderer.SetPoints(path);
-            else
+            else if (pathLineRenderer != null)
                 pathLineRenderer.Clear();
 #endif
         }
@@ -152,9 +174,9 @@ namespace Scripts_Creatures.Creatures{
             startNode.SetPosition(transform.position.x, transform.position.y);
             path = creatureManager.pathFinders[(int)pathFinderType].FindDirectionPath(startNode, direction, 5f);
 #if UNITY_EDITOR
-            if (debugMode && path != null)
+            if (pathLineRenderer != null && debugMode && path != null)
                 pathLineRenderer.SetPoints(path);
-            else
+            else if (pathLineRenderer != null)
                 pathLineRenderer.Clear();
 #endif
         }
@@ -168,9 +190,9 @@ namespace Scripts_Creatures.Creatures{
             startNode.SetPosition(transform.position.x, transform.position.y);
             path = creatureManager.pathFinders[(int)pathFinderType].FindRandomPath(startNode, direction, 5);
 #if UNITY_EDITOR
-            if (debugMode && path != null)
+            if (pathLineRenderer != null && debugMode && path != null)
                 pathLineRenderer.SetPoints(path);
-            else
+            else if (pathLineRenderer != null)
                 pathLineRenderer.Clear();
 #endif
         }
@@ -236,6 +258,23 @@ namespace Scripts_Creatures.Creatures{
 #endif
         protected virtual void Update()
         {
+            if (!Lucy.Presentation.GameSession.BlocksGameplayInput && Time.timeScale > 0f &&
+                (Portal.PortalManager.Instance == null || !Portal.PortalManager.Instance.IsTransitioning))
+            {
+                var player = Portal.Character.Instance;
+                if (player != null)
+                {
+                    if (!capturedArrivalPosition)
+                    {
+                        arrivalPosition = player.transform.position;
+                        capturedArrivalPosition = true;
+                    }
+                    if (!leftArrivalPosition && Vector2.Distance(player.transform.position, arrivalPosition) >= ARRIVAL_DEPARTURE_DISTANCE)
+                        leftArrivalPosition = true;
+                    if (leftArrivalPosition)
+                        arrivalGraceRemaining = Mathf.Max(0f, arrivalGraceRemaining - Time.deltaTime);
+                }
+            }
 #if UNITY_EDITOR
             if (debugMode)
             {
@@ -252,7 +291,7 @@ namespace Scripts_Creatures.Creatures{
         {
             while (true)
             {
-                yield return new WaitForSecondsRealtime(ACTION_DELAY);
+                yield return new WaitForSeconds(ACTION_DELAY);
                 actions[status].Update();
             }
         }
@@ -322,6 +361,19 @@ namespace Scripts_Creatures.Creatures{
 
         protected virtual void OnTriggerEnter2D(Collider2D collision)
         {
+            TryCatchPlayer(collision);
+        }
+
+        protected virtual void OnTriggerStay2D(Collider2D collision)
+        {
+            // Protection is temporary even if the player stays inside the enemy's trigger.
+            TryCatchPlayer(collision);
+        }
+
+        private void TryCatchPlayer(Collider2D collision)
+        {
+            if (!enabled || IsArrivalProtected || Time.timeScale <= 0f ||
+                Lucy.Presentation.GameSession.BlocksGameplayInput) return;
             if (collision.CompareTag("Player"))
             {
 #if UNITY_EDITOR
@@ -330,7 +382,7 @@ namespace Scripts_Creatures.Creatures{
                     Debug.Log(gameObject.name + " | " + this.name + " : Kill Player...");
                 }
 #endif
-                Destroy(collision.gameObject);
+                Lucy.Presentation.GameSession.Instance.Fail("어둠 속의 누군가에게 붙잡혔습니다.");
             }
         }
     }

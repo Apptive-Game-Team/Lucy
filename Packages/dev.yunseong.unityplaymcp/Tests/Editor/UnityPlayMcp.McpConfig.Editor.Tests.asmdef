@@ -1,0 +1,24 @@
+{
+  "name": "UnityPlayMcp.McpConfig.Editor.Tests",
+  "rootNamespace": "UnityPlayMcp.Tests.McpConfig",
+  "references": [
+    "UnityPlayMcp.Affordances.Scan",
+    "UnityPlayMcp.McpConfig.Editor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Newtonsoft.Json.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

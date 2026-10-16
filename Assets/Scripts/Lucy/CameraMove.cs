@@ -18,31 +18,36 @@ namespace Lucy
 
         void OnEnable()
         {
+            if (Instance != this) return;
             ReferenceManager.Instance.SetReferableObject("MainCamera",this,false);
-            hallucination = transform.Find("hallucination").gameObject;
-            hallucination.SetActive(false);
+            var overlay = transform.Find("hallucination");
+            hallucination = overlay != null ? overlay.gameObject : null;
+            if (hallucination != null) hallucination.SetActive(false);
         }
 
         protected override void Awake()
         {
             base.Awake();
+            if (Instance != this) return;
             PortalManager.Instance.SetSceneChangeListener(this);
         }
 
         void ISceneChangeListener.OnSceneChange()
         {
             square = ReferenceManager.Instance.FindGameObjectByName("Square");
-            player = Character.Instance.gameObject;
+            player = Character.Instance != null ? Character.Instance.gameObject : null;
+            if (square == null || Camera.main == null) return;
             Renderer BackgroundRenderer = square.GetComponent<Renderer>();
             Vector2 MapSize = new Vector2(BackgroundRenderer.bounds.size.x, BackgroundRenderer.bounds.size.y);
             height = Camera.main.orthographicSize;
             width = height * Screen.width / Screen.height;
-            diffX = MapSize.x/2 - width;
-            diffY = MapSize.y/2 - height;
+            diffX = Mathf.Max(0, MapSize.x/2 - width);
+            diffY = Mathf.Max(0, MapSize.y/2 - height);
         }
 
         void Update()
         {
+            if (Lucy.Presentation.GameSession.BlocksGameplayInput || player == null || square == null) return;
             try
             {
                 CameraPosition();

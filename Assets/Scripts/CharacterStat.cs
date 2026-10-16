@@ -29,7 +29,7 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
     public float maxMental = 100;
     public float curStamina;
     public float maxStamina = 100;
-    public int reduceAmount = 10;
+    public int reduceAmount = 2;
     private GameObject hallucination;
     private SpriteRenderer hallucinationSpriteRenderer;
 
@@ -58,25 +58,62 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
 
     void Start()
     {
-        Transform canvas = UIController.Instance.transform.Find("StatCanvas 1");
-        Transform mentalBar = canvas.Find("MentalBar");
-        Transform staminaBar = canvas.Find("StaminaBar");
-        mentalSlider = mentalBar.GetComponent<Slider>();
-        staminaSlider = staminaBar.GetComponent<Slider>();
-        count_Mental = mentalBar.Find("Count_Mental").GetComponent<TextMeshProUGUI>();
-        count_Stamina = staminaBar.Find("Count_Stamina").GetComponent<TextMeshProUGUI>();
-        PortalManager.Instance.SetSceneChangeListener(this);
-        audioSource = transform.Find("PlayerStatusSoundController").GetComponent<AudioSource>();
-        audioSource.clip = SoundManager.Instance.soundSources.GetByName("Heartbeat").Value.sound;
+        BindUI();
+        if (PortalManager.Instance != null) PortalManager.Instance.SetSceneChangeListener(this);
+        var soundTransform = transform.Find("PlayerStatusSoundController");
+        audioSource = soundTransform != null ? soundTransform.GetComponent<AudioSource>() : null;
+        if (audioSource != null && SoundManager.Instance != null && SoundManager.Instance.soundSources != null)
+        {
+            var heartbeat = SoundManager.Instance.soundSources.GetByName("Heartbeat");
+            if (heartbeat.HasValue) audioSource.clip = heartbeat.Value.sound;
+            audioSource.loop = true;
+        }
         SetStats();
         UpdateStats();
         mentalCoroutine = StartCoroutine(ReduceMental());
     }
 
+    private void OnDestroy() { if (instance == this) instance = null; }
+    private void OnDisable()
+    {
+        isOnLight = false;
+        onLightCounter = null;
+        mentalCoroutine = null;
+    }
+
+    private void BindUI()
+    {
+        if (UIController.Instance == null) return;
+        var canvas = UIController.Instance.transform.Find("StatCanvas 1");
+        if (canvas == null) return;
+        var mentalBar = canvas.Find("MentalBar");
+        var staminaBar = canvas.Find("StaminaBar");
+        if (mentalBar != null)
+        {
+            mentalSlider = mentalBar.GetComponent<Slider>();
+            var counter = mentalBar.Find("Count_Mental");
+            count_Mental = counter != null ? counter.GetComponent<TextMeshProUGUI>() : null;
+        }
+        if (staminaBar != null)
+        {
+            staminaSlider = staminaBar.GetComponent<Slider>();
+            var counter = staminaBar.Find("Count_Stamina");
+            count_Stamina = counter != null ? counter.GetComponent<TextMeshProUGUI>() : null;
+        }
+    }
+
     void ISceneChangeListener.OnSceneChange()
     {
-        hallucination = ReferenceManager.Instance.FindComponentByName<CameraMove>("MainCamera").hallucination;
-        hallucinationSpriteRenderer = hallucination.GetComponent<SpriteRenderer>();
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Puzzle_2F")
+        {
+            reduceAmount = 2;
+            if (invertoryAndItem.FlashLight.instance != null) invertoryAndItem.FlashLight.instance.consumeAmount = 1;
+        }
+        BindUI();
+        var camera = ReferenceManager.Instance != null ? ReferenceManager.Instance.FindComponentByName<CameraMove>("MainCamera") : null;
+        hallucination = camera != null ? camera.hallucination : null;
+        hallucinationSpriteRenderer = hallucination != null ? hallucination.GetComponent<SpriteRenderer>() : null;
+        UpdateStats();
     }
 
     /// <summary>
@@ -86,6 +123,8 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
     {
         curMental = maxMental;
         curStamina = maxStamina;
+        canRun = true;
+        isRun = false;
     }
     
     /// <summary>
@@ -93,10 +132,26 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
     /// </summary>
     public void UpdateStats()
     {
-        mentalSlider.value = curMental/maxMental;
-        staminaSlider.value = curStamina/maxStamina;
-        count_Stamina.text = string.Format("{0}/{1}", Mathf.FloorToInt(curStamina), maxStamina);
-        count_Mental.text = string.Format("{0}/{1}", Mathf.FloorToInt(curMental), maxMental);
+        maxMental = Mathf.Max(1, maxMental);
+        maxStamina = Mathf.Max(1, maxStamina);
+        curMental = Mathf.Clamp(curMental, 0, maxMental);
+        curStamina = Mathf.Clamp(curStamina, 0, maxStamina);
+        if (mentalSlider != null) mentalSlider.value = curMental/maxMental;
+        if (staminaSlider != null) staminaSlider.value = curStamina/maxStamina;
+        if (count_Stamina != null) count_Stamina.text = string.Format("{0}/{1}", Mathf.FloorToInt(curStamina), maxStamina);
+        if (count_Mental != null) count_Mental.text = string.Format("{0}/{1}", Mathf.FloorToInt(curMental), maxMental);
+        float warning = Mathf.Clamp01(1 - curMental / (maxMental * MENTAL_WARNING_RATE));
+        if (hallucinationSpriteRenderer != null)
+        {
+            Color color = hallucinationSpriteRenderer.color; color.a = warning / 3f;
+            hallucinationSpriteRenderer.color = color; hallucination.SetActive(warning > 0);
+        }
+        if (audioSource != null)
+        {
+            audioSource.pitch = 1 + warning;
+            if (warning > 0 && !audioSource.isPlaying) audioSource.Play();
+            else if (warning == 0) audioSource.Stop();
+        }
     }
     
     /// <summary>
@@ -116,7 +171,7 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
             curStamina = 0;
             canRun = false;
         }
-        if (curStamina >= STAMINA_RECOVERY_THRESHOLD)
+        if (curStamina >= Mathf.Min(STAMINA_RECOVERY_THRESHOLD, maxStamina))
         {
             canRun = true;
         }
@@ -129,33 +184,14 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
     /// </summary>
     public IEnumerator ReduceMental()
     {
-        yield return new WaitUntil(() => hallucinationSpriteRenderer != null);
-
         while (curMental > 0)
         {   
-            yield return new WaitForSecondsRealtime(delay);
+            yield return new WaitForSeconds(Mathf.Max(1f, delay));
             if (!isOnLight)
             {
-                curMental -= reduceAmount;
-                // Increase heartbeat pitch as mental decreases
-                audioSource.pitch = 1 + (float)(((maxMental * MENTAL_WARNING_RATE) - curMental) / (maxMental * MENTAL_WARNING_RATE));
-                // Gradually increase hallucination overlay opacity
-                float alpha = (float)(((maxMental * MENTAL_WARNING_RATE) - curMental) / (maxMental * MENTAL_WARNING_RATE)) / 3;
-                yield return new WaitUntil(() => hallucinationSpriteRenderer != null);
-                Color hallucinationColor = hallucinationSpriteRenderer.color;
-                hallucinationColor.a = alpha;
-                hallucinationSpriteRenderer.color = hallucinationColor;
-
-                if (curMental <= maxMental * MENTAL_WARNING_RATE && !audioSource.isPlaying)
-                {
-                    audioSource.Play();
-                    hallucination.SetActive(true);
-                } else  if (curMental > maxMental * MENTAL_WARNING_RATE)
-                {
-                    audioSource.Stop();
-                    hallucination.SetActive(false);
-                }
+                curMental = Mathf.Max(0, curMental - Mathf.Max(0, reduceAmount));
                 UpdateStats();
+                if (curMental <= 0 && Lucy.Presentation.GameSession.Instance != null) Lucy.Presentation.GameSession.Instance.Fail("빛을 잃고 어둠 속에서 길을 잃었습니다.");
             }
         }
     }
@@ -166,6 +202,7 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
     /// </summary>
     public void StartMentalReduce()
     {
+        if (!isActiveAndEnabled) { mentalCoroutine = null; return; }
         if (mentalCoroutine != null)
         {
             StopCoroutine(mentalCoroutine);

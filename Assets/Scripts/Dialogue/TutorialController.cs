@@ -32,7 +32,7 @@ namespace Dialogue
 
         private void LoadGameScene()
         {
-            SceneManager.LoadScene("...");
+            Lucy.Presentation.GameSession.Instance.StartNewGame();
         }
     }
 }

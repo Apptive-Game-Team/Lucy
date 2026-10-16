@@ -1,4 +1,17 @@
 using UnityEngine;
+using System.Collections.Generic;
+
+public static class PersistentGameObjects
+{
+    private static readonly HashSet<GameObject> roots = new HashSet<GameObject>();
+    public static void Register(GameObject gameObject) { roots.Add(gameObject.transform.root.gameObject); }
+    public static void Clear()
+    {
+        foreach (var root in roots)
+            if (root != null) { root.SetActive(false); Object.Destroy(root); }
+        roots.Clear();
+    }
+}
 
 /// <summary>
 /// Base class for implementing the Singleton pattern in Unity.
@@ -23,6 +36,7 @@ public class SingletonObject<T> : MonoBehaviour where T : MonoBehaviour
                 if (_instance != null)
                 {
                     DontDestroyOnLoad(_instance.gameObject);
+                    PersistentGameObjects.Register(_instance.gameObject);
                 }
             }
 
@@ -39,9 +53,11 @@ public class SingletonObject<T> : MonoBehaviour where T : MonoBehaviour
         {
             _instance = this as T;
             DontDestroyOnLoad(gameObject);
+            PersistentGameObjects.Register(gameObject);
         }
         else if (_instance != this)
         {
+            gameObject.SetActive(false);
             Destroy(gameObject);
         }
     }

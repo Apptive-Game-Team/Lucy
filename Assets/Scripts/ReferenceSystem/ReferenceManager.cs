@@ -47,7 +47,8 @@ namespace ReferenceSystem
         {
             try
             {
-                return indexToComponents[keyToIndex[key]] as T;
+                var component = indexToComponents[keyToIndex[key]];
+                return component != null ? component as T : null;
             }
             catch
             {

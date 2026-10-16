@@ -7,6 +7,7 @@ namespace Scripts_Creatures.Creatures
         protected override void Start()
         {
             base.Start();
+            if (!enabled) return;
             minSpeed = 1;
             maxSpeed = 2;
             actions[status].Start();

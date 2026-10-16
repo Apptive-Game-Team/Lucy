@@ -10,7 +10,7 @@ namespace Puzzle
             if(other.CompareTag("Player"))
             {
                 FlashLight.instance.consumeAmount = 1;
-                CharacterStat.instance.reduceAmount = 10;
+                CharacterStat.instance.reduceAmount = 2;
             }
         }
 
@@ -19,7 +19,7 @@ namespace Puzzle
             if (other.CompareTag("Player"))
             {
                 FlashLight.instance.consumeAmount = 3;
-                CharacterStat.instance.reduceAmount = 30;
+                CharacterStat.instance.reduceAmount = 6;
             }
         }
     }

@@ -8,7 +8,7 @@ namespace Scripts_Creatures.Util
         [SerializeField]
         private float maxDistance = 10f;
 
-        [SerializeField] bool debugMode = true;
+        [SerializeField] bool debugMode = false;
 
         [SerializeField] LayerMask targetMask;
 
@@ -29,11 +29,13 @@ namespace Scripts_Creatures.Util
             foreach(Collider2D target in targets)
             {
                 float distance = Vector3.Distance(transform.position, target.transform.position);
-                AudioSource source = target.GetComponentInChildren<AudioSource>();
-
-                if (distance < source.maxDistance && source.isPlaying)
+                foreach (AudioSource source in target.GetComponentsInChildren<AudioSource>())
                 {
-                    hitTargetList.Add(target);
+                    if (source.isPlaying && !source.mute && source.volume > 0 && distance < source.maxDistance)
+                    {
+                        hitTargetList.Add(target);
+                        break;
+                    }
                 }
             }
 

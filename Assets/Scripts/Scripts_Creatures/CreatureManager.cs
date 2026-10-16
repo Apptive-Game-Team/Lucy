@@ -40,12 +40,33 @@ namespace Scripts_Creatures
         [SerializeField] bool debugMode;
 
         public List<PathFinder> pathFinders = new List<PathFinder>();
+        public bool HasNavigationMap { get; private set; }
 
         private void OnEnable()
         {
             ReferenceManager.Instance.SetReferableObject("CreatureManager", this, false);
             mapBuilder = gameObject.GetComponent<MapBuilder>();
-            tilemaps.Add(GameObject.Find("Floor_tilemap").GetComponent<Tilemap>());
+            tilemaps.Clear();
+            pathFinders.Clear();
+            doorAppliedMap = doorAndlightAppliedMap = null;
+            lastDoors = lastSpotLights = new GameObject[0];
+            var floor = GameObject.Find("Floor_tilemap") ?? GameObject.Find("MazeFloor");
+            var floorMap = floor != null ? floor.GetComponent<Tilemap>() : null;
+            HasNavigationMap = floorMap != null;
+            if (!HasNavigationMap)
+            {
+                // The bridge puzzle uses sprite platforms, with no roaming creatures.
+                // Its Void tilemap is a hazard, never walkable navigation ground.
+                map = new int[1, 1];
+                mapOffset = Vector3Int.zero;
+                pathFinders.Add(new PathFinder(map, mapOffset, debugMode));
+                pathFinders.Add(new PathFinder(map, mapOffset, debugMode));
+                return;
+            }
+            tilemaps.Add(floorMap);
+            var mazeWalls = GameObject.Find("MazeWall");
+            if (mazeWalls != null && mazeWalls.TryGetComponent<Tilemap>(out var wallMap))
+                tilemaps.Add(wallMap);
             //tilemaps.Add(GameObject.Find("Furniture_grid").GetComponent<Tilemap>());
             InitMap();
             InitPathFinders();
@@ -100,13 +121,16 @@ namespace Scripts_Creatures
             foreach (Tilemap tilemap in tilemaps)
             {
              
-                foreach (Vector3Int position in bounds.allPositionsWithin)
+                foreach (Vector3Int position in tilemap.cellBounds.allPositionsWithin)
                 {
                     TileBase tileBase = tilemap.GetTile(position);
-                    int offsetAppliedX = position.x - mapOffset.x;
-                    int offsetAppliedY = position.y - mapOffset.y;
+                    // Maze walls use half-height cells on a separate Grid. All layers
+                    // must be converted into the floor grid before applying obstacles.
+                    Vector3Int floorPosition = tilemaps[0].WorldToCell(tilemap.CellToWorld(position));
+                    int offsetAppliedX = floorPosition.x - mapOffset.x;
+                    int offsetAppliedY = floorPosition.y - mapOffset.y;
 
-                    if (offsetAppliedX > 0 && offsetAppliedX < map.GetLength(0) && offsetAppliedY > 0 && offsetAppliedY < map.GetLength(1))
+                    if (offsetAppliedX >= 0 && offsetAppliedX < map.GetLength(0) && offsetAppliedY >= 0 && offsetAppliedY < map.GetLength(1))
                     {
                         if (!isReversed && tileBase != null)
                         {
@@ -207,7 +231,7 @@ namespace Scripts_Creatures
 
         void ApplyLightOnMap()
         {
-            doorAndlightAppliedMap = DeepCopy(doorAppliedMap);
+            doorAndlightAppliedMap = DeepCopy(doorAppliedMap ?? map);
 
             GameObject[] spotLights = GameObject.FindGameObjectsWithTag("Light");
 

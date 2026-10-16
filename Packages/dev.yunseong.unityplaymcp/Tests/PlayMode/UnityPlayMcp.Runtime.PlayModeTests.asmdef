@@ -1,0 +1,23 @@
+{
+  "name": "UnityPlayMcp.Runtime.PlayModeTests",
+  "rootNamespace": "UnityPlayMcp.Tests.PlayMode",
+  "references": [
+    "UnityPlayMcp.Runtime",
+    "UnityPlayMcp.Affordances.Scan",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Newtonsoft.Json.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}
