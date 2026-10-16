@@ -22,7 +22,7 @@ namespace Title_Ending_Scene
         {
             if (scene.name == "Title")
             {
-                Screen.SetResolution(titleWidth, titleHeight, fullscreen);
+                Screen.SetResolution(defaultWidth, defaultHeight, fullscreen);
             }
             else
             {

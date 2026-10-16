@@ -40,6 +40,8 @@ namespace Scripts_Creatures.Util
             {
                 compare = HCost.CompareTo(other.HCost);
             }
+            if (compare == 0) compare = X.CompareTo(other.X);
+            if (compare == 0) compare = Y.CompareTo(other.Y);
             return compare;
         }
 
@@ -61,8 +63,8 @@ namespace Scripts_Creatures.Util
     public class PathFinder
     {
         private int[,] map;
-        private readonly int width;
-        private readonly int height;
+        private int width;
+        private int height;
         private Vector3Int mapOffset;
         private List<Tuple<int, int>> directions;
         public int maxComputing = 1000;
@@ -74,6 +76,7 @@ namespace Scripts_Creatures.Util
         {
             this.map = map;
             this.mapOffset = mapOffset;
+            this.debugMode = debugMode;
             width = map.GetLength(0);
             height = map.GetLength(1);
             nodes = new Node[width, height];
@@ -90,18 +93,21 @@ namespace Scripts_Creatures.Util
 
 #endif
             this.map = newMap;
+            width = newMap.GetLength(0);
+            height = newMap.GetLength(1);
             nodes = new Node[width, height];
         }
 
         public List<Node> FindPath(Node startNode, Node endNode)
         {
+            nodes = new Node[width, height];
+            startNode.Parent = null;
             int computeCount = 0;
-
-            SortedSet<Node> openSet = new SortedSet<Node>() { startNode};
-            HashSet<Node> closedSet = new HashSet<Node>();
 
             startNode.GCost = 0;
             startNode.HCost = GetDistance(startNode, endNode);
+            SortedSet<Node> openSet = new SortedSet<Node>() { startNode};
+            HashSet<Node> closedSet = new HashSet<Node>();
 
             while (openSet.Count > 0 && computeCount < maxComputing)
             {
@@ -129,6 +135,7 @@ namespace Scripts_Creatures.Util
                     int newMovementCostToNeighbor = currentNode.GCost + GetDistance(currentNode, neighbor);
                     if (newMovementCostToNeighbor < neighbor.GCost || !openSet.Contains(neighbor))
                     {
+                        openSet.Remove(neighbor);
                         neighbor.GCost = newMovementCostToNeighbor;
                         neighbor.HCost = GetDistance(neighbor, endNode);
                         neighbor.Parent = currentNode;
@@ -167,6 +174,8 @@ namespace Scripts_Creatures.Util
 
         private Node GetNode(int x, int y)
         {
+            if (x - mapOffset.x < 0 || x - mapOffset.x >= width || y - mapOffset.y < 0 || y - mapOffset.y >= height)
+                return new Node(x, y, false);
             Node tempNode;
             if (this.nodes[x - mapOffset.x, y - mapOffset.y] == null)
             {
@@ -181,6 +190,9 @@ namespace Scripts_Creatures.Util
 
         public List<Node> FindDirectionPath(Node startNode, Vector3 direction, float maxDistance = 10f)
         {
+            nodes = new Node[width, height];
+            startNode.Parent = null;
+            startNode.GCost = startNode.HCost = 0;
             SortedSet<Node> openSet = new SortedSet<Node>() { startNode };
             HashSet<Node> closedSet = new HashSet<Node>();
 
@@ -205,17 +217,15 @@ namespace Scripts_Creatures.Util
 
                     float gCost = currentNode.GCost + GetDistance(currentNode, neighbor);
 
-                    if (!openSet.Contains(neighbor))
-                    {
-                        openSet.Add(neighbor);
-                    } else if (gCost >= neighbor.GCost)
+                    if (openSet.Contains(neighbor) && gCost >= neighbor.GCost)
                     {
                         continue;
                     }
-
+                    openSet.Remove(neighbor);
                     neighbor.GCost = (int)gCost;
                     neighbor.HCost = (int) Vector3.Angle(direction, (new Vector3(neighbor.X - startNode.X, neighbor.Y - startNode.Y)).normalized);
                     neighbor.Parent = currentNode;
+                    openSet.Add(neighbor);
                 }
             }
 
@@ -230,9 +240,11 @@ namespace Scripts_Creatures.Util
 
             Node lastNode = startNode;
 
-            List<Node> neighbors = GetNeighbors(startNode);
             System.Random random = new System.Random();
-            int currentDirection = directions.FindIndex(t => t.Item1 == Mathf.Sign(direction.x) && t.Item2 == Mathf.Sign(direction.y));
+            // Mathf.Sign(0) is +1, so matching both axes never selected a cardinal direction.
+            int currentDirection = Math.Abs(direction.x) >= Math.Abs(direction.y)
+                ? (direction.x >= 0 ? 0 : 2)
+                : (direction.y >= 0 ? 3 : 1);
             for (int i = 0; i < nodeLen; i++)
             {
                 computingCounter++;

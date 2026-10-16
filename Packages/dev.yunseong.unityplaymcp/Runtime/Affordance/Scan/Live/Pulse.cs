@@ -1,0 +1,310 @@
+using System;
+using System.Collections;
+using UnityEngine;
+
+namespace UnityPlayMcp.Affordances.Live
+{
+    /// <summary>바뀐 pulse 가 가는 자리.</summary>
+    /// <remarks>
+    /// 소켓이 아니라 이음매다. 이 패키지는 JSON 을 손으로 써서 그것을 싣고 나가는 게임이 직렬화 의존성을 지지 않게 하는데,
+    /// 여기에 전송을 넣으면 원하든 원하지 않든 모든 게임에 대해 그것을 되돌리게 된다. 도착하는 것은 완성된 문서이고,
+    /// 그것을 나르는 일은 다른 쪽의 결정이다.
+    /// </remarks>
+    public interface IPulseSink
+    {
+        void Send(string document);
+    }
+
+    /// <summary>
+    /// 박자에 맞춰 감시 대상 멤버를 읽고, 답이 바뀌었을 때 건넨다.
+    /// </summary>
+    /// <remarks>
+    /// 게임이 시작하기 전에 쓰인 리포트에 대고 명세를 돌릴 수는 없다. 근거는 무엇이 참이어야 하고 무엇이 바뀔지를 말하고,
+    /// 지금 무엇이 참인지는 도는 게임만이 말하며, 이것이 그것을 나르는 채널이다.
+    ///
+    /// 박자마다가 아니라 바뀔 때 보낸다. 게임이 있는 상태는 대개 한 프레임 전에 있던 그 상태이고, 같은 문서를 초당 예순 번
+    /// 받은 독자는 그중 무엇이 중요했는지를 스스로 알아내야 한다.
+    ///
+    /// 결정하는 것은 문서의 다이제스트가 아니라 움직인 값의 목록이다. 다이제스트를 먼저 시도했는데, 실행해 봐야만 드러나는
+    /// 방식으로 틀렸다: 문서는 그것이 몇 번째 pulse 인지와 어느 프레임에 찍혔는지를 나르고 둘 다 매번 다르므로, 모든 pulse 가
+    /// 새것으로 보였고 게이트는 단 한 번도 닫히지 않았다. 샘플 게임에서 실측하니 pulse 33 건 중 33 건이 나갔고 그중 22 건이
+    /// 제 텍스트로 아무것도 바뀌지 않았다고 말하고 있었다. 값 자체를 비교하는 것은 pulse 가 주장하는 바에서 어긋날 수 없다.
+    /// pulse 가 발행하는 바로 그 비교이기 때문이다.
+    ///
+    /// 게이트가 일하게 만드는 것은 그 위쪽에 있다. 경계 없는 씬 덤프를 해싱하면 매 프레임 변화를 보고하게 되고 — 숨 쉬는
+    /// idle 애니메이션 하나면 충분하다 — 그래서 다른 SDK 의 전부 읽기 모드는 플레이 중에 쓸 수 있었던 적이 없다. 이쪽은
+    /// 근거가 실제로 이름 댄 멤버를 해싱하므로, 값이 움직였다는 것은 어딘가의 조건이 이제 다르게 읽힐 수 있다는 뜻이다.
+    ///
+    /// 일부러 시작하고 저절로 시작하는 일은 없다. 박자마다 필드 백 개를 읽는 값은 게임이 동의해야 하는 것이고, 설치되는
+    /// 순간부터 폴링을 시작하는 패키지는 리포트만 원했던 프로젝트에 그 값을 치르게 한다.
+    /// </remarks>
+    public sealed class Pulse : MonoBehaviour
+    {
+        /// <summary>
+        /// 하나: 씬 이름, static 들, 그리고 감시 대상 멤버를 나르는 객체들.
+        /// </summary>
+        /// <remarks>
+        /// 리포트 자신의 버전과 별개다. 둘은 서로 다른 코드가 서로 다른 순간에 읽고 어느 쪽도 다른 쪽의 모양에 대해 의견이 없다 —
+        /// 이것을 읽는 쪽은 기록이 쓸모없고, 리포트를 읽는 쪽은 폴링할 수 없다.
+        /// </remarks>
+        /// <remarks>
+        /// 둘. 객체들이 한 목록이기를 그만두었기 때문이다. 그것들은 <c>active</c> 와 <c>deactive</c> 로 나뉘고 어느 쪽인지를
+        /// 말하는 플래그를 더는 나르지 않는다 — 같은 사실이 두 자리가 아니라 한 자리에 있다. 한 모양에 대고 쓰인 독자는 다른
+        /// 모양을 읽을 수 없으므로, 그것을 발견하도록 두는 대신 번호가 움직인다.
+        /// </remarks>
+        internal const int SchemaVersion = 2;
+
+        /// <summary>pulse 사이의 초.</summary>
+        /// <remarks>
+        /// 초당 하나. 전에는 초당 열이었는데, 감시 대상 멤버를 초당 열 번 읽는 값이 플레이 모드에서 게임을 눈에 띄게 느리게
+        /// 만들었다. 그러면 agent 가 보는 화면과 조작 결과가 게임이 실제로 어떻게 도는지를 말하지 못한다.
+        ///
+        /// 대가는 이 간격보다 짧게 사는 값이 보이지 않는다는 것이다. 1초 안에 올라갔다 내려온 카운터는 그것을 사이에 두고 찍은
+        /// 두 <c>pulse</c> 에 대해 한 번도 움직이지 않았고, 게이트는 뒤의 것을 바뀌지 않은 것으로 쥔다. 그런 값을 봐야 하는
+        /// 사람은 Project Settings 의 Unity Play MCP 화면에서 간격을 줄이고 그만큼의 읽기 값을 치른다 —
+        /// <c>PulseIntervalPreference</c> 가 그 값을 기억하고 <see cref="Begin"/> 이 그것을 받는다.
+        ///
+        /// 트래픽을 낮게 유지하는 것은 이것이 아니라 게이트다.
+        /// </remarks>
+        internal const float DefaultInterval = 1f;
+
+        /// <summary>전달 사이의 초.</summary>
+        /// <remarks>
+        /// 읽기와 전달이 두 속도인 것은 일부러다. 기본값에서는 둘이 초당 하나로 같아서 <c>pulse</c> 하나가 곧 메시지 하나지만,
+        /// 간격을 줄인 프로젝트에서는 다시 갈라진다. 그때 소켓을 지키는 것이 이 값이다: 게임당 초당 작은 메시지 여럿을 나르는
+        /// 소켓이 그것들을 1초에 한 번 모아 나르는 소켓보다 비싸다.
+        ///
+        /// 나가는 길에 아무것도 병합하지 않는다. <c>pulse</c> 다섯은 다섯으로 도착하고 각자 몇 번째인지와 어느 프레임에
+        /// 찍혔는지를 그대로 말한다. 독자가 그 수열로 1초를 복원하기 때문이다. 배치는 그것들이 *언제 떠나는가* 이지 *무엇인가* 가 아니다.
+        /// </remarks>
+        private const float DefaultDelivery = 1f;
+
+        private static Pulse _beating;
+
+        private IPulseSink _sink;
+        private float _interval = DefaultInterval;
+        private float _delivery = DefaultDelivery;
+
+        /// <summary>찍었으나 아직 건네지 않은 pulse 들.</summary>
+        private readonly System.Collections.Generic.List<string> _pending =
+            new System.Collections.Generic.List<string>();
+        private bool _read;
+
+        /// <summary>직전 pulse 가 sink 에 닿지 못했는지.</summary>
+        private bool _lost;
+
+        /// <summary>다음 pulse 를 차이가 아니라 전량으로 찍으라는 청이 왔는지.</summary>
+        /// <remarks>
+        /// <see cref="_lost"/> 와 따로 두는 것은 까닭이 달라서다. 그쪽은 sink 가 실패했다는 사실이고, 이쪽은 읽는 쪽이 새로 붙었거나
+        /// 이미 도는 채널에 <c>start_readings</c> 를 다시 보냈다는 사실이다. 소켓은 client 가 없어도 보내기에 실패하지 않으므로,
+        /// 끊겼다 다시 붙은 독자는 그 사이의 차이를 잃었는데도 <see cref="_lost"/> 가 서지 않는다 (#69).
+        /// </remarks>
+        private bool _wholeRequested;
+
+        /// <summary>이 인스턴스가 찍는 reading 들의 run.</summary>
+        /// <remarks>
+        /// <see cref="_reading"/> 은 <see cref="Begin"/> 마다 1부터 다시 센다. 읽는 쪽이 그보다 오래 살면 새 run 의 번호가 이전 run 의
+        /// 번호보다 작아 이미 지나간 reading 처럼 보이고, 실제로 MCP server 가 그렇게 새 장면을 버렸다 (#69). 번호끼리 비교해도 되는지를
+        /// 읽는 쪽이 알도록 run 을 함께 싣는다.
+        /// </remarks>
+        private string _run;
+
+        /// <summary>
+        /// 감시가 시작된 순간부터 세어 이것이 몇 번째 pulse 인지.
+        /// </summary>
+        /// <remarks>
+        /// 보낸 것마다가 아니라 찍은 pulse 마다 센다. 그래서 번호의 빈자리 자체가 소식이다: 그 구간 동안 상태가 가만히 있었다는
+        /// 말인데, 그것이 없으면 독자는 타임스탬프 둘과 간격에 대한 추측으로 그것을 유추해야 한다.
+        /// </remarks>
+        private long _reading;
+
+        /// <summary>아직 아무 데도 가지 않은 좌표들과, 그것들이 마지막으로 한 말.</summary>
+        private readonly Restless _restless = new Restless();
+
+        /// <summary>같은 것인데, 화면 사각형에 대한 것. 여기서는 경계가 추측이 아니라 사실일 수 있다.</summary>
+        /// <remarks>
+        /// 1 픽셀. 그 아래로는 아무것도 다르게 그려지지 않고 옛 숫자로 보낸 포인터도 같은 것에 떨어지는데, 그것이 이 채널이
+        /// 사각형에 대해 약속하는 것의 전부다. 월드 데드밴드는 재사용할 수 없다: 월드 단위의 천분의 일은 딱히 무엇도 아닌 것의
+        /// 천분의 일이고, 화면을 가로질러서는 아무것도 걸러 내지 않는다.
+        /// </remarks>
+        private readonly Restless _pixels = new Restless(1f);
+
+        /// <summary>직전 pulse 가 한 말. 이번 pulse 가 그 차이를 말할 수 있도록.</summary>
+        private readonly System.Collections.Generic.Dictionary<string, string> _since =
+            new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+
+        internal static bool InProgress => _beating != null;
+
+        /// <summary>이것이 시작된 뒤로 나간 pulse 의 수.</summary>
+        internal static int Sent { get; private set; }
+
+        /// <summary>찍었으나 바뀌지 않은 것으로 판명된 pulse 의 수.</summary>
+        /// <remarks>
+        /// 말해 두는 것은 두 숫자가 함께여야 게이트가 무슨 일이든 하고 있음을 보이기 때문이다. 모든 pulse 가 나가는 게임은 어떤
+        /// 조건도 언급하지 않는 이유로 움직이는 멤버를 watch list 에 가진 것이고, 그것은 우회해 조율할 것이 아니라 가서 봐야
+        /// 할 것이다.
+        /// </remarks>
+        internal static int Held { get; private set; }
+
+        /// <summary>읽기를 시작하거나, 이미 돌고 있어서 false 로 답한다.</summary>
+        internal static bool Begin(IPulseSink sink, float interval = DefaultInterval)
+        {
+            if (_beating != null || sink == null || interval <= 0f)
+            {
+                return false;
+            }
+
+            var carrier = new GameObject("Unity Play MCP Pulse") { hideFlags = HideFlags.HideAndDontSave };
+            DontDestroyOnLoad(carrier);
+
+            _beating = carrier.AddComponent<Pulse>();
+            _beating._sink = sink;
+            _beating._interval = interval;
+            _beating._run = Guid.NewGuid().ToString("N");
+            Sent = 0;
+            Held = 0;
+
+            _beating.StartCoroutine(_beating.Beat());
+            return true;
+        }
+
+        /// <summary>도는 채널이 있으면 다음 pulse 를 전량으로 찍게 한다. 없으면 아무것도 하지 않는다.</summary>
+        internal static void RequestWhole()
+        {
+            if (_beating != null)
+            {
+                _beating._wholeRequested = true;
+            }
+        }
+
+        internal static void Stop()
+        {
+            if (_beating == null)
+            {
+                return;
+            }
+
+            // 지난 1초가 모은 것이 무엇이든 여전히 누군가의 것이고, 감시가 끝나는 순간은 대개 무언가 흥미로운 일이 막 일어난 직후다.
+            // 박자가 제 루프를 벗어나는 자리가 아니라 여기서 하는 것은, 박자가 거기 닿는 일이 없기 때문이다: carrier 를 파괴하면
+            // 코루틴이 선 자리에서 멈춘다.
+            _beating.Deliver();
+
+            var carrier = _beating.gameObject;
+
+            _beating._sink = null;
+            _beating = null;
+            Destroy(carrier);
+        }
+
+        private IEnumerator Beat()
+        {
+            var untilDelivery = _delivery;
+
+            // 첫 pulse 는 언제나 나간다. 아직 아무 말도 하지 않았으므로 "바뀌지 않음" 은 이것이 그것에 대해 할 수 있는 주장이 아니다.
+            while (_beating == this)
+            {
+                Take();
+
+                yield return new WaitForSecondsRealtime(_interval);
+
+                untilDelivery -= _interval;
+
+                if (untilDelivery > 0f)
+                {
+                    continue;
+                }
+
+                untilDelivery = _delivery;
+                Deliver();
+            }
+        }
+
+        /// <summary>지난 전달 이후 읽은 것을 전부 건넨다.</summary>
+        private void Deliver()
+        {
+            for (var at = 0; at < _pending.Count; at++)
+            {
+                try
+                {
+                    _sink.Send(_pending[at]);
+                }
+                catch (Exception exception)
+                {
+                    // pulse 는 도착했든 아니든 유효하다. 다음 전달에 그것들을 다시 보내면 sink 가 언짢은 동안 계속 그러게 되는데, 그것이 소켓
+                    // 하나가 망가진 것을 홍수로 바꾸는 모양이다.
+                    //
+                    // 대신 다음 것이 전량으로 나간다. pulse 는 움직인 것만 나르므로 잃어버린 하나는 아무도 다시 듣지 못할 차이다 — 독자는
+                    // 무언가 그 값들을 움직이기 전까지 그것들에 대해 틀린 채로 있고, 그런 일은 영영 없을 수도 있다. 전량 pulse 하나가 그것을
+                    // 고치고 그다음부터 차이가 다시 이어진다.
+                    //
+                    // 배치의 나머지는 시도하지 않고 버린다. 그것들은 도착하지 않은 pulse 에 대한 차이이므로, 보내면 독자는 값을 들은 적도 없는
+                    // 것에 대한 변경을 쥐게 된다.
+                    _lost = true;
+                    _pending.Clear();
+                    Debug.LogWarning("[Unity Play MCP] A reading could not be delivered: " + exception.Message);
+                    return;
+                }
+
+                _lost = false;
+                Sent++;
+            }
+
+            _pending.Clear();
+        }
+
+        private void Take()
+        {
+            string document;
+            var settled = false;
+            var forced = _wholeRequested;
+
+            try
+            {
+                // carrier 는 씬 로드보다 오래 살도록 만들어졌으므로, 그것을 쥔 씬은 Unity 가 그렇게 오래 사는 나머지 전부를 두는
+                // 바로 그 씬이다. 스스로 설치되는 패키지가 그 씬에 대해 가진 유일한 손잡이이고, 스캔 자신의 순회도 같은 방식으로
+                // 그것을 잡는다.
+                document = WithRun(LiveState.Compose(
+                    ++_reading, gameObject.scene, _restless, _pixels, _since, _lost || forced, out settled));
+            }
+            catch (Exception exception)
+            {
+                // 나쁜 pulse 하나는 건너뛸 pulse 이지 감시를 멈출 이유가 아니다. 던지는 필드는 이미 문서 안에서 읽지 못한 것으로
+                // 보고된다. 이것은 걷기 자체가 무너진 경우이고, 씬이 헐리는 중이면 그런 일이 생길 수 있다.
+                Debug.LogWarning("[Unity Play MCP] A reading could not be taken: " + exception.Message);
+                return;
+            }
+
+            _wholeRequested = false;
+
+            // 청해진 전량 pulse 는 아무것도 안 움직였어도 나간다. 청한 쪽은 바로 그 한 장을 기다리고 있다.
+            if (_read && settled && !forced)
+            {
+                Held++;
+                return;
+            }
+
+            _read = true;
+
+            // 여기서 보내지 않고 전달 박자까지 쥐고 있는다. 찍는 것과 건네는 것은 두 속도이고, 이것은 게임을 따라가야 하는 쪽이다.
+            _pending.Add(document);
+        }
+
+        /// <summary>문서 맨 앞에 run 을 끼운다.</summary>
+        /// <remarks>
+        /// <see cref="LiveState"/> 가 문서를 <c>{"schema":</c> 로 시작한다는 것에 기댄다. <c>WebSocketPulseSink</c> 가 봉투를
+        /// 끼우는 것과 같은 방식이고 같은 까닭이다: 다시 파싱해 직렬화하면 전량 pulse 를 한 번 더 훑는다.
+        /// </remarks>
+        private string WithRun(string document)
+        {
+            return "{\"run\":\"" + _run + "\"," + document.Substring(1);
+        }
+
+        private void OnDestroy()
+        {
+            if (_beating == this)
+            {
+                _beating = null;
+            }
+        }
+    }
+}

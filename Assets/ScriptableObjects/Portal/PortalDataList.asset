@@ -38,5 +38,11 @@ MonoBehaviour:
     sceneID: 5
     destination: {x: -7, y: -4, z: 0}
   - portalID: 10
+    sceneID: 3
+    destination: {x: -7, y: 14.5, z: 0}
+  - portalID: 4
+    sceneID: 2
+    destination: {x: -2.5, y: -1.5, z: 0}
+  - portalID: 11
     sceneID: 6
     destination: {x: 0, y: 0, z: 0}

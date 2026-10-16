@@ -26,6 +26,7 @@ namespace invertoryAndItem
         public void Clear()
         {
             curSlot = null;
+            equipped = false;
             icon.gameObject.SetActive(false);
             quantityText.text = string.Empty;
         }

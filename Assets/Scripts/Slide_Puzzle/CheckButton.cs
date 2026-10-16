@@ -12,8 +12,10 @@ namespace Slide_Puzzle
 
         public void OnButtonClick()
         {
+            if (buttons == null || buttons.Length != 9) return;
             for (int i = 0; i < 9; i++)
             {
+                if (buttons[i] == null) return;
                 checkPosition.Set(125+i%3*250,-125-i/3*250);
                 if (buttons[i].GetComponent<RectTransform>().anchoredPosition != checkPosition)
                 {
@@ -22,7 +24,7 @@ namespace Slide_Puzzle
                 }
             }
             Debug.Log("정답");
-            PuzzleInteract.Instance.ClearPuzzle();
+            if (PuzzleInteract.Instance != null) PuzzleInteract.Instance.ClearPuzzle();
             return;
         }
     }

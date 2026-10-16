@@ -18,6 +18,7 @@ namespace Portal
         private const float CALL_LISTENER_DELAY = 0.1f;
 
         private readonly List<ISceneChangeListener> listeners = new List<ISceneChangeListener>();
+        public bool IsTransitioning { get; private set; }
 
         private void Start()
         {
@@ -31,7 +32,7 @@ namespace Portal
         /// <param name="listener">The listener to register</param>
         public void SetSceneChangeListener(ISceneChangeListener listener)
         {
-            listeners.Add(listener);
+            if (listener != null && !listeners.Contains(listener)) listeners.Add(listener);
         }
 
         /// <summary>
@@ -40,8 +41,9 @@ namespace Portal
         /// </summary>
         private IEnumerator CallOnSceneChange()
         {
-            yield return new WaitForSeconds(CALL_LISTENER_DELAY);
-            foreach (ISceneChangeListener listener in listeners)
+            yield return new WaitForSecondsRealtime(CALL_LISTENER_DELAY);
+            listeners.RemoveAll(listener => listener == null || (listener is UnityEngine.Object obj && obj == null));
+            foreach (ISceneChangeListener listener in listeners.ToArray())
             {
                 try
                 {
@@ -49,7 +51,7 @@ namespace Portal
                 }
                 catch(Exception e)
                 {
-                    Debug.LogWarning(e.Message);
+                    Debug.LogException(e);
                 }
             
             }
@@ -62,13 +64,37 @@ namespace Portal
         /// <param name="portalID">The ID of the portal to use for transition</param>
         public IEnumerator TransitScene(PortalID portalID)
         {
-            yield return CameraEffector.Instance.FadeOut();
+            if (IsTransitioning || Lucy.Presentation.GameSession.BlocksGameplayInput) yield break;
+            if (portalDataList == null || sceneDataList == null) yield break;
             PortalData portalData = portalDataList.GetPortalDataByID(portalID);
+            if (portalData == null) yield break;
             SceneData sceneData = sceneDataList.GetSceneDataByID(portalData.sceneID);
-            SceneManager.LoadScene(sceneData.sceneName);
-            StartCoroutine(CallOnSceneChange());
-            Character.Instance.transform.position = portalData.destination;
-            StartCoroutine(CameraEffector.Instance.FadeIn());
+            if (sceneData == null || !Application.CanStreamedLevelBeLoaded(sceneData.sceneName))
+            {
+                Debug.LogError("Portal destination is not in Build Settings: " + portalID);
+                yield break;
+            }
+            IsTransitioning = true;
+            try
+            {
+                if (InputSystem.InputManager.Instance != null) InputSystem.InputManager.Instance.SetMovementState(false);
+                if (Character.Instance != null && Character.Instance.TryGetComponent<Rigidbody2D>(out var body)) body.velocity = Vector2.zero;
+                if (CameraEffector.Instance != null) yield return CameraEffector.Instance.FadeOut();
+                if (Lucy.Presentation.GameSession.BlocksGameplayInput)
+                {
+                    if (CameraEffector.Instance != null) yield return CameraEffector.Instance.FadeIn();
+                    yield break;
+                }
+                yield return SceneManager.LoadSceneAsync(sceneData.sceneName);
+                if (Character.Instance != null) Character.Instance.transform.position = portalData.destination;
+                yield return CallOnSceneChange();
+                if (CameraEffector.Instance != null) yield return CameraEffector.Instance.FadeIn();
+            }
+            finally
+            {
+                if (InputSystem.InputManager.Instance != null) InputSystem.InputManager.Instance.SetMovementState(true);
+                IsTransitioning = false;
+            }
         }
 
     }

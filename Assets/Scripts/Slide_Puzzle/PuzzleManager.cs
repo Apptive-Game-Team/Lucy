@@ -27,7 +27,7 @@ namespace Slide_Puzzle
 
             AssignButtonListeners();
 
-            resetButton.onClick.AddListener(ResetPuzzle);
+            if (resetButton != null) resetButton.onClick.AddListener(ResetPuzzle);
         }
 
         void AssignButtonListeners()
@@ -93,22 +93,18 @@ namespace Slide_Puzzle
         void OnPuzzleSolved()
         {
             Debug.Log("Puzzle Solved!");
+            if (PuzzleInteract.Instance != null) PuzzleInteract.Instance.ClearPuzzle();
         }
 
         void ResetPuzzle()
         {
-            for (int j=0; j<2; j++)
+            for (int i = 0; i < puzzlePieces.Length; i++)
             {
-                for (int i = 0; i < puzzlePieces.Length; i++)
-                {
-                    puzzlePieces[i].transform.position = initialPositions[i];
-                    puzzlePieces[i] = initialPuzzlePieces[i];
-                }
-
-                emptyIndex = puzzlePieces.Length - 1;
-
-                AssignButtonListeners();
+                puzzlePieces[i] = initialPuzzlePieces[i];
+                puzzlePieces[i].transform.position = initialPositions[i];
             }
+            emptyIndex = puzzlePieces.Length - 1;
+            AssignButtonListeners();
         }
     }
 }

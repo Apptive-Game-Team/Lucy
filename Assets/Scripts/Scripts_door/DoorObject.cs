@@ -18,7 +18,9 @@ namespace Scripts_door
 
         public bool CheckCanOpen()
         {
-            return !isLocked || Array.Exists(Inventory.instance.slots,itemSlot => itemSlot.item.itemId == keyId);
+            return !isLocked || (Inventory.instance != null && Inventory.instance.slots != null &&
+                Array.Exists(Inventory.instance.slots, itemSlot => itemSlot != null && itemSlot.item != null &&
+                    itemSlot.quantity > 0 && itemSlot.item.itemId == keyId));
         }
     }
 
@@ -34,8 +36,8 @@ namespace Scripts_door
             if (doorInfo.CheckCanOpen())
             {
                 door.SetActive(!door.activeSelf);
-                soundController.PlaySound(door.activeSelf);
-                creatureManager.UpdateMap();
+                if (soundController != null) soundController.PlaySound(door.activeSelf);
+                if (creatureManager != null) creatureManager.UpdateMap();
             }
         }
 
@@ -52,7 +54,7 @@ namespace Scripts_door
             {
                 Debug.LogWarning("This Door is Locked, But Has not Key. Please Door");
             }
-            soundController.SetType("Door");
+            if (soundController != null) soundController.SetType("Door");
         }
     }
 }

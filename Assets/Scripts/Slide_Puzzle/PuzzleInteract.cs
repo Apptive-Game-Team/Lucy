@@ -14,6 +14,8 @@ namespace Slide_Puzzle
         public GameObject text;
         public ItemData key_3F;
         public bool isClear = false;
+        private bool rewardPending;
+        private bool showingReward;
 
         private void Awake()
         {
@@ -29,13 +31,18 @@ namespace Slide_Puzzle
 
         protected override void Start()
         {
-            text.SetActive(false);
-            slicePuzzleCanvas.gameObject.SetActive(false);
-            clearPuzzleImage.SetActive(false);
+            base.Start();
+            if (text != null) text.SetActive(false);
+            if (slicePuzzleCanvas != null) slicePuzzleCanvas.gameObject.SetActive(false);
+            if (clearPuzzleImage != null) clearPuzzleImage.SetActive(false);
         }
         protected override void ActOnTrigger(Collider2D other)
         {
-            if (!isClear)
+            if (rewardPending && !showingReward)
+            {
+                TryEquipKey();
+            }
+            else if (!isClear && slicePuzzleCanvas != null)
             {
                 slicePuzzleCanvas.gameObject.SetActive(true);
                 Time.timeScale = 0f;
@@ -44,29 +51,62 @@ namespace Slide_Puzzle
 
         protected override void OnTriggerEnter2D(Collider2D other)
         {
-            if (!isClear)
+            base.OnTriggerEnter2D(other);
+            if (!isClear || rewardPending)
             {
                 if (other.gameObject.tag.Equals("Player"))
                 {
-                    text.SetActive(true);
+                    if (text != null) text.SetActive(true);
                 }
             }
         }
 
+        protected override void OnTriggerExit2D(Collider2D other)
+        {
+            base.OnTriggerExit2D(other);
+            if (other.CompareTag("Player") && text != null) text.SetActive(false);
+        }
+
         public void ClearPuzzle()
         {
+            if (isClear) return;
             isClear = true;
-            slicePuzzleCanvas.gameObject.SetActive(false);
-            clearPuzzleImage.SetActive(true);
+            rewardPending = true;
+            if (text != null) text.SetActive(false);
+            if (slicePuzzleCanvas != null) slicePuzzleCanvas.gameObject.SetActive(false);
+            if (clearPuzzleImage != null) clearPuzzleImage.SetActive(true);
+            showingReward = true;
             StartCoroutine(EquipKey());
         }
 
         private IEnumerator EquipKey()
         {
             yield return new WaitUntil(() => InputManager.Instance.GetKeyDown(ActionCode.Interaction));
-            Inventory.instance.AddItem(key_3F);
-            clearPuzzleImage.SetActive(false);
+            TryEquipKey();
+            if (clearPuzzleImage != null) clearPuzzleImage.SetActive(false);
+            showingReward = false;
             Time.timeScale = 1f;
+        }
+
+        private void TryEquipKey()
+        {
+            if (!rewardPending) return;
+            if (Inventory.instance != null && Inventory.instance.AddItem(key_3F))
+            {
+                rewardPending = false;
+                if (text != null) text.SetActive(false);
+            }
+            else
+            {
+                // Leave the reward here so a full inventory never traps the player in paused UI.
+                if (text != null) text.SetActive(true);
+                Debug.Log("Make room in the inventory, then interact again to collect the key.");
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
         }
     }
 }

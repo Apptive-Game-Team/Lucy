@@ -7,7 +7,7 @@ namespace Title_Ending_Scene
     {
         public void OnButtonClick()
         {
-            SceneManager.LoadScene("Test240819");
+            Lucy.Presentation.GameSession.Instance.StartNewGame();
         }
     }
 }

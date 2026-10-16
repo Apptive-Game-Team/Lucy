@@ -7,7 +7,7 @@ public abstract class InteractableObject : MonoBehaviour, IKeyInputListener
     private Collider2D other;
     protected virtual void Start()
     {
-        TextObject.SetActive(false);
+        if (TextObject != null) TextObject.SetActive(false);
         InputManager.Instance.SetKeyListener(this);
     }
 
@@ -15,7 +15,7 @@ public abstract class InteractableObject : MonoBehaviour, IKeyInputListener
     {
         if (other.gameObject.tag.Equals("Player"))
         {
-            TextObject.SetActive(true);
+            if (TextObject != null) TextObject.SetActive(true);
             this.other = other;
         }
     }
@@ -33,7 +33,7 @@ public abstract class InteractableObject : MonoBehaviour, IKeyInputListener
     {
         if (other.gameObject.tag.Equals("Player"))
         {
-            TextObject.SetActive(false);
+            if (TextObject != null) TextObject.SetActive(false);
             this.other = null;  
         }
     }

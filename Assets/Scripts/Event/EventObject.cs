@@ -12,7 +12,7 @@ namespace Event
         {
             PortalManager.Instance.SetSceneChangeListener(this);
             eventSoundController = GetComponent<EventSoundController>();
-            EventScheduler.Instance.eventObjects.Add("FirstMeetNpcEventObject", this);
+            EventScheduler.Instance.eventObjects["FirstMeetNpcEventObject"] = this;
         }
 
         public void PlaySound()

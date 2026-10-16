@@ -13,6 +13,36 @@ namespace Interactable
         public GameObject player;
         public GameObject flashlight;
         public List<Sprite> drawerImages;
+        private Coroutine bookRoutine;
+
+        public void ReadBook(GameObject page)
+        {
+            if (bookRoutine == null && page != null) bookRoutine = StartCoroutine(ReadBookUntilClosed(page));
+        }
+
+        private IEnumerator ReadBookUntilClosed(GameObject page)
+        {
+            float scale = Time.timeScale;
+            var input = InputManager.Instance;
+            input.SetMovementState(false);
+            input.SetKeyActive(ActionCode.Interaction, false);
+            input.SetKeyActive(ActionCode.OpenInventory, false);
+            page.SetActive(true);
+            Time.timeScale = 0;
+            yield return new WaitForSecondsRealtime(.25f);
+            yield return new WaitUntil(() => !Input.GetKey(KeyCode.E) && !Input.GetKey(KeyCode.Z));
+            yield return new WaitUntil(() => page == null || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Escape));
+            if (page != null) page.SetActive(false);
+            Time.timeScale = scale;
+            yield return new WaitForEndOfFrame();
+            if (input != null)
+            {
+                input.SetMovementState(true);
+                input.SetKeyActive(ActionCode.Interaction, true);
+                input.SetKeyActive(ActionCode.OpenInventory, true);
+            }
+            bookRoutine = null;
+        }
 
         protected override void Awake()
         {
@@ -21,8 +51,8 @@ namespace Interactable
 
         void Start()
         {
-            player = Character.Instance.gameObject;
-            flashlight.SetActive(false);
+            player = Character.Instance != null ? Character.Instance.gameObject : null;
+            if (flashlight != null) flashlight.SetActive(false);
             furnitures = new Dictionary<FurnitureType, Furnitures>()
             {
                 { FurnitureType.Cabinet, new Cabinet(player)},
@@ -62,7 +92,17 @@ namespace Interactable
             {
                 if (InputManager.Instance.GetKeyDown(ActionCode.Interaction))
                 {
+                    if (player == null) return true;
                     player.SetActive(true);
+                    // Deactivating the player stops its stat coroutines; restore protection consistently.
+                    var stats = player.GetComponent<CharacterStat>();
+                    if (stats != null)
+                    {
+                        bool protectedByLight = FlashLight.instance != null && FlashLight.instance.battery > 0 &&
+                            Inventory.instance != null && Inventory.instance.IsItemEquipped(FlashLight.instance.itemData);
+                        if (protectedByLight) stats.StopMentalReduce();
+                        else stats.StartMentalReduce();
+                    }
                     return true;
                 }
                 return false;
@@ -73,8 +113,9 @@ namespace Interactable
 
         public override void Interact(Furniture furniture)
         {
-            if (!isHidden)
+            if (!isHidden && player != null && FurnitureController.Instance != null)
             {
+                if (player.TryGetComponent<Rigidbody2D>(out var body)) body.velocity = Vector2.zero;
                 player.SetActive(false);
                 isHidden = true;
                 FurnitureController.Instance.StartCoroutine(Reveal());
@@ -88,16 +129,7 @@ namespace Interactable
         {
             GameObject bookPage = furniture.transform.Find("Canvas").gameObject;
 
-            if (!bookPage.activeSelf)
-            {
-                bookPage.SetActive(true);
-                InputManager.Instance.SetMovementState(false);
-            }
-            else
-            {
-                bookPage.SetActive(false);
-                InputManager.Instance.SetMovementState(true);
-            }
+            FurnitureController.Instance.ReadBook(bookPage);
         }
     }
 
@@ -105,17 +137,19 @@ namespace Interactable
     {
         private GameObject flashlight;
         private readonly List<Sprite> drawerImages;
-        private readonly SpriteRenderer spriteRenderer;
+
 
         public Drawer(GameObject flashlight,List<Sprite> drawerImages)
         {
             this.flashlight = flashlight;
             this.drawerImages = drawerImages;
-            spriteRenderer = GameObject.Find("Drawer").GetComponent<SpriteRenderer>();
+
         }
 
         public override void Interact(Furniture furniture)
         {
+            var spriteRenderer = furniture.GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null || drawerImages == null || drawerImages.Count < 2) return;
             if (flashlight == null || !flashlight.activeSelf)
             {
                 if (spriteRenderer.sprite == drawerImages[0])
@@ -133,9 +167,12 @@ namespace Interactable
             }
             else
             {
-                Inventory.instance.AddItem(flashlight.GetComponent<ItemObject>().item);
-                flashlight.SetActive(false);
-                flashlight = null;
+                var pickup = flashlight.GetComponent<ItemObject>();
+                if (pickup != null && Inventory.instance != null && Inventory.instance.AddItem(pickup.item))
+                {
+                    flashlight.SetActive(false);
+                    flashlight = null;
+                }
             }
         }
     }

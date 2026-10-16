@@ -8,79 +8,74 @@ namespace Password_Object
     public class PasswordSystem : MonoBehaviour
     {
         [SerializeField] private string currentPassword = "";
-
         private string password = "";
-
-        PasswordObject passwordObject;
-
-        Canvas passwordCanvas;
-
-        TMP_Text text;
-
-        [SerializeField] List<Button> buttons;
+        private PasswordObject passwordObject;
+        private Canvas passwordCanvas;
+        private TMP_Text text;
+        [SerializeField] private List<Button> buttons;
 
         private void Awake()
         {
-            text = gameObject.GetComponentInChildren<TMP_Text>();
-            passwordCanvas = gameObject.GetComponentInChildren<Canvas>();
-        }
-
-        void Start()
-        {
+            text = GetComponentInChildren<TMP_Text>(true);
+            passwordCanvas = GetComponentInChildren<Canvas>(true);
             InitButtonsOnClick();
-            passwordCanvas.gameObject.SetActive(false);
+            ClosePasswordPage();
         }
 
-        private void OnEnable()
+        private void OnEnable() { ClearInput(); }
+        private void OnDisable() { passwordObject = null; ClearInput(); }
+
+        private void ClearInput()
         {
             currentPassword = "";
-            text.SetText(currentPassword);
+            if (text != null) text.SetText(currentPassword);
         }
 
         public void ClosePasswordPage()
         {
-            passwordCanvas.gameObject.SetActive(false);
+            passwordObject = null;
+            password = "";
+            ClearInput();
+            if (passwordCanvas != null) passwordCanvas.gameObject.SetActive(false);
         }
 
-        public void SetPassword(string password, PasswordObject passwordObject)
+        public void SetPassword(string password, PasswordObject target)
         {
-            this.passwordObject = passwordObject;
-            passwordCanvas.gameObject.SetActive(true);
+            if (target == null || passwordCanvas == null || string.IsNullOrEmpty(password)) return;
             this.password = password;
-            currentPassword = "";
-            text.SetText(currentPassword);
+            passwordCanvas.gameObject.SetActive(true);
+            passwordObject = target;
+            ClearInput();
         }
+
+        private bool CanEnter => passwordObject != null && passwordCanvas != null &&
+            passwordCanvas.gameObject.activeInHierarchy && !Lucy.Presentation.GameSession.BlocksGameplayInput;
 
         private void InitButtonsOnClick()
         {
-            for (int i = 0; i < 10; i++) {
-                int index = i;
+            if (buttons == null) return;
+            for (int i = 0; i < 10 && i < buttons.Count; i++)
+            {
+                int digit = i;
+                if (buttons[i] == null) continue;
                 buttons[i].onClick.AddListener(() =>
                 {
-                    currentPassword += index.ToString();
-                    text.SetText(currentPassword);
-                
+                    if (!CanEnter || currentPassword.Length >= password.Length) return;
+                    currentPassword += digit.ToString();
+                    if (text != null) text.SetText(currentPassword);
                 });
             }
-
-            buttons[10].onClick.AddListener(() =>
-            {
-                currentPassword = "";
-                text.SetText(currentPassword);
-            });
-
-            buttons[11].onClick.AddListener(() =>
-            {
-                if (password == currentPassword)
+            if (buttons.Count > 10 && buttons[10] != null)
+                buttons[10].onClick.AddListener(() => { if (CanEnter) ClearInput(); });
+            if (buttons.Count > 11 && buttons[11] != null)
+                buttons[11].onClick.AddListener(() =>
                 {
-                    passwordObject.Unlock();
-                    passwordCanvas.gameObject.SetActive(false);
-                } else
-                {
-                    currentPassword = "";
-                    text.SetText(currentPassword);
-                }
-            });
+                    if (!CanEnter) return;
+                    if (password != currentPassword) { ClearInput(); return; }
+                    var target = passwordObject;
+                    ClosePasswordPage();
+                    if (target != null) target.Unlock();
+                });
         }
     }
 }

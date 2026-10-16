@@ -15,5 +15,5 @@ MonoBehaviour:
   npcDialogues:
   - npcType: PUZZLENPC
     texts:
-    - text: "\uB0A0 \uC5EC\uAE30\uC11C \uAEBC\uB0B4\uC918"
-    - text: "\uC717 \uBC29\uC5D0 \uC5F4\uC1E0\uAC00 \uC788\uC744\uAC70\uC57C"
+    - text: "루시, 대피 기록을 찾았구나. 이 문을 열어 줄래?"
+    - text: "문을 열고 안으로 들어와. 내가 북동쪽 비상 통로의 바리케이드를 치울게."

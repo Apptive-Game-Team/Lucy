@@ -55,15 +55,21 @@ namespace InputSystem
             return (int)action >= (int)ActionCode.MoveUp && (int)action <= (int)ActionCode.MoveLeft;
         }
 
+        protected override void Awake()
+        {
+            base.Awake();
+            InitKeyDownDictionarys();
+        }
+
         private void Start()
         {
-            InitKeyDownDictionarys();
             StartCoroutine(CallListenersCoroutine());
         }
 
         public void SetKeyActive(ActionCode action, bool active)
         {
             keyActiveFlags[action] = active;
+            if (!active) { keyDownBools[action] = false; keyDownBoolsForListener[action] = false; }
         }
 
         public void SetMovementState(bool active)
@@ -89,6 +95,7 @@ namespace InputSystem
 
         public bool GetKeyDown(ActionCode action)
         {
+            if (Lucy.Presentation.GameSession.BlocksGameplayInput || !GetKeyActive(action)) return false;
             if (keyDownBools[action])
             {
                 keyDownBools[action] = false;
@@ -165,7 +172,21 @@ namespace InputSystem
 
         public bool GetKey(ActionCode action)
         {
-            return (Input.GetKey(keyMappings[action]) && keyActiveFlags[action]);
+            return !Lucy.Presentation.GameSession.BlocksGameplayInput && keyActiveFlags[action] &&
+                (Input.GetKey(keyMappings[action]) || Input.GetKey(AlternateKey(action)));
+        }
+
+        private static KeyCode AlternateKey(ActionCode action)
+        {
+            switch (action)
+            {
+                case ActionCode.MoveUp: return KeyCode.W;
+                case ActionCode.MoveDown: return KeyCode.S;
+                case ActionCode.MoveLeft: return KeyCode.A;
+                case ActionCode.MoveRight: return KeyCode.D;
+                case ActionCode.Interaction: return KeyCode.E;
+                default: return KeyCode.None;
+            }
         }
 
         IEnumerator KeyDownCounter(ActionCode action)
@@ -179,11 +200,16 @@ namespace InputSystem
 
         void Update()
         {
+            if (Lucy.Presentation.GameSession.BlocksGameplayInput)
+            {
+                foreach (ActionCode code in keyMappings.Keys) { keyDownBools[code] = false; keyDownBoolsForListener[code] = false; }
+                return;
+            }
             foreach (ActionCode action in keyMappings.Keys)
             {
                 if (keyActiveFlags[action])
                 {
-                    if (Input.GetKeyDown(keyMappings[action]))
+                    if (Input.GetKeyDown(keyMappings[action]) || Input.GetKeyDown(AlternateKey(action)))
                     {
                         keyDownBools[action] = true;
                         keyDownBoolsForListener[action] = true;
@@ -201,7 +227,7 @@ namespace InputSystem
 
         public void SetKeyListener(IKeyInputListener listener)
         {
-            inputListeners.Add(listener);
+            if (listener != null && !inputListeners.Contains(listener)) inputListeners.Add(listener);
         }
 
         private void InitKeyDownDictionarys()
@@ -220,6 +246,8 @@ namespace InputSystem
             while (true)
             {
                 yield return new WaitForSecondsRealtime(KEY_LISTENER_DELAY);
+                if (Lucy.Presentation.GameSession.BlocksGameplayInput) continue;
+                inputListeners.RemoveAll(listener => listener == null || (listener is UnityEngine.Object obj && obj == null));
                 foreach (ActionCode action in keyMappings.Keys)
                 {
                     if (keyActiveFlags[action])
@@ -229,7 +257,7 @@ namespace InputSystem
                             keyDownBoolsForListener[action] = false;
                             CallOnKeyDownListeners(action);
                         }
-                        else if (Input.GetKey(keyMappings[action]))
+                        else if (GetKey(action))
                         {
                             CallOnKeyListeners(action);
                         }
@@ -246,7 +274,7 @@ namespace InputSystem
 
         private void CallOnKeyListeners(ActionCode action)
         {
-            foreach (IKeyInputListener listener in inputListeners)
+            foreach (IKeyInputListener listener in inputListeners.ToArray())
             {
                 listener.OnKey(action);
 
@@ -255,7 +283,7 @@ namespace InputSystem
 
         private void CallOnKeyDownListeners(ActionCode action)
         {
-            foreach (IKeyInputListener listener in inputListeners)
+            foreach (IKeyInputListener listener in inputListeners.ToArray())
             {
                 listener.OnKeyDown(action);
 
@@ -264,7 +292,7 @@ namespace InputSystem
 
         private void CallOnKeyUpListeners(ActionCode action)
         {
-            foreach (IKeyInputListener listener in inputListeners)
+            foreach (IKeyInputListener listener in inputListeners.ToArray())
             {
                 listener.OnKeyUp(action);
 

@@ -48,11 +48,11 @@ namespace Puzzle
                     bridge.SetActive(isOns[bridgeComponent.bridgeID]);
                 }
             }
-            if(player.transform.position.x > -40f && SceneManager.GetActiveScene().name == "Puzzle_2F_Beaver")
+            if(player != null && square != null && player.transform.position.x > -40f && SceneManager.GetActiveScene().name == "Puzzle_2F")
             {
                 square.transform.position = new Vector3(12.06f, 0.13f, 0f);
             }
-            else if(player.transform.position.x <= -40f && SceneManager.GetActiveScene().name == "Puzzle_2F_Beaver")
+            else if(player != null && square != null && player.transform.position.x <= -40f && SceneManager.GetActiveScene().name == "Puzzle_2F")
             {
                 square.transform.position = new Vector3(-92.0f, 0.13f, 0f);
             }

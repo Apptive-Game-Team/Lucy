@@ -7,22 +7,20 @@ namespace Lucy
     {
         [SerializeField] public GameObject handlightObject;
         public static HandLightSwitch instance;
-
         private void Awake()
         {
+            if (instance != null && instance != this) { Destroy(this); return; }
             instance = this;
         }
+        private void OnDestroy() { if (instance == this) instance = null; }
         public void TurnOnHandLight()
         {
-            if ( FlashLight.instance.battery>=0)
-            {
-                handlightObject.SetActive(true);
-            }
+            if (handlightObject != null)
+                handlightObject.SetActive(FlashLight.instance != null && FlashLight.instance.battery > 0);
         }
-
         public void TurnOffHandLight()
         {
-            handlightObject.SetActive(false);
+            if (handlightObject != null) handlightObject.SetActive(false);
         }
     }
 }
