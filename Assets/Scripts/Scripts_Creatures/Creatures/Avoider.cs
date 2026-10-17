@@ -15,6 +15,7 @@ namespace Scripts_Creatures.Creatures
         {
             pathFinderType = PathFinderType.AVOIDER;
             base.Start();
+            if (!enabled) return;
 
             minSpeed = 1;
             maxSpeed = 2;
@@ -43,11 +44,12 @@ namespace Scripts_Creatures.Creatures
 
         public void OnDetectedByHandLight(Vector3 handLightPosition)
         {
+            if (!enabled) return;
             if (status != CreatureStatus.AVOIDING)
             {
+                this.handLightPosition = handLightPosition;
                 status = CreatureStatus.AVOIDING;
                 actions[status].Start();
-                this.handLightPosition = handLightPosition;
 
             }
         }
@@ -60,6 +62,7 @@ namespace Scripts_Creatures.Creatures
         protected override void PatrolUpdate()
         {
             base.PursuitUpdate();
+            if (status != CreatureStatus.PATROL) return;
             if (path == null || path.Count == 0)
             {
                 SetRandomPath();

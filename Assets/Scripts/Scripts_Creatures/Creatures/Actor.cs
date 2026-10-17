@@ -44,7 +44,7 @@ namespace Scripts_Creatures.Creatures
 
             try
             {
-                List<Node> path = creatureManager.pathFinders[(int)pathFinderType].FindPath(startNode, endNode);
+                List<Node> path = creatureManager.pathFinders[(int)pathFinderType].FindPathToWorld(transform.position, new Vector2(x,y));
                 return path;
             }
             catch (Exception e)

@@ -150,6 +150,35 @@ namespace Scripts_Creatures.Util
             throw new Exception("Path not Found");
         }
 
+        // Authored paths use integer world positions. A player's fractional body position
+        // can round into the wall beside a narrow doorway; project only blocked endpoints.
+        public List<Node> FindPathToWorld(Vector2 start, Vector2 destination)
+        {
+            var starts = NearbyEndpoints(start);
+            var ends = NearbyEndpoints(destination);
+            foreach (var from in starts)
+                foreach (var to in ends)
+                {
+                    try { return FindPath(new Node(from.X, from.Y, true), new Node(to.X, to.Y, true)); }
+                    catch (Exception error) when (error.Message == "Path not Found") { }
+                }
+            throw new Exception("Path not Found");
+        }
+
+        private List<Node> NearbyEndpoints(Vector2 point)
+        {
+            var rounded = new Node(true);
+            rounded.SetPosition(point.x,point.y);
+            if (GetNode(rounded.X,rounded.Y).IsWalkable) return new List<Node> { rounded };
+            var candidates = new List<Node>();
+            for (int x=rounded.X-1; x<=rounded.X+1; x++)
+                for (int y=rounded.Y-1; y<=rounded.Y+1; y++)
+                    if (GetNode(x,y).IsWalkable && (new Vector2(x,y)-point).sqrMagnitude <= 1.21f)
+                        candidates.Add(new Node(x,y,true));
+            candidates.Sort((a,b) => (new Vector2(a.X,a.Y)-point).sqrMagnitude.CompareTo((new Vector2(b.X,b.Y)-point).sqrMagnitude));
+            return candidates;
+        }
+
 
         private List<Node> GetNeighbors(Node node)
         {

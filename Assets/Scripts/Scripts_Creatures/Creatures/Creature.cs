@@ -39,6 +39,8 @@ namespace Scripts_Creatures.Creatures{
         protected Dictionary<CreatureStatus, (Action Start, Action Update)> actions = new Dictionary<CreatureStatus, (Action Start, Action Update)>();
 
         protected CreatureStatus status;
+        public CreatureStatus CurrentStatus => status;
+        public bool IsChasingPlayer => status == CreatureStatus.PURSUIT;
 
         private Coroutine alertedCounterCoroutine;
 
@@ -128,14 +130,23 @@ namespace Scripts_Creatures.Creatures{
             if (detectedPlayerCollider.Count > 0)
             {
                 // Player detected - start pursuit
-                Vector3 detectedPlayerPosition = detectedPlayerCollider[0].transform.position;
-                if (!targetPosition.Equals(detectedPlayerPosition))
+                // Door sounds may attract attention, but must never replace a visible player.
+                Collider2D target = detectedPlayerCollider.Find(hit => hit.CompareTag("Player"));
+                if (target == null) target = detectedPlayerCollider[0];
+                // Navigation follows the feet/body collider, not the portrait pivot above it.
+                Vector3 detectedPlayerPosition = target.bounds.center;
+                if (!targetPosition.Equals(detectedPlayerPosition) || path == null || path.Count == 0)
                 {
                     targetPosition = detectedPlayerPosition;
                     SetPathToPosition(targetPosition);
                 }
-                status = CreatureStatus.PURSUIT;
-                actions[status].Start();
+                if (status != CreatureStatus.PURSUIT)
+                {
+                    if (alertedCounterCoroutine != null) StopCoroutine(alertedCounterCoroutine);
+                    alertedCounterCoroutine = null;
+                    status = CreatureStatus.PURSUIT;
+                    actions[status].Start();
+                }
             } else if (status.Equals(CreatureStatus.PURSUIT) && !isChasing)
             { 
                 // Player lost during pursuit - become alerted
@@ -287,7 +298,7 @@ namespace Scripts_Creatures.Creatures{
 #endif
         }
 
-        IEnumerator CreatureUpdate()
+        protected IEnumerator CreatureUpdate()
         {
             while (true)
             {
@@ -312,6 +323,7 @@ namespace Scripts_Creatures.Creatures{
         {
             detector.SetLookingDirection(direction);
             DetectPlayer();
+            if (status != CreatureStatus.PATROL) return;
             if (path == null || path.Count == 0)
             {
                 SetRandomPath();
@@ -382,7 +394,7 @@ namespace Scripts_Creatures.Creatures{
                     Debug.Log(gameObject.name + " | " + this.name + " : Kill Player...");
                 }
 #endif
-                Lucy.Presentation.GameSession.Instance.Fail("어둠 속의 누군가에게 붙잡혔습니다.");
+                Lucy.Presentation.GameSession.Instance.Caught(transform);
             }
         }
     }

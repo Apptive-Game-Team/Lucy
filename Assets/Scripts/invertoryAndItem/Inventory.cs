@@ -43,6 +43,7 @@ namespace invertoryAndItem
         public static Inventory instance;
         public ItemData battery;
         private bool separating;
+        private Lucy.Presentation.RemoteDisassemblyView disassemblyView;
 
         private void Awake()
         {
@@ -68,6 +69,8 @@ namespace invertoryAndItem
         private void OnDisable()
         {
             separating = false;
+            if (disassemblyView != null) disassemblyView.Dismiss();
+            disassemblyView = null;
             if (seperatingImages == null) return;
             foreach (var image in seperatingImages)
                 if (image != null) image.gameObject.SetActive(false);
@@ -104,6 +107,12 @@ namespace invertoryAndItem
         /// </summary>
         /// <param name="item">The item to add</param>
         /// <returns>True if item was successfully added, false if inventory is full</returns>
+        public bool CanAddItem(ItemData item)
+        {
+            return item != null && slots != null &&
+                ((item.canStack && GetItemStack(item) != null) || GetEmptySlot() != null);
+        }
+
         public bool AddItem(ItemData item)
         {
             if (item == null || slots == null) return false;
@@ -371,13 +380,10 @@ namespace invertoryAndItem
         private IEnumerator GetBatteryEvent()
         {
             separating = true;
-            foreach (var image in seperatingImages)
-            {
-                if (image == null) continue;
-                image.gameObject.SetActive(true);
-                yield return new WaitForSeconds(1f);
-                image.gameObject.SetActive(false);
-            }
+            disassemblyView = Lucy.Presentation.RemoteDisassemblyView.Create(transform);
+            yield return disassemblyView.Show();
+            if (disassemblyView != null) disassemblyView.Dismiss();
+            disassemblyView = null;
             separating = false;
         }
     }

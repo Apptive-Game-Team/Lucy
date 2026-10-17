@@ -74,6 +74,115 @@ namespace Lucy.Editor
                 if (UnityEngine.SceneManagement.SceneManager.GetSceneAt(i).isDirty)
                     throw new InvalidOperationException("Save modified scenes before validation. Existing unsaved changes have been left untouched.");
             result = new Result { timestampUtc = DateTime.UtcNow.ToString("o") };
+            Check("Last Night Round: progression, power and ending guards", NightRoundStateChecks.Run);
+            Check("Hospital map: architectural surfaces and eight cutout props", () =>
+            {
+                var surfaces = Resources.Load<Texture2D>("Presentation/HospitalSurfaces");
+                var props = Resources.Load<Texture2D>("Presentation/HospitalWardProps");
+                Require(surfaces != null && surfaces.isReadable, "Hospital surface atlas missing or unreadable.");
+                Require(props != null && props.isReadable, "Hospital prop atlas missing or unreadable.");
+                var storage = Resources.Load<Texture2D>("Presentation/HospitalStorage");
+                Require(storage != null && storage.isReadable, "Hospital storage atlas missing or unreadable.");
+                var pixels = props.GetPixels32();
+                for (int row = 0; row < 2; row++) for (int col = 0; col < 4; col++)
+                {
+                    int solid = 0, empty = 0;
+                    for (int y = row * props.height / 2; y < (row + 1) * props.height / 2; y++)
+                        for (int x = col * props.width / 4; x < (col + 1) * props.width / 4; x++)
+                            if (pixels[y * props.width + x].a > 32) solid++; else empty++;
+                    Require(solid > 1000 && empty > 1000, "Each hospital prop requires a visible silhouette and transparent padding.");
+                }
+            });
+            // Validate every directional animation cell, not only the atlas import.
+            Check("Nurse departure: eight transparent run poses and footsteps", () =>
+            {
+                var atlas=Resources.Load<Texture2D>("Presentation/NurseRun");
+                Require(atlas!=null && atlas.isReadable,"Nurse run atlas missing or unreadable.");
+                var pixels=atlas.GetPixels32();
+                for (int row=0;row<2;row++) for(int col=0;col<4;col++)
+                {
+                    int opaque=0,transparent=0;
+                    for(int y=row*atlas.height/2;y<(row+1)*atlas.height/2;y++)
+                        for(int x=col*atlas.width/4;x<(col+1)*atlas.width/4;x++)
+                            if(pixels[y*atlas.width+x].a>32) opaque++; else transparent++;
+                    Require(opaque>1000 && transparent>1000,"Nurse pose must contain cutout character and transparent padding.");
+                }
+                Require(Resources.Load<AudioClip>("Sound/Footsteps - Essentials/Footsteps_Tile/Footsteps_Tile_Run/Footsteps_Tile_Run_01")!=null,"Nurse running footstep missing.");
+            });
+            Check("Tutorial: skip, new-run reset and out-of-order actions", () =>
+            {
+                Lucy.Presentation.HospitalTutorial.Reset();
+                Lucy.Presentation.HospitalTutorial.DoorOpened(Lucy.Presentation.GameSession.FirstScene);
+                Lucy.Presentation.HospitalTutorial.EnterScene("0102");
+                Require(Lucy.Presentation.HospitalTutorial.Step==0,"Door/scene transition must not complete unperformed actions.");
+                Lucy.Presentation.HospitalTutorial.Skip();
+                Require(!Lucy.Presentation.HospitalTutorial.Visible(Lucy.Presentation.GameSession.FirstScene),"Skip must hide tutorial.");
+                Lucy.Presentation.HospitalTutorial.Reset();
+                Require(Lucy.Presentation.HospitalTutorial.Visible(Lucy.Presentation.GameSession.FirstScene),"New run must restore tutorial.");
+                Require(!Lucy.Presentation.HospitalTutorial.Visible("Maze_3F"),"Tutorial must not cover later scenes.");
+            });
+            Check("Capture feedback: animation atlas and audio", () =>
+            {
+                var atlas=Resources.Load<Texture2D>("Presentation/LucyDefeat");
+                Require(atlas!=null && atlas.isReadable,"Capture atlas missing or unreadable.");
+                Require(Resources.Load<AudioClip>("Sound/Horror Elements/Hits/Hit_stress")!=null,"Capture impact missing.");
+                Require(Resources.Load<AudioClip>("Sound/Horror Elements/Misc/Misc_Cry_solo")!=null,"Capture cry missing.");
+            });
+            Check("Nurse: separate dialogue and world artwork", () =>
+            {
+                var portrait = Resources.Load<Sprite>("Presentation/Nurse");
+                var world = Resources.Load<Sprite>("Presentation/NurseWorld");
+                Require(portrait != null && world != null,"Nurse artwork missing.");
+                Require(portrait.texture != world.texture,"Dialogue illustration must not be reused on the map.");
+            });
+            Check("Door artwork: readable four-pose atlas", () =>
+            {
+                var atlas = Resources.Load<Texture2D>("Presentation/WardDoors");
+                Require(atlas != null && atlas.isReadable,"Door atlas missing or unreadable.");
+                var pixels = atlas.GetPixels32();
+                for (int row=0; row<2; row++)
+                    for (int col=0; col<2; col++)
+                    {
+                        int count=0;
+                        for (int y=row*atlas.height/2; y<(row+1)*atlas.height/2; y++)
+                            for (int x=col*atlas.width/2; x<(col+1)*atlas.width/2; x++)
+                                if (pixels[y*atlas.width+x].a>32) count++;
+                        Require(count>1000,"Door pose is empty: " + row + "/" + col);
+                    }
+            });
+            Check("Creature animation: all twelve atlas frames contain artwork", () =>
+            {
+                var atlas = Resources.Load<Texture2D>("Presentation/WardOrderlyWalk");
+                Require(atlas != null && atlas.isReadable,"Creature atlas must exist and support runtime slicing.");
+                var pixels = atlas.GetPixels32();
+                for (int row = 0; row < 3; row++)
+                    for (int col = 0; col < 4; col++)
+                    {
+                        int opaque = 0;
+                        for (int y = row * atlas.height / 3; y < (row + 1) * atlas.height / 3; y++)
+                            for (int x = col * atlas.width / 4; x < (col + 1) * atlas.width / 4; x++)
+                                if (pixels[y * atlas.width + x].a > 32) opaque++;
+                        Require(opaque > 1000,"Empty or invalid creature frame " + row + "/" + col);
+                    }
+            });
+            Check("Pathfinder: fractional doorway target and closed door", () =>
+            {
+                var map = OpenMap(7,5);
+                for (int y=0; y<5; y++) map[3,y] = y == 2 ? 1 : 0;
+                var finder = new PathFinder(map,new Vector3Int(-5,-1,0));
+                var path = finder.FindPathToWorld(new Vector2(0,1),new Vector2(-2.4f,1.6f));
+                Require(path.Any(n => n.X == -2 && n.Y == 1),"Open doorway must be traversable.");
+                Require(path.All(n => map[n.X+5,n.Y+1] == 1),"Path crossed a blocked cell.");
+                map[3,2] = 0;
+                finder.SetMap(map);
+                bool rejected = false;
+                try { finder.FindPathToWorld(new Vector2(0,1),new Vector2(-3.2f,1.6f)); }
+                catch (Exception) { rejected = true; }
+                Require(rejected,"Closed doorway must prevent room entry.");
+                map[3,2] = 1;
+                finder.SetMap(map);
+                Require(finder.FindPathToWorld(new Vector2(-4,1),new Vector2(0,1)).Count > 0,"Reopened doorway must permit reverse passage.");
+            });
             Check("Pathfinder: equal-cost candidates remain distinct", () =>
             {
                 var candidates = new SortedSet<Node> { new Node(1, 0, true), new Node(0, 1, true) };
@@ -120,6 +229,27 @@ namespace Lucy.Editor
                 Require(finder.FindPath(new Node(-4, 7, true), new Node(-4, 7, true)).Count == 0, "Same-cell path should be empty.");
             });
             Check("Navigation: wall grid conversion and independent bounds", ValidateNavigationLayers);
+            foreach (var guid in AssetDatabase.FindAssets("t:ItemData"))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var item = AssetDatabase.LoadAssetAtPath<ScriptableObjects.ScriptableObject_items.Script.ItemData>(path);
+                // NONE is the unused example asset, not a collectible.
+                if (item == null || item.itemId == ScriptableObjects.ScriptableObject_items.Script.ItemID.NONE) continue;
+                Check("Item icon: " + path, () => Require(item.icon != null && item.icon.texture != null,
+                    "Missing inventory/world item sprite: " + path));
+            }
+            foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/items" }))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                Check("World item icon: " + path, () =>
+                {
+                    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                    var pickup = prefab.GetComponent<invertoryAndItem.ItemObject>();
+                    Require(pickup != null && pickup.item != null && pickup.item.icon != null, "Missing item data/icon: " + path);
+                    var renderer = prefab.GetComponent<SpriteRenderer>();
+                    Require(renderer != null && renderer.sprite != null, "Missing prefab sprite: " + path);
+                });
+            }
             var scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
             Check("Build scenes: present, unique, title first", () =>
             {

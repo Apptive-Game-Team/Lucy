@@ -9,6 +9,7 @@ namespace Lucy.Presentation
     {
         private static readonly HashSet<int> found = new HashSet<int>();
         public static int FoundCount => found.Count;
+        public static HospitalStory ActiveRecord { get; private set; }
         public static bool HasRecord(int index) => found.Contains(index);
         private int index;
         private Vector2 point;
@@ -46,6 +47,7 @@ namespace Lucy.Presentation
             SceneManager.MoveGameObjectToScene(go, SceneManager.GetActiveScene());
             var story = go.AddComponent<HospitalStory>();
             story.index = id; story.point = position;
+            ActiveRecord = story;
             go.transform.position = position;
             story.BuildMarker();
         }
@@ -73,11 +75,9 @@ namespace Lucy.Presentation
                 var label = marker.GetComponent<TextMesh>();
                 bool nearby = distance <= 1.6f;
                 label.color = nearby ? new Color(1,.88f,.45f) : new Color(.65f,.85f,.75f);
-                label.text = found.Contains(index)
-                    ? (nearby ? "기록\n[E] 다시 읽기" : "기록")
-                    : (nearby ? "◆ 기록\n[E] 조사" : "◆ 기록");
+                label.text = found.Contains(index) ? "기록" : "◆ 기록";
             }
-            if (distance > 1.6f || (!Input.GetKeyDown(KeyCode.E) && !Input.GetKeyDown(KeyCode.Z))) return;
+            if (HospitalInteraction.Focus != this || (!Input.GetKeyDown(KeyCode.E) && !Input.GetKeyDown(KeyCode.Z))) return;
             bool first = found.Add(index);
             if (first) GameSession.Instance.RegisterCheckpoint(SceneManager.GetActiveScene().name, player.transform.position);
             if (first && CharacterStat.instance != null)
@@ -87,7 +87,7 @@ namespace Lucy.Presentation
             }
             if (first && index > 0 && invertoryAndItem.FlashLight.instance != null)
                 invertoryAndItem.FlashLight.instance.Refill(3);
-            marker.GetComponent<TextMesh>().text = "기록\n[E] 다시 읽기";
+            marker.GetComponent<TextMesh>().text = "기록";
             GameSession.Instance.ShowDocument(titles[index], pages[index] + (first ? "\n\n정신력 +20 · 이 기록에서 다시 이어갈 수 있습니다." + (index > 0 ? "\n대피 물품함에서 배터리를 최대 3칸 보충했다." : "") : ""));
             Debug.Log("[Lucy Story] Read record " + (index + 1) + "; total " + found.Count);
         }

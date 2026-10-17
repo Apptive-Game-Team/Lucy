@@ -9,7 +9,6 @@ namespace Scripts_Creatures
     public class HandLight : MonoBehaviour
     {
         Detector detector;
-        Avoider avoider;
 
         HandLightSwitch handLightSwitch;
 
@@ -22,20 +21,16 @@ namespace Scripts_Creatures
 
         void Update()
         {
-            if (handLightSwitch.handlightObject.activeSelf)
+            if (handLightSwitch != null && detector != null && handLightSwitch.handlightObject != null &&
+                handLightSwitch.handlightObject.activeInHierarchy)
             {
                 List<Collider2D> targets = detector.DetectByView();
                 foreach (Collider2D target in targets)
                 {
-                    try
-                    {
-                        avoider = target.GetComponent<Avoider>();
+                    // Only light-sensitive subtypes react; guards and ordinary monsters keep chasing.
+                    var avoider = target.GetComponentInParent<Avoider>();
+                    if (avoider != null)
                         avoider.OnDetectedByHandLight(transform.position);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
                 }
             }
         }

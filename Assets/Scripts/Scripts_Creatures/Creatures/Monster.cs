@@ -16,6 +16,7 @@ namespace Scripts_Creatures.Creatures
         protected override void PatrolUpdate()
         {
             base.PatrolUpdate();
+            if (status != CreatureStatus.PATROL) return;
             if (path == null || path.Count == 0)
             {
                 SetDirectionPath();
