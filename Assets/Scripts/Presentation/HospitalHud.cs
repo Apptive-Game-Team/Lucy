@@ -10,6 +10,8 @@ namespace Lucy.Presentation
         private readonly Text[] values = new Text[3];
         private readonly RectTransform[] fills = new RectTransform[3];
         private Text objective, progress;
+        private RectTransform interactionPanel;
+        private Text interactionText;
         private Font font;
         private string sceneName;
         private float nextLegacyCheck;
@@ -41,6 +43,9 @@ namespace Lucy.Presentation
             objective = TextAt(task, "", new Vector2(16, -12), new Vector2(398, 58), 21, TextColor);
             objective.lineSpacing = 1.08f;
             progress = TextAt(task, "", new Vector2(16, -79), new Vector2(398, 22), 16, Muted);
+            interactionPanel = Panel("Interaction prompt", new Vector2(.5f, 0), new Vector2(0, 38), new Vector2(460, 48));
+            interactionText = TextAt(interactionPanel, "", new Vector2(16, -8), new Vector2(428, 32), 22, TextColor);
+            interactionText.alignment = TextAnchor.MiddleCenter;
             foreach (var graphic in GetComponentsInChildren<Graphic>()) graphic.raycastTarget = false;
             Refresh();
             HideLegacyIndicators();
@@ -95,6 +100,19 @@ namespace Lucy.Presentation
             SetValue(2, light != null ? light.battery : 0, light != null ? light.Capacity : 9, light != null);
             if (objective != null) objective.text = CompactObjective();
             if (progress != null) progress.text = "기록 " + HospitalStory.FoundCount + "/4    J 기록장    ESC 메뉴";
+            if (HospitalTutorial.Visible(sceneName))
+            {
+                objective.fontSize=18;
+                objective.text=HospitalTutorial.Instruction(sceneName);
+                progress.text=HospitalTutorial.Heading;
+            }
+            else if (objective!=null) objective.fontSize=21;
+            if (interactionPanel != null)
+            {
+                var focus = HospitalInteraction.Focus;
+                interactionPanel.gameObject.SetActive(focus != null);
+                if (focus != null) interactionText.text = "[E / Z]   " + HospitalInteraction.Label(focus);
+            }
         }
 
         private void SetValue(int index, float value, float maximum, bool available)

@@ -187,7 +187,7 @@ public class CharacterStat : MonoBehaviour, ISceneChangeListener
         while (curMental > 0)
         {   
             yield return new WaitForSeconds(Mathf.Max(1f, delay));
-            if (!isOnLight)
+            if (!isOnLight && !Lucy.Presentation.HospitalTutorial.ProtectLearning)
             {
                 curMental = Mathf.Max(0, curMental - Mathf.Max(0, reduceAmount));
                 UpdateStats();

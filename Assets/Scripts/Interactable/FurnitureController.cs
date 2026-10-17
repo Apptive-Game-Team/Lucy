@@ -127,9 +127,20 @@ namespace Interactable
     {
         public override void Interact(Furniture furniture)
         {
-            GameObject bookPage = furniture.transform.Find("Canvas").gameObject;
-
-            FurnitureController.Instance.ReadBook(bookPage);
+            var session = Lucy.Presentation.GameSession.Instance;
+            if (session != null && furniture.gameObject.scene.name == Lucy.Presentation.GameSession.FirstScene)
+            {
+                session.ShowDocument("병동 비상 안내",
+                    "야간 정전 시 병실의 비상등은 약한 밝기로 유지됩니다.\n\n" +
+                    "이동 전 오른쪽 서랍에서 손전등을 꺼내세요.\n가방(I)에서 손전등을 선택하고 장착할 수 있습니다.\n\n" +
+                    "배터리가 다 떨어지면 손전등이 꺼집니다.\n가방에서 예비 배터리를 사용해 보충하세요.\n\n" +
+                    "병실을 나와 오른쪽 계단으로 이동하세요.\n2층 간호실의 대피 기록을 확인하세요.\n\n" +
+                    "안내문 아래에 작은 글씨가 덧붙어 있다.\n‘루시, 침상 아래 메모를 먼저 읽어 줘.’");
+                return;
+            }
+            var bookPage = furniture.transform.Find("Canvas");
+            if (bookPage != null && FurnitureController.Instance != null)
+                FurnitureController.Instance.ReadBook(bookPage.gameObject);
         }
     }
 

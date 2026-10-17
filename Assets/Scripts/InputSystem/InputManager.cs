@@ -283,8 +283,12 @@ namespace InputSystem
 
         private void CallOnKeyDownListeners(ActionCode action)
         {
+            // Snapshot once: opening a drawer must not also pick up its item with the same press.
+            var focus = action == ActionCode.Interaction ? Lucy.Presentation.HospitalInteraction.Focus : null;
             foreach (IKeyInputListener listener in inputListeners.ToArray())
             {
+                if (action == ActionCode.Interaction && listener is InteractableObject interactable && interactable != focus)
+                    continue;
                 listener.OnKeyDown(action);
 
             }

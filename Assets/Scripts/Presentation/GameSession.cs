@@ -13,6 +13,7 @@ namespace Lucy.Presentation
         public static GameSession Instance { get; private set; }
         public static bool BlocksGameplayInput => Instance != null && Instance.blocked;
         private bool blocked, loading, failed, paused, documentOpen;
+        private bool capturePlaying;
         private float documentOpenedAt;
         private float elapsed, previousScale = 1;
         private GameObject screen, hud;
@@ -65,6 +66,7 @@ namespace Lucy.Presentation
             EnsureEventSystem();
             EnsureAudioListener();
             HospitalStory.EnterScene(sceneName);
+            HospitalTutorial.EnterScene(sceneName);
             if (title) ShowTitle();
             else if (ending) ShowEnding();
             else ShowHud();
@@ -112,6 +114,8 @@ namespace Lucy.Presentation
         private void Update()
         {
             if (loading) return;
+            HospitalTutorial.Observe(sceneName);
+            if (!blocked && Time.timeScale>0 && HospitalTutorial.Visible(sceneName) && Input.GetKeyDown(KeyCode.T)) HospitalTutorial.Skip();
             if (documentOpen)
             {
                 if (Time.unscaledTime - documentOpenedAt > .3f && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Space))) CloseDocument();
@@ -194,9 +198,10 @@ namespace Lucy.Presentation
         {
             var p = Panel(true);
             Heading(p,"THE SILENT WARD", "L U C Y", "불이 꺼진 정신병원. 잠긴 병동.\n그리고, 나를 따라오는 발소리.");
-            Button(p,"새 게임",.34f,StartNewGame);
-            Button(p,"조작 방법",.25f,ShowHelp);
-            Button(p,"소리 설정",.16f,ShowSettings);
+            Button(p,"새 기획 플레이 · 개발 중",.38f,StartStoryBlockout);
+            Button(p,"기존 버전 플레이",.30f,StartNewGame);
+            Button(p,"조작 방법",.22f,ShowHelp);
+            Button(p,"소리 설정",.14f,ShowSettings);
             Label(p,"Footer","탐색 · 퍼즐 · 생존     /     헤드폰 사용 권장",18,new Vector2(.08f,.07f),new Vector2(.8f,.12f),gold);
         }
 
@@ -266,6 +271,38 @@ namespace Lucy.Presentation
         {
             if (blocked || loading) return;
             failed = blocked = true; Time.timeScale = 0; AudioListener.pause = true;
+            ShowFailure(reason);
+        }
+
+        public void Caught(Transform attacker)
+        {
+            if (blocked || loading || capturePlaying) return;
+            failed = blocked = capturePlaying = true;
+            Time.timeScale = 0; AudioListener.pause = true;
+            ClearUI();
+            StartCoroutine(PlayCapture(attacker));
+        }
+
+        private IEnumerator PlayCapture(Transform attacker)
+        {
+            var effect = gameObject.AddComponent<HospitalCaptureEffect>();
+            var sequence = effect.Play(attacker);
+            while (true)
+            {
+                bool next;
+                try { next = sequence.MoveNext(); }
+                catch (System.Exception error) { Debug.LogException(error); break; }
+                if (!next) break;
+                yield return sequence.Current;
+            }
+            (sequence as System.IDisposable)?.Dispose();
+            Destroy(effect);
+            capturePlaying = false;
+            ShowFailure("어둠 속의 누군가에게 붙잡혔습니다.");
+        }
+
+        private void ShowFailure(string reason)
+        {
             var p = Panel(false); Heading(p,"THE NIGHT IS NOT OVER", "다시, 눈을 뜨면",reason + "\n빛과 체력을 아끼며 다른 길을 찾아보세요.");
             if (HasCheckpoint)
             {
@@ -290,13 +327,22 @@ namespace Lucy.Presentation
         }
 
         private static string FormatTime(float seconds) => $"{(int)seconds / 60:00}:{(int)seconds % 60:00}";
+        public void StartStoryBlockout()
+        {
+            if (loading || capturePlaying || !enabled || Lucy.LastNightRound.NightRoundGame.Instance != null) return;
+            ClearUI();
+            PersistentGameObjects.Clear();
+            enabled = false;
+            StartCoroutine(Lucy.LastNightRound.NightRoundGame.Launch());
+        }
         public void StartNewGame()
         {
-            if (loading) return;
+            if (loading || capturePlaying) return;
+            HospitalTutorial.Reset();
             checkpointScene = null;
             StartCoroutine(LoadFresh(FirstScene));
         }
-        public void ReturnToTitle() { if (!loading) StartCoroutine(LoadFresh("Title")); }
+        public void ReturnToTitle() { if (!loading && !capturePlaying) StartCoroutine(LoadFresh("Title")); }
 
         public void RegisterCheckpoint(string scene, Vector3 position)
         {
@@ -308,7 +354,7 @@ namespace Lucy.Presentation
 
         public void ContinueFromCheckpoint()
         {
-            if (!loading && failed && HasCheckpoint && Application.CanStreamedLevelBeLoaded(checkpointScene))
+            if (!loading && !capturePlaying && failed && HasCheckpoint && Application.CanStreamedLevelBeLoaded(checkpointScene))
                 StartCoroutine(RestoreCheckpoint());
         }
 

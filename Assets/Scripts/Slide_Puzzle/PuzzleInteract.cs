@@ -56,7 +56,7 @@ namespace Slide_Puzzle
             {
                 if (other.gameObject.tag.Equals("Player"))
                 {
-                    if (text != null) text.SetActive(true);
+                    if (text != null) text.SetActive(false); // Shared HUD owns the interaction prompt.
                 }
             }
         }

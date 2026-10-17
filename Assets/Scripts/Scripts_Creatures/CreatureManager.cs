@@ -172,6 +172,10 @@ namespace Scripts_Creatures
 
             lastDoors = doors;
 
+            // Light-aware navigation also depends on the door map, even if no lights changed.
+            doorAndlightAppliedMap = null;
+            lastSpotLights = null;
+
             ApplyDoorOnMap();
 
             return doorAppliedMap;
@@ -188,7 +192,7 @@ namespace Scripts_Creatures
 
             GameObject[] spotLights = GameObject.FindGameObjectsWithTag("Light");
 
-            if (Util.Util.AreArraysEqual(lastSpotLights, spotLights))
+            if (lastSpotLights != null && Util.Util.AreArraysEqual(lastSpotLights, spotLights))
             {
                 if (doorAndlightAppliedMap == null)
                 {

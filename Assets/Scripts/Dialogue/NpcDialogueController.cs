@@ -44,6 +44,7 @@ namespace Dialogue
         public float typingSpeed = 0.05f;
         public float delayBetweenDialogues = 1.2f;
         private bool displaying;
+        public bool IsDisplaying => displaying;
 
         protected override void Awake()
         {

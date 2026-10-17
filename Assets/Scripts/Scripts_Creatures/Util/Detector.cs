@@ -51,10 +51,10 @@ namespace Scripts_Creatures.Util
                 targetPosition = null;
                 Vector3 colliderPosition = collider.transform.position;
                 Vector3 targetDirection = (colliderPosition - transform.position).normalized;
-                float targetAngle = Mathf.Acos(Vector3.Dot(
+                float targetAngle = Mathf.Acos(Mathf.Clamp(Vector3.Dot(
                     AngleToDir(lookingAngle),
                     targetDirection
-                )) * Mathf.Rad2Deg;
+                ), -1f, 1f)) * Mathf.Rad2Deg;
 
                 if (targetAngle <= viewAngle * 0.5f &&
                     !Physics2D.Raycast(

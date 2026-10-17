@@ -1,0 +1,21 @@
+# Creature pursuit and animation
+
+Generated with the built-in image_gen tool. Saved atlas: Assets/Resources/Presentation/WardOrderlyWalk.png. Four walking frames each for front, right and back; left mirrors the right-facing row. Runtime slicing trims alpha inside each cell and uses a common pixels-per-unit scale. A separate visual child preserves the original AI transform and catch collider. Direction and frame playback follow actual displacement; pursuit animates at 11 fps, patrol at 7 fps, idle uses a subtle breathing offset. Paused gameplay freezes the presentation.
+
+The old front-only WardShadow image is no longer assigned to every creature. The new coat silhouette is shorter and wider, with visible limbs and no surrounding smoke halo.
+
+AI fixes restore the Guard sensing coroutine after NPC stop/resume, retry empty paths to stationary targets, use body collider position as the navigation target, and prevent patrol from overwriting a newly selected pursuit path. Light-sensitive enemy subtypes retain their distinct reactions.
+
+## Generation prompt
+
+Production pixel-art monster WALK CYCLE sprite sheet for a dark top-down 2D hospital horror game. Exactly 4 columns by 3 rows, 12 equally sized cells on a transparent background, square canvas. One consistent supernatural faceless hospital orderly, hunched shoulders, short messy black hair hiding face except two tiny dim ivory eyes, weathered desaturated gray-green knee-length orderly coat, dark trousers and shoes, long but anatomically coherent arms. Compact readable 16-bit pixel game character proportions, head about one quarter of height, full body, camera 3/4 overhead like RPG Maker, crisp pixel edges, no blur, no smoky halo, not photorealistic. Row1: facing DOWN toward viewer four distinct walking frames alternating left step, passing pose, right step, passing pose. Row2: facing RIGHT profile four distinct walking frames with visibly different feet and arm positions. Row3: facing UP away from viewer four walking frames showing back of head and coat, no eyes on back. Same character size and outfit across all 12 frames, feet on the same baseline within each cell, each character centered in its cell, generous transparent gutters, each figure occupies 65 percent of cell width and 80 percent height, no overlapping adjacent cells. Readable pale gray-green coat so visible under a flashlight, dark outlines. No weapons, blood, text, labels, grids, scenery, cast shadows, additional objects. True transparent alpha background. This is a usable animation atlas, not a concept sheet.
+
+## Validation scope
+
+Actual Play verification used session 3966cd5e2d3f49a2b933019791aeba39. The editor-only preview-ward command entered the authored second-floor scene through PortalManager; pause-guards/resume-guards exercised the same Guard API used by NPC events. These are explicit fixtures, not a claim of a new full-game walkthrough or a replay of the complete NPC dialogue.
+
+After stop/resume and the normal arrival grace, the Guard entered PURSUIT and caught a stationary player. A second stop/resume test moved the player along the corridor and around its corner: at 07:33:06 UTC the Guard was at (-5,14) in PURSUIT, then at (-3.10,14) at 07:33:07 while following the moving player. At 07:33:08 it entered ALERTED after the player moved out of view. Animation telemetry changed between front and side frames (2 to 5) as it moved; earlier patrol cycled frames 4,7,6,5. Pausing froze both movement and animation. Flashlight was equipped during these tests, confirming Guard pursuit is not globally disabled by the torch. Screenshot Logs/LucyCreature-NewArt.png shows the new sprite under the player's actual flashlight. Detailed telemetry: Logs/LucyEnemyTrace.txt.
+
+At the user's request, the game's sound settings were changed to 0% and the displayed volume was checked before continuing the second test. Other enemy subtype reactions were reviewed in code, not separately played through in this pass.
+
+Windows build completed 2026-10-16 16:34:46 KST: succeeded, 0 errors, 0 warnings, 339781414 bytes. Validation: 79 passed, 0 failed, including all twelve atlas cells. Local ZIP refreshed. Not yet committed/published to the existing GitHub release.
