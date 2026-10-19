@@ -12,6 +12,33 @@ namespace Lucy.LastNightRound
         public string ending = "";
         public int finalPower; // 0 unset, 1 connecting door / manual exit, 2 main exit.
 
+        public int PoweredCircuitCount => ((circuits & 1) != 0 ? 1 : 0) + ((circuits & 2) != 0 ? 1 : 0) + ((circuits & 4) != 0 ? 1 : 0);
+
+        // Shared by world art and focus selection; circuits and final routing remain reversible.
+        public bool IsActionComplete(string id)
+        {
+            switch (id)
+            {
+                case "flashlight": return flashlight;
+                case "bracelet": return bracelet;
+                case "meet": return metNurse;
+                case "manifest": return transferMismatch;
+                case "safe": return firstEscape;
+                case "fuse": return fuse;
+                case "service-exit": return secondEscape;
+                case "lock-record": return truth;
+                case "reunite": return reunited;
+                case "manual": return manualDoor;
+                default: return false;
+            }
+        }
+
+        public bool IsCircuitPowered(string id)
+        {
+            int bit = id == "circuit-light" ? 1 : id == "circuit-supply" ? 2 : id == "circuit-door" ? 4 : 0;
+            return (circuits & bit) != 0;
+        }
+
         public bool CanLeaveWard { get { return flashlight && metNurse; } }
         public bool CanLeaveNursing { get { return firstEscape; } }
         public bool CanLeaveService { get { return secondEscape; } }

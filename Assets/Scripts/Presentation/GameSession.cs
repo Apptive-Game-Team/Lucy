@@ -197,9 +197,10 @@ namespace Lucy.Presentation
         private void ShowTitle()
         {
             var p = Panel(true);
-            Heading(p,"THE SILENT WARD", "L U C Y", "불이 꺼진 정신병원. 잠긴 병동.\n그리고, 나를 따라오는 발소리.");
-            Button(p,"새 기획 플레이 · 개발 중",.38f,StartStoryBlockout);
-            Button(p,"기존 버전 플레이",.30f,StartNewGame);
+            Heading(p,"THE LAST NIGHT ROUND", "L U C Y", "마지막 야간 순회\n잠긴 병동에서, 함께 나갈 방법을 찾으세요.");
+            Button(p,"새 게임",.38f,StartNewGame);
+            if (Lucy.LastNightRound.NightRoundGame.HasSavedGame)
+                Button(p,"이어하기",.30f,() => StartNightRound(true));
             Button(p,"조작 방법",.22f,ShowHelp);
             Button(p,"소리 설정",.14f,ShowSettings);
             Label(p,"Footer","탐색 · 퍼즐 · 생존     /     헤드폰 사용 권장",18,new Vector2(.08f,.07f),new Vector2(.8f,.12f),gold);
@@ -246,8 +247,8 @@ namespace Lucy.Presentation
         private void ShowHelp()
         {
             var p = Panel(false);
-            Heading(p,"HOW TO SURVIVE", "어둠 속의 약속", "방향키 / WASD  이동     Shift  달리기\nZ / E  조사·대화     I  가방     ESC  일시정지");
-            Label(p,"Tips","가방에서 손전등을 장착하면 정신력 감소를 막습니다.\n배터리가 다 떨어지기 전에 교체하세요.\n달리면 체력을 소모하고 발소리로 위험을 부릅니다.\n스위치와 가구를 조사하고, 퍼즐의 단서를 찾으세요.",24,new Vector2(.08f,.23f),new Vector2(.90f,.46f),Color.white);
+            Heading(p,"THE LAST NIGHT ROUND", "어둠 속의 약속", "방향키 / WASD  이동     Shift  달리기\nE  조사·대화     I  소지품     J  증거     ESC  메뉴");
+            Label(p,"Tips","Space로 문서를 닫습니다. 조사 중에는 추격도 멈춥니다.\n손전등을 찾고 팔찌와 이송 기록을 대조하세요.\n배전반은 세 회로 중 두 개에만 전원을 공급합니다.\n마지막 손잡이는 E를 2초 누르거나 화면 버튼을 누르세요.\n붙잡히면 R로 사건 체크포인트에서 다시 시작합니다.",24,new Vector2(.08f,.23f),new Vector2(.90f,.46f),Color.white);
             Button(p,"돌아가기",.10f,() => { if (paused) { Time.timeScale = previousScale; Pause(); } else ShowTitle(); });
         }
 
@@ -329,13 +330,21 @@ namespace Lucy.Presentation
         private static string FormatTime(float seconds) => $"{(int)seconds / 60:00}:{(int)seconds % 60:00}";
         public void StartStoryBlockout()
         {
+            StartNightRound(false);
+        }
+        private void StartNightRound(bool resume)
+        {
             if (loading || capturePlaying || !enabled || Lucy.LastNightRound.NightRoundGame.Instance != null) return;
             ClearUI();
             PersistentGameObjects.Clear();
             enabled = false;
-            StartCoroutine(Lucy.LastNightRound.NightRoundGame.Launch());
+            StartCoroutine(Lucy.LastNightRound.NightRoundGame.Launch(resume));
         }
         public void StartNewGame()
+        {
+            StartNightRound(false);
+        }
+        public void StartLegacyGame()
         {
             if (loading || capturePlaying) return;
             HospitalTutorial.Reset();

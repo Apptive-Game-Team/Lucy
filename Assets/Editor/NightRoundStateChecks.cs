@@ -10,9 +10,11 @@ public static class NightRoundStateChecks
         var state = new NightRoundState();
         Check(state.circuits == 1 && state.finalPower == 0 && state.ending == "", "New game defaults", ref checks);
         Check(!state.CanLeaveWard && !state.CanCrossFinalDoor, "New game doors", ref checks);
+        Check(!state.IsActionComplete("flashlight") && state.PoweredCircuitCount == 1, "Fresh pickup and power presentation", ref checks);
         string[] premature = { "meet", "manifest", "safe", "circuit-light", "circuit-supply", "circuit-door", "fuse", "service-exit", "lock-record", "reunite", "power-together", "power-alone", "manual", "nurse-crossed", "exit", "unknown", null };
         foreach (string action in premature) RejectUnchanged(state, action, ref checks);
         Accept(state, "flashlight", ref checks);
+        Check(state.IsActionComplete("flashlight"), "Collected pickup removed from focus", ref checks);
         RejectUnchanged(state, "flashlight", ref checks);
         Accept(state, "meet", ref checks);
         Check(state.CanLeaveWard, "Ward unlock after actual meeting", ref checks);
@@ -27,6 +29,7 @@ public static class NightRoundStateChecks
         RejectUnchanged(state, "circuit-door", ref checks);
         RejectUnchanged(state, "fuse", ref checks);
         Accept(state, "circuit-supply", ref checks);
+        Check(state.IsCircuitPowered("circuit-supply") && state.PoweredCircuitCount == 2 && !state.IsActionComplete("circuit-supply"), "Powered circuit remains reversible and focusable", ref checks);
         Accept(state, "fuse", ref checks);
         RejectUnchanged(state, "fuse", ref checks);
         RejectUnchanged(state, "circuit-door", ref checks);
@@ -85,6 +88,7 @@ public static class NightRoundStateChecks
         RejectUnchanged(alone, "power-together", ref checks);
         var restoredEnding = JsonUtility.FromJson<NightRoundState>(JsonUtility.ToJson(alone));
         Check(restoredEnding.ending == "alone" && restoredEnding.truth && restoredEnding.fuse, "Ending and evidence serialize", ref checks);
+        Check(restoredEnding.IsActionComplete("fuse") && restoredEnding.IsActionComplete("lock-record"), "Restored save derives completed visuals", ref checks);
         Debug.Log("NightRoundStateChecks: " + checks + " checks passed.");
     }
 
