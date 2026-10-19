@@ -15,6 +15,11 @@ namespace Lucy.LastNightRound
         public Vector2 PlayerPosition => player.position;
         public string Focus => focus;
         public bool IsDead => dead;
+        public bool EpilogueComplete => epilogue != null && epilogue.Complete;
+        public bool IsEpilogueMoving => epilogue != null && epilogue.Moving && !paused;
+        public bool IsManualHeld => manualHeld;
+        public float ManualProgress => hold;
+        public int EpilogueBeat => epilogue == null ? -1 : epilogue.Beat;
         public Vector2 NursePosition => nurse.position;
         public bool IsBlocked => document != null || paused || dead || State.ending != "";
         private NightRoundMap map;
@@ -23,7 +28,7 @@ namespace Lucy.LastNightRound
         private Font font;
         private string focus, document, documentTitle, notice = "";
         private float openedAt, noticeUntil, warning, captureAt, hold, tension;
-        private bool paused, dead, chasing, nurseWalking;
+        private bool paused, dead, chasing;
         private int pursuit;
         private SaveData checkpoint;
         private GUIStyle text, heading, button;
@@ -35,6 +40,9 @@ namespace Lucy.LastNightRound
         private float nextFootstep;
         private float cameraVelocity;
         private int currentRoom;
+        private bool manualHeld, assistedHold;
+        private NightRoundEpilogue epilogue;
+        private bool FinalDoorOpen => State.reunited && (State.finalPower == 2 || State.nurseCrossed || (State.manualDoor && manualHeld));
         private static readonly string[] RoomNames = { "입원 병동", "야간 간호실", "전력 설비실", "기록 보관실", "마지막 출구" };
         public static bool HasSavedGame => File.Exists(Path.Combine(Application.persistentDataPath, "last-night-round-blockout.json"));
         [Serializable] private class SaveData
@@ -102,11 +110,18 @@ namespace Lucy.LastNightRound
 
         private void Update()
         {
+            if (epilogue != null)
+            {
+                if (Input.GetKeyDown(KeyCode.Escape)) paused = !paused;
+                if (!paused) epilogue.Tick(Input.GetKeyDown(KeyCode.Space));
+                if (epilogue.Complete && Input.GetKeyDown(KeyCode.R)) Restore(false);
+                return;
+            }
             flashlight.enabled = State.flashlight;
             serviceLight.intensity = (State.circuits & 1) != 0 ? .65f : .08f;
             ambience.volume = IsBlocked ? .04f : .12f;
             if (IsBlocked && footsteps.isPlaying) footsteps.Stop();
-            bool[] open = { State.CanLeaveWard, State.CanLeaveNursing, State.CanLeaveService, State.CanLeaveIsolation, State.CanCrossFinalDoor };
+            bool[] open = { State.CanLeaveWard, State.CanLeaveNursing, State.CanLeaveService, State.CanLeaveIsolation, FinalDoorOpen };
             for (int i = 0; i < gates.Length; i++)
             {
                 gates[i].sprite = doorArt[open[i] ? 3 : 2];
@@ -143,22 +158,29 @@ namespace Lucy.LastNightRound
                 float distance = Vector2.Distance(player.position, station.Value);
                 if (distance < closest) { closest = distance; focus = station.Key; }
             }
-            if (focus == "manual" && State.finalPower == 1 && !State.manualDoor)
+            manualHeld = false;
+            if (focus == "manual" && State.finalPower == 1 && !State.nurseCrossed)
             {
-                hold = Input.GetKey(KeyCode.E) ? hold + Time.deltaTime : 0;
-                if (hold >= 2) { Interact(focus); hold = 0; }
+                if (Input.GetKeyDown(KeyCode.F)) assistedHold = !assistedHold;
+                if (direction.sqrMagnitude > 0) assistedHold = false;
+                manualHeld = direction.sqrMagnitude == 0 && (Input.GetKey(KeyCode.E) || assistedHold);
+                if (manualHeld)
+                {
+                    hold = Mathf.Min(2,hold + Time.deltaTime);
+                    if (hold >= 2 && !State.manualDoor && State.Apply("manual",out var message)) Notify(message + "\n계속 유지하세요. 서연이 반대편 손잡이를 잡으면 놓아도 됩니다.");
+                }
             }
-            else { hold = 0; if (focus != null && Input.GetKeyDown(KeyCode.E)) Interact(focus); }
+            else { assistedHold = false; if (focus != null && Input.GetKeyDown(KeyCode.E)) Interact(focus); }
             if (IsBlocked) return;
             UpdateNurse(); UpdatePursuer();
-            if (State.reunited && player.position.x > 78.5f && Mathf.Abs(player.position.y) < 1.3f) Interact("exit");
+            if (State.CanCrossFinalDoor && player.position.x > 80.4f && Mathf.Abs(player.position.y) < 1.3f && (State.finalPower == 2 || State.nurseOutside)) Interact("exit");
             currentRoom = Mathf.Clamp(Mathf.FloorToInt((player.position.x + 9) / 18), 0, 4);
         }
 
         private float CameraX(float x)
         {
             float halfWidth = cameraView.orthographicSize * cameraView.aspect;
-            return halfWidth >= 44 ? 36 : Mathf.Clamp(x, -8 + halfWidth, 80 - halfWidth);
+            return halfWidth >= 46.5f ? 38.5f : Mathf.Clamp(x, -8 + halfWidth, 85 - halfWidth);
         }
 
         private void LateUpdate()
@@ -167,7 +189,8 @@ namespace Lucy.LastNightRound
             float at = cameraView.transform.position.x;
             float offset = player.position.x - at;
             float target = CameraX(at + Mathf.Sign(offset) * Mathf.Max(0,Mathf.Abs(offset)-2));
-            cameraView.transform.position = new Vector3(Mathf.SmoothDamp(at,target,ref cameraVelocity,.22f),0,-10);
+            float cameraY = Mathf.Lerp(cameraView.transform.position.y,Mathf.Clamp(player.position.y*.5f,-.6f,2),Time.deltaTime*5);
+            cameraView.transform.position = new Vector3(Mathf.SmoothDamp(at,target,ref cameraVelocity,.22f),cameraY,-10);
         }
 
         private bool Allowed(Vector2 target, Vector2 from)
@@ -206,9 +229,18 @@ namespace Lucy.LastNightRound
         {
             var start = (Vector2)actor.position;
             var next = start + new Vector2(delta.x, 0);
-            if (gated ? Allowed(next, start) : map.CanMove(next)) actor.position = next;
+            if (CanMoveActor(actor,next,start,gated)) actor.position = next;
             start = actor.position; next = start + new Vector2(0, delta.y);
-            if (gated ? Allowed(next, start) : map.CanMove(next)) actor.position = next;
+            if (CanMoveActor(actor,next,start,gated)) actor.position = next;
+        }
+
+        private bool CanMoveActor(Transform actor,Vector2 next,Vector2 from,bool gated)
+        {
+            if (gated) return Allowed(next,from);
+            if (!map.CanMove(next)) return false;
+            if (actor == nurse && from.y >= 5.8f && next.y < 5.8f && next.x > 68 && State.finalPower != 1) return false;
+            if (from.x <= 77 && next.x > 76.65f && !FinalDoorOpen) return false;
+            return true;
         }
 
         public void Interact(string id)
@@ -216,16 +248,29 @@ namespace Lucy.LastNightRound
             if (IsBlocked) return;
             // All interactions, including test calls, must be reached physically.
             if (!map.Stations.TryGetValue(id, out var point) || Vector2.Distance(player.position, point) > 1.6f) return;
+            if (id == "reunite" && Vector2.Distance(nurse.position,new Vector2(59,7f)) > .5f)
+            { Notify("관찰창 안쪽에서 서연이 다가오는 발소리가 들립니다. 잠시 기다리세요."); return; }
+            if (id == "manual" && State.reunited && State.finalPower == 1 && !State.nurseCrossed)
+            { assistedHold = !assistedHold; Notify(assistedHold ? "손잡이 유지 시작 · 이동하거나 F를 누르면 해제" : "손잡이를 놓았습니다. 조작 진행은 유지됩니다."); return; }
+            if (id == "exit" && player.position.x <= 80.4f) { Notify("외부 출입문 C의 바깥으로 걸어가세요."); return; }
             bool firstManifest = !State.transferMismatch, firstPower = !State.powerRestored;
             if (!State.Apply(id, out var message)) { Notify(message); return; }
             map.SetStationActive(id, true);
             if (id == "manifest" && firstManifest) BeginPursuit(1, new Vector2(10, 0));
             if (firstPower && State.powerRestored) BeginPursuit(2, new Vector2(28, 0));
-            if (id == "power-together" || id == "power-alone") { if (pursuit != 3) BeginPursuit(3, new Vector2(63, 0)); }
+            if (id == "power-together" || id == "power-alone")
+            {
+                assistedHold = manualHeld = false; hold = 0;
+                if (pursuit != 3) BeginPursuit(3, new Vector2(63, 0));
+            }
             if (id == "safe" || id == "service-exit") { chasing = false; pursuer.gameObject.SetActive(false); }
-            if (id == "manual") nurseWalking = true;
             if (id == "meet" || id == "safe" || id == "service-exit" || id == "lock-record" || id == "reunite") SaveCheckpoint();
-            if (State.ending != "") { chasing = false; pursuer.gameObject.SetActive(false); Debug.Log("[LastNightRound] ending=" + State.ending); }
+            if (State.ending != "")
+            {
+                chasing = false; pursuer.gameObject.SetActive(false); flashlight.enabled = false; footsteps.Stop(); ambience.Stop();
+                epilogue = new NightRoundEpilogue(map,transform,player,nurse,cameraView,State.ending == "together");
+                Debug.Log("[LastNightRound] ending=" + State.ending + " exterior crossings verified");
+            }
             else if (id.StartsWith("circuit-") || id == "manual") Notify(message);
             else Tell(StationLabel(id), message);
         }
@@ -233,15 +278,12 @@ namespace Lucy.LastNightRound
         private void UpdateNurse()
         {
             Vector2 position = nurse.position;
-            bool atFinalRoom = position.x > 70.05f || (position.x >= 69.95f && position.y <= -2.9f);
-            if (nurseWalking && State.manualDoor && !State.nurseCrossed && atFinalRoom)
+            if (State.nurseCrossed)
             {
-                var target = new Vector2(78, -.8f);
-                Move(nurse, (target - (Vector2)nurse.position).normalized * 3.2f * Time.deltaTime, false);
-                if (Vector2.Distance(nurse.position, target) < .25f)
-                {
-                    State.Apply("nurse-crossed", out var message); Notify(message); nurseWalking = false;
-                }
+                // Hold the far handle until Lucy has physically passed B, then follow through C.
+                if (player.position.x <= 77.45f) return;
+                Move(nurse,Vector2.ClampMagnitude(new Vector2(82,-.6f)-position,3.4f*Time.deltaTime),false);
+                if (nurse.position.x > 80.4f && !State.nurseOutside) State.Apply("nurse-outside",out _);
             }
             else if (State.transferMismatch && !State.nurseCrossed)
             {
@@ -249,14 +291,21 @@ namespace Lucy.LastNightRound
                 // Travel stays on the physical staff corridor; reunion never moves the actor.
                 Vector2 target;
                 if (position.x < 20.95f) target = new Vector2(21, 0);
-                else if (position.x <= 21.05f && position.y < 7.65f) target = new Vector2(21, 7.7f);
-                else if (position.x < 69.95f) target = new Vector2(70, 7.7f);
-                else target = new Vector2(70, -3);
-                if (!atFinalRoom)
+                else if (position.x <= 21.05f && position.y < 6.95f) target = new Vector2(21, 7f);
+                else if (position.x < 58.95f) target = new Vector2(59,7f);
+                else if (!State.reunited) target = new Vector2(59,7f);
+                else if (position.x < 69.95f && position.y > 6) target = new Vector2(70,7f);
+                else if (position.y > .05f) target = new Vector2(70,0);
+                else if (position.x < 74.45f) target = new Vector2(74.5f,0);
+                else
                 {
-                    Vector2 delta = target - position;
-                    Move(nurse, Vector2.ClampMagnitude(delta, 4.3f * Time.deltaTime), false);
+                    if (!State.manualDoor || !manualHeld || State.finalPower != 1) return;
+                    target = new Vector2(78.2f,-.6f);
                 }
+                if (position.x >= 69.95f && position.y < 5.8f && State.finalPower != 1) return;
+                Move(nurse,Vector2.ClampMagnitude(target-position,4.3f*Time.deltaTime),false);
+                if (nurse.position.x >= 77.9f && State.manualDoor && manualHeld && State.finalPower == 1)
+                { State.Apply("nurse-crossed",out var message); assistedHold = manualHeld = false; Notify(message); }
             }
             else if (State.metNurse && !State.transferMismatch)
             {
@@ -267,7 +316,7 @@ namespace Lucy.LastNightRound
 
         private void BeginPursuit(int number, Vector2 at)
         {
-            pursuit = number; chasing = true; warning = number == 3 ? 6 : 3;
+            pursuit = number; chasing = true; warning = number == 3 ? 10 : 3;
             pursuer.position = at; pursuer.gameObject.SetActive(true);
             Notify("호출등이 켜졌습니다. 복도에서 빠른 발소리가 다가옵니다.");
             Debug.Log("[LastNightRound] pursuit=" + number);
@@ -299,13 +348,19 @@ namespace Lucy.LastNightRound
             {
                 var saved = disk ? JsonUtility.FromJson<SaveData>(File.ReadAllText(SavePath)) : checkpoint;
                 if (saved == null || saved.version != 1 || saved.state == null) throw new Exception("호환되지 않는 개발 저장입니다.");
+                epilogue?.Dispose(); epilogue = null;
                 State = JsonUtility.FromJson<NightRoundState>(JsonUtility.ToJson(saved.state));
                 player.position = saved.player; nurse.position = saved.nurse; checkpoint = saved;
+                // Existing v1 reunion saves predate the question and staff-side A door.
+                if (State.reunited) State.radioAnswered = true;
+                if (State.reunited && State.finalPower == 0 && nurse.position.y < 5.8f) nurse.position = new Vector2(70,7f);
                 cameraView.transform.position = new Vector3(CameraX(player.position.x),0,-10); cameraVelocity = 0;
                 currentRoom = Mathf.Clamp(Mathf.FloorToInt((player.position.x+9)/18),0,4);
                 focus = null;
-                chasing = dead = paused = nurseWalking = false; document = null; hold = tension = warning = 0; pursuit = 0;
+                assistedHold = manualHeld = false;
+                chasing = dead = paused = false; document = null; hold = tension = warning = 0; pursuit = 0;
                 pursuer.gameObject.SetActive(false); Time.timeScale = 1;
+                if (!ambience.isPlaying) ambience.Play();
                 Debug.Log("[LastNightRound] restored " + (disk ? "disk" : "checkpoint") + " player=" + player.position + " ending=" + State.ending);
                 Notify("사건 체크포인트에서 이어갑니다.");
             }
@@ -327,8 +382,9 @@ namespace Lucy.LastNightRound
                 case "circuit-light": return "처치실 조명 회로"; case "circuit-supply": return "물품실 회로";
                 case "circuit-door": return "연결문 회로"; case "service-exit": return "유지 보수 통로";
                 case "lock-record": return "외부 잠금 이력"; case "reunite": return "관찰창의 서연";
+                case "recording": return "천장 방송에 질문하기"; case "radio": return "무전으로 새 질문하기";
                 case "power-together": return "연결문 유지 / 함께 탈출"; case "power-alone": return "주 출구 우선 / 먼저 탈출";
-                case "manual": return "내부문 손잡이 — E 2초 / 클릭 대체"; case "exit": return "외부 출입문";
+                case "manual": return "B문 손잡이 — E 유지 / F·클릭 유지 토글"; case "exit": return "C문 밖으로 걸어가기";
                 default: return id;
             }
         }
@@ -343,6 +399,22 @@ namespace Lucy.LastNightRound
                 button = new GUIStyle(GUI.skin.button) { font = font, fontSize = 23, wordWrap = true };
             }
             GUI.matrix = Matrix4x4.Scale(new Vector3(Screen.width / 1600f, Screen.height / 900f, 1));
+            if (epilogue != null)
+            {
+                epilogue.Draw(text,heading);
+                if (paused)
+                {
+                    GUI.Box(new Rect(450,300,700,180),""); GUI.Label(new Rect(500,330,600,60),"잠시 숨 고르기",heading);
+                    if (GUI.Button(new Rect(550,410,500,55),"계속하기",button)) paused=false;
+                }
+                else if (epilogue.Complete)
+                {
+                    if (GUI.Button(new Rect(220,730,350,70),"최종 선택 다시 · R",button)) Restore(false);
+                    if (GUI.Button(new Rect(625,730,350,70),"새로 시작",button)) StartCoroutine(Launch());
+                    if (GUI.Button(new Rect(1030,730,350,70),"타이틀로",button)) ReturnToTitle();
+                }
+                GUI.matrix=Matrix4x4.identity; return;
+            }
             if (dead && defeatArt != null)
             {
                 GUI.color = new Color(.45f,.45f,.45f,1);
@@ -413,6 +485,6 @@ namespace Lucy.LastNightRound
             }
             GUI.matrix = Matrix4x4.identity;
         }
-        private void OnDestroy() { if (Instance == this) Instance = null; map?.Dispose(); }
+        private void OnDestroy() { if (Instance == this) Instance = null; epilogue?.Dispose(); map?.Dispose(); }
     }
 }

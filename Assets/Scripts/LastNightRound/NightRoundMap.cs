@@ -19,6 +19,7 @@ namespace Lucy.LastNightRound
         private readonly Dictionary<string, TextMesh> stationLabels = new Dictionary<string, TextMesh>();
         private readonly Dictionary<string, string> stationTitles = new Dictionary<string, string>();
         private readonly Dictionary<string, SpriteRenderer> switches = new Dictionary<string, SpriteRenderer>();
+        private SpriteRenderer connectionDoor, observationLamp;
         private readonly List<Rect> floors = new List<Rect>();
         private static readonly Color ActiveColor = new Color(.80f, .72f, .40f);
         private static readonly Color InactiveColor = new Color(.27f, .41f, .40f);
@@ -49,7 +50,7 @@ namespace Lucy.LastNightRound
                 else Wall(new Rect(x - 8, 5.7f, 16, .3f));
                 Wall(new Rect(x - 8, -6, 16, .3f));
                 SideWall(x - 8, i == 0);
-                SideWall(x + 7.7f, i == 4);
+                SideWall(x + 7.7f, false);
                 Label(names[i], new Vector2(x, -5.4f), .25f, new Color(.71f,.79f,.77f));
                 // Furniture is solid in the same rectangle used by CanMove. All stations
                 // and the central east-west walking lane remain clear.
@@ -63,6 +64,18 @@ namespace Lucy.LastNightRound
                 Box("Door threshold", new Rect(x + 8.8f, -1.45f, .12f, 2.9f), new Color(.36f,.44f,.40f), -18);
             }
             StaffCorridor();
+            // A joins the staff corridor; B divides the final room; C leads outside.
+            Wall(new Rect(76.85f,-6,.3f,4.5f));
+            Wall(new Rect(76.85f,1.5f,.3f,4.5f));
+            var outside = new Rect(80,-1.5f,5,3); floors.Add(outside); Floor(outside,0);
+            Wall(new Rect(80,1.5f,5,.3f)); Wall(new Rect(80,-1.8f,5,.3f)); Wall(new Rect(85,-1.8f,.3f,3.6f));
+            connectionDoor = NightRoundArt.Place(Root,"A / staff connection",Art.Atlas("WardDoors",2,2)[0],new Rect(69,5.1f,2,1.8f),40);
+            NightRoundArt.Place(Root,"C / exterior doorway",Art.Atlas("WardDoors",2,2)[3],new Rect(79.7f,-1.5f,1.4f,3),120);
+            Label("A · 서연의 연결문",new Vector2(70,4.8f),.17f,new Color(.71f,.88f,.76f));
+            Label("B · 내부 방화문",new Vector2(75.5f,1.9f),.17f,new Color(.85f,.75f,.55f));
+            Label("C · 병원 밖",new Vector2(82,1.1f),.17f,new Color(.85f,.90f,.82f));
+            Box("Observation glass",new Rect(57.8f,5.5f,2.4f,.35f),new Color(.27f,.46f,.48f),6);
+            observationLamp = Box("Live response lamp",new Rect(58.9f,5.2f,.2f,.2f),InactiveColor,8);
             Station("flashlight", -5, -3, "손전등");
             Station("bracelet", -5, 3, "입원 팔찌");
             Station("meet", 5, 0, "간호사와 합류");
@@ -74,11 +87,13 @@ namespace Lucy.LastNightRound
             Station("fuse", 40, -3, "예비 퓨즈");
             Station("service-exit", 42, 0, "설비실 출입문");
             Station("lock-record", 49, 3, "봉인된 기록");
-            Station("reunite", 59, 0, "다시 만나는 곳");
+            Station("recording",53,-3,"천장 방송");
+            Station("radio",54,3,"무전기로 새 질문");
+            Station("reunite", 59, 4, "관찰창의 서연");
             Station("power-together", 68, 3, "함께 전원 복구");
             Station("power-alone", 72, 3, "혼자 전원 복구");
             Station("manual", 75, -2, "수동 개방 장치");
-            Station("exit", 79, 0, "병원 밖으로");
+            Station("exit", 82, 0, "병원 밖으로");
         }
 
         private void StaffCorridor()
@@ -143,6 +158,8 @@ namespace Lucy.LastNightRound
             markers.Add(id, Box(id + " / status", new Rect(x -.32f,y -.5f,.64f,.06f), ActiveColor, 4));
             Sprite prop;
             if (id == "flashlight") prop = Resources.Load<Sprite>("Presentation/FlashlightIcon");
+            else if (id == "radio") prop = Resources.Load<Sprite>("Presentation/RemoteIcon");
+            else if (id == "recording") prop = Art.Atlas("HospitalWardProps",4,2)[6];
             else if (id == "manifest" || id == "lock-record" || id == "bracelet") prop = Art.Atlas("HospitalWardProps",4,2)[4];
             else if (id == "safe") prop = Art.Atlas("HospitalWardProps",4,2)[7];
             else if (id == "meet" || id == "reunite" || id == "service-exit" || id == "exit") prop = Art.Atlas("WardDoors",2,2)[1];
@@ -190,14 +207,13 @@ namespace Lucy.LastNightRound
             }
             else if (room == 3)
             {
-                for (int n=0;n<3;n++) Furnish("Records archive",storage[3],new Rect(x-1+n*2.6f,3.9f,1.8f,1.5f));
+                for (int n=0;n<2;n++) Furnish("Records archive",storage[3],new Rect(x-1+n*2.6f,3.9f,1.8f,1.5f));
                 Furnish("Sealed files",storage[3],new Rect(x-6,-5.2f,1.8f,1.5f));
                 Furnish("Wheelchair",props[0],new Rect(x+4.4f,-5.2f,1.5f,1.5f));
             }
             else
             {
                 Furnish("Waiting chairs",props[7],new Rect(x-6.6f,-5.1f,3,1.3f));
-                Furnish("Waiting chairs",props[7],new Rect(x+3,-5.1f,3,1.3f));
                 Box("Exit guide",new Rect(x+1,-.65f,5.5f,.09f),new Color(.30f,.52f,.43f),-18);
                 Label("외부 출입문 →",new Vector2(x+4.8f,1.9f),.19f,new Color(.67f,.85f,.72f));
             }
@@ -212,12 +228,14 @@ namespace Lucy.LastNightRound
 
         public void RefreshStations(NightRoundState state, string focus = null)
         {
+            connectionDoor.sprite = Art.Atlas("WardDoors",2,2)[state.finalPower == 1 ? 1 : 0];
+            observationLamp.color = state.radioAnswered ? new Color(.3f,.95f,.63f) : InactiveColor;
             foreach (var entry in stationArt)
             {
                 string id = entry.Key;
                 bool done = state.IsActionComplete(id);
                 bool pickup = id == "flashlight" || id == "bracelet" || id == "fuse";
-                entry.Value.enabled = !pickup || !done;
+                entry.Value.enabled = (!pickup || !done) && id != "reunite" && id != "exit";
                 markers[id].enabled = !done;
                 var label = stationLabels[id];
                 if (label != null)
@@ -304,6 +322,7 @@ namespace Lucy.LastNightRound
             Root = null; Pixel = null; texture = null; font = null;
             Walls.Clear(); Stations.Clear(); markers.Clear(); floors.Clear();
             stationArt.Clear(); stationLabels.Clear(); stationTitles.Clear(); switches.Clear();
+            connectionDoor = observationLamp = null;
         }
     }
 }
