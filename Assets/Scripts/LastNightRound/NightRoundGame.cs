@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering.Universal;
 
 namespace Lucy.LastNightRound
 {
@@ -27,6 +28,15 @@ namespace Lucy.LastNightRound
         private SaveData checkpoint;
         private GUIStyle text, heading, button;
         private readonly SpriteRenderer[] gates = new SpriteRenderer[5];
+        private Sprite[] doorArt;
+        private Light2D flashlight, serviceLight;
+        private Texture2D defeatArt;
+        private AudioSource ambience, footsteps;
+        private float nextFootstep;
+        private float cameraVelocity;
+        private int currentRoom;
+        private static readonly string[] RoomNames = { "입원 병동", "야간 간호실", "전력 설비실", "기록 보관실", "마지막 출구" };
+        public static bool HasSavedGame => File.Exists(Path.Combine(Application.persistentDataPath, "last-night-round-blockout.json"));
         [Serializable] private class SaveData
         {
             public int version = 1;
@@ -35,7 +45,7 @@ namespace Lucy.LastNightRound
         }
         private string SavePath => Path.Combine(Application.persistentDataPath, "last-night-round-blockout.json");
 
-        public static IEnumerator Launch()
+        public static IEnumerator Launch(bool resume = false)
         {
             yield return null;
             var old = SceneManager.GetActiveScene();
@@ -43,7 +53,8 @@ namespace Lucy.LastNightRound
             SceneManager.SetActiveScene(scene);
             foreach (var root in old.GetRootGameObjects()) root.SetActive(false);
             var host = new GameObject("Last Night Round — Development Blockout");
-            host.AddComponent<NightRoundGame>();
+            var game = host.AddComponent<NightRoundGame>();
+            if (resume) game.Restore(true);
             if (old.IsValid()) yield return SceneManager.UnloadSceneAsync(old);
         }
 
@@ -52,38 +63,59 @@ namespace Lucy.LastNightRound
             Instance = this; State = new NightRoundState();
             font = Resources.Load<Font>("Presentation/LucyFont");
             map = new NightRoundMap(); map.Build();
+            doorArt = map.Art.Atlas("WardDoors", 2, 2);
             float[] gateX = { 8, 26, 44, 62, 77 };
             for (int i = 0; i < gates.Length; i++)
             {
                 var gate = new GameObject("Progress gate " + i); gate.transform.SetParent(transform);
-                gate.transform.position = new Vector3(gateX[i], 0, 0); gate.transform.localScale = new Vector3(.22f, 3, 1);
-                gates[i] = gate.AddComponent<SpriteRenderer>(); gates[i].sprite = map.Pixel; gates[i].sortingOrder = 8;
+                gate.transform.position = new Vector3(gateX[i], 0, 0);
+                gates[i] = gate.AddComponent<SpriteRenderer>(); gates[i].sprite = doorArt[2]; gates[i].sortingOrder = 120;
+                gate.transform.localScale = Vector3.one * (3 / doorArt[2].bounds.size.y);
             }
             player = Actor("루시", new Vector2(-3, 0), new Color(.69f, .79f, .88f));
             nurse = Actor("서연", new Vector2(6, 0), new Color(.56f, .78f, .65f));
             pursuer = Actor("순회자", new Vector2(10, 0), new Color(.51f, .25f, .25f));
             pursuer.gameObject.SetActive(false);
+            SetupLighting();
+            ambience = gameObject.AddComponent<AudioSource>(); ambience.playOnAwake = false;
+            ambience.clip = Resources.Load<AudioClip>("Sound/Horror Elements/Ambient/Amb_darkroom");
+            ambience.loop = true; ambience.volume = .12f; ambience.Play();
+            footsteps = gameObject.AddComponent<AudioSource>(); footsteps.playOnAwake = false;
+            footsteps.clip = Resources.Load<AudioClip>("Sound/Footsteps - Essentials/Footsteps_Tile/Footsteps_Tile_Run/Footsteps_Tile_Run_01");
+            footsteps.volume = .2f;
+            defeatArt = Resources.Load<Texture2D>("Presentation/LucyDefeat");
             var view = new GameObject("Blockout Camera", typeof(Camera), typeof(AudioListener));
             cameraView = view.GetComponent<Camera>(); cameraView.orthographic = true; cameraView.orthographicSize = 7.3f;
             cameraView.backgroundColor = new Color(.018f, .025f, .03f); cameraView.clearFlags = CameraClearFlags.SolidColor;
-            cameraView.transform.position = new Vector3(-1, 0, -10);
+            cameraView.transform.position = new Vector3(CameraX(player.position.x), 0, -10);
             Time.timeScale = 1; AudioListener.pause = false;
             SaveCheckpoint(false);
-            Tell("마지막 야간 순회 · 개발 블록아웃", "새 기획의 진행 검증용입니다. 임시 맵과 인물로 구성되어 있습니다.\n\nWASD / 방향키 이동 · Shift 달리기 · E 조사\nSpace 대화 닫기 · I 소지품 · J 증거 · Esc 일시정지\n\n침상 옆 팔찌와 서랍의 손전등부터 확인하세요.\n무음 상태에서도 모든 정보와 위험 경고를 읽을 수 있습니다.");
+            Tell("마지막 야간 순회", "눈을 뜬 병동에는 아무도 없습니다. 문밖에서 누군가 당신의 이름을 부릅니다.\n\nWASD / 방향키 이동 · Shift 달리기 · E 조사\nSpace 대화 닫기 · I 소지품 · J 증거 · Esc 일시정지\n\n입원 팔찌와 손전등부터 확인하세요.\n무음 상태에서도 모든 정보와 위험 경고를 읽을 수 있습니다.");
         }
 
         private Transform Actor(string name, Vector2 at, Color color)
         {
             var go = new GameObject(name); go.transform.SetParent(transform); go.transform.position = at;
-            var r = go.AddComponent<SpriteRenderer>(); r.sprite = map.Pixel; r.color = color; r.sortingOrder = 20;
-            go.transform.localScale = new Vector3(.6f, .9f, 1);
+            go.AddComponent<NightRoundActorView>().Initialize(map.Art, name == "루시" ? 0 : name == "서연" ? 1 : 2);
             return go.transform;
         }
 
         private void Update()
         {
+            flashlight.enabled = State.flashlight;
+            serviceLight.intensity = (State.circuits & 1) != 0 ? .65f : .08f;
+            ambience.volume = IsBlocked ? .04f : .12f;
+            if (IsBlocked && footsteps.isPlaying) footsteps.Stop();
             bool[] open = { State.CanLeaveWard, State.CanLeaveNursing, State.CanLeaveService, State.CanLeaveIsolation, State.CanCrossFinalDoor };
-            for (int i = 0; i < gates.Length; i++) { gates[i].enabled = !open[i]; gates[i].color = new Color(.55f, .30f, .22f); }
+            for (int i = 0; i < gates.Length; i++)
+            {
+                gates[i].sprite = doorArt[open[i] ? 3 : 2];
+                gates[i].color = open[i] ? Color.white : new Color(.85f,.75f,.65f);
+                float x = i == 4 ? 77 : 8 + i * 18;
+                float hingeOffset = open[i] ? (doorArt[3].bounds.size.x - doorArt[2].bounds.size.x) * gates[i].transform.localScale.x * .5f : 0;
+                gates[i].transform.position = new Vector3(x - hingeOffset, 0, 0);
+            }
+            map.RefreshStations(State, focus);
             if (document != null)
             {
                 if (Time.unscaledTime - openedAt > .25f && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape))) document = null;
@@ -98,10 +130,16 @@ namespace Lucy.LastNightRound
             var direction = new Vector2((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) ? 1 : 0) - (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) ? 1 : 0),
                 (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) ? 1 : 0) - (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) ? 1 : 0));
             float speed = Input.GetKey(KeyCode.LeftShift) ? 5.2f : 3.4f;
+            var beforeMove = player.position;
             Move(player, direction.normalized * speed * Time.deltaTime, true);
+            if ((player.position - beforeMove).sqrMagnitude > .000001f && Time.time >= nextFootstep)
+            { footsteps.Play(); nextFootstep = Time.time + (speed > 4 ? .24f : .38f); }
+            if (direction.sqrMagnitude > 0)
+                flashlight.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90);
             focus = null; float closest = 1.55f;
             foreach (var station in map.Stations)
             {
+                if (State.IsActionComplete(station.Key)) continue;
                 float distance = Vector2.Distance(player.position, station.Value);
                 if (distance < closest) { closest = distance; focus = station.Key; }
             }
@@ -114,7 +152,22 @@ namespace Lucy.LastNightRound
             if (IsBlocked) return;
             UpdateNurse(); UpdatePursuer();
             if (State.reunited && player.position.x > 78.5f && Mathf.Abs(player.position.y) < 1.3f) Interact("exit");
-            cameraView.transform.position = Vector3.Lerp(cameraView.transform.position, new Vector3(player.position.x, 0, -10), 8 * Time.deltaTime);
+            currentRoom = Mathf.Clamp(Mathf.FloorToInt((player.position.x + 9) / 18), 0, 4);
+        }
+
+        private float CameraX(float x)
+        {
+            float halfWidth = cameraView.orthographicSize * cameraView.aspect;
+            return halfWidth >= 44 ? 36 : Mathf.Clamp(x, -8 + halfWidth, 80 - halfWidth);
+        }
+
+        private void LateUpdate()
+        {
+            if (cameraView == null || player == null || IsBlocked) return;
+            float at = cameraView.transform.position.x;
+            float offset = player.position.x - at;
+            float target = CameraX(at + Mathf.Sign(offset) * Mathf.Max(0,Mathf.Abs(offset)-2));
+            cameraView.transform.position = new Vector3(Mathf.SmoothDamp(at,target,ref cameraVelocity,.22f),0,-10);
         }
 
         private bool Allowed(Vector2 target, Vector2 from)
@@ -125,6 +178,28 @@ namespace Lucy.LastNightRound
             for (int i = 0; i < barriers.Length; i++)
                 if (!open[i] && from.x <= barriers[i] && target.x > barriers[i] - .25f) return false;
             return true;
+        }
+
+        private void SetupLighting()
+        {
+            foreach (var renderer in map.Root.GetComponentsInChildren<SpriteRenderer>()) renderer.sharedMaterial = map.Art.LitMaterial;
+            foreach (var gate in gates) gate.sharedMaterial = map.Art.LitMaterial;
+            var ambient = Instantiate(Resources.Load<GameObject>("Presentation/WardAmbient"), transform);
+            ambient.GetComponent<Light2D>().intensity = .65f;
+            var glow = Resources.Load<GameObject>("Presentation/FirstRoomGlow");
+            for (int i = 0; i < 5; i++)
+            {
+                var lamp = Instantiate(glow, transform).GetComponent<Light2D>();
+                lamp.transform.position = new Vector3(i * 18, 2, 0);
+                lamp.intensity = .65f; lamp.pointLightInnerRadius = 1; lamp.pointLightOuterRadius = 8;
+                if (i == 2) serviceLight = lamp;
+            }
+            flashlight = Instantiate(glow, player).GetComponent<Light2D>();
+            flashlight.name = "Lucy flashlight"; flashlight.transform.localPosition = Vector3.up * .4f;
+            flashlight.intensity = 1.4f; flashlight.pointLightInnerRadius = .5f; flashlight.pointLightOuterRadius = 6;
+            flashlight.pointLightInnerAngle = 30; flashlight.pointLightOuterAngle = 75;
+            flashlight.color = new Color(1,.94f,.78f);
+            flashlight.enabled = false;
         }
 
         private void Move(Transform actor, Vector2 delta, bool gated)
@@ -226,6 +301,9 @@ namespace Lucy.LastNightRound
                 if (saved == null || saved.version != 1 || saved.state == null) throw new Exception("호환되지 않는 개발 저장입니다.");
                 State = JsonUtility.FromJson<NightRoundState>(JsonUtility.ToJson(saved.state));
                 player.position = saved.player; nurse.position = saved.nurse; checkpoint = saved;
+                cameraView.transform.position = new Vector3(CameraX(player.position.x),0,-10); cameraVelocity = 0;
+                currentRoom = Mathf.Clamp(Mathf.FloorToInt((player.position.x+9)/18),0,4);
+                focus = null;
                 chasing = dead = paused = nurseWalking = false; document = null; hold = tension = warning = 0; pursuit = 0;
                 pursuer.gameObject.SetActive(false); Time.timeScale = 1;
                 Debug.Log("[LastNightRound] restored " + (disk ? "disk" : "checkpoint") + " player=" + player.position + " ending=" + State.ending);
@@ -265,6 +343,12 @@ namespace Lucy.LastNightRound
                 button = new GUIStyle(GUI.skin.button) { font = font, fontSize = 23, wordWrap = true };
             }
             GUI.matrix = Matrix4x4.Scale(new Vector3(Screen.width / 1600f, Screen.height / 900f, 1));
+            if (dead && defeatArt != null)
+            {
+                GUI.color = new Color(.45f,.45f,.45f,1);
+                GUI.DrawTexture(new Rect(0,0,1600,900), defeatArt, ScaleMode.ScaleAndCrop);
+                GUI.color = Color.white;
+            }
             if (document != null || dead || paused || State.ending != "")
             {
                 GUI.color = new Color(.025f, .04f, .045f, .97f);
@@ -272,18 +356,31 @@ namespace Lucy.LastNightRound
                 GUI.color = Color.white;
             }
             GUI.Box(new Rect(20, 18, 1560, 102), "");
-            GUI.Label(new Rect(40, 25, 650, 36), "마지막 야간 순회 · 개발 블록아웃", heading);
+            GUI.Label(new Rect(40, 25, 650, 36), "마지막 야간 순회", heading);
             GUI.Label(new Rect(850, 28, 690, 82), State.Objective, text);
             GUI.Label(new Rect(40, 70, 700, 38), "긴장 " + Mathf.RoundToInt(tension) + "   |   E 조사 · Shift 달리기 · Esc 메뉴", text);
-            if (State.firstEscape)
-                GUI.Label(new Rect(30, 130, 800, 60), "공급 2회로: " + ((State.circuits & 1) != 0 ? "[조명 ON] " : "[조명 OFF] ") + ((State.circuits & 2) != 0 ? "[물품 ON] " : "[물품 OFF] ") + ((State.circuits & 4) != 0 ? "[연결문 ON]" : "[연결문 OFF]"), text);
+            if (!IsBlocked)
+            {
+                GUI.Label(new Rect(40,128,650,42), "0" + (currentRoom+1) + " / " + RoomNames[currentRoom] + "    ·    J 확인한 증거", text);
+                if (State.firstEscape && currentRoom == 2)
+                {
+                    GUI.Box(new Rect(25,178,770,55), "");
+                    GUI.Label(new Rect(40,185,750,42), "전력 " + State.PoweredCircuitCount + "/2    " + ((State.circuits&1)!=0 ? "조명 ON   " : "조명 OFF   ") + ((State.circuits&2)!=0 ? "물품 ON   " : "물품 OFF   ") + ((State.circuits&4)!=0 ? "문 ON" : "문 OFF"), text);
+                }
+            }
             if (!IsBlocked && focus != null)
             {
                 GUI.Box(new Rect(350, 790, 900, 80), "");
-                if (GUI.Button(new Rect(370, 804, 860, 50), "E  " + StationLabel(focus) + (hold > 0 ? "  " + Mathf.CeilToInt(hold / 2 * 100) + "%" : ""), button)) Interact(focus);
+                string action = StationLabel(focus);
+                if (focus.StartsWith("circuit-")) action += State.IsCircuitPowered(focus) ? " 끄기" : " 켜기";
+                if (GUI.Button(new Rect(370, 804, 860, 50), "E  " + action + (hold > 0 ? "  " + Mathf.CeilToInt(hold / 2 * 100) + "%" : ""), button)) Interact(focus);
             }
             if (Time.unscaledTime < noticeUntil) GUI.Label(new Rect(280, 710, 1100, 70), notice, text);
-            if (chasing && !IsBlocked) GUI.Label(new Rect(500, 140, 700, 50), warning > 0 ? "복도 끝에서 문이 열립니다…" : "순회자가 쫓아옵니다. 열린 통로로 이동하세요.", text);
+            if (chasing && !IsBlocked)
+            {
+                GUI.color = new Color(.40f,.10f,.08f,.95f); GUI.DrawTexture(new Rect(850,128,710,76),Texture2D.whiteTexture); GUI.color = Color.white;
+                GUI.Label(new Rect(870,137,670,66),warning > 0 ? "복도 끝에서 문이 열립니다…" : "순회자 접근  /  " + (pursuer.position.x < player.position.x ? "← 왼쪽" : "오른쪽 →") + "\n열린 통로로 이동하세요.",text);
+            }
             if (document != null)
             {
                 GUI.Box(new Rect(230, 175, 1140, 550), "");

@@ -59,6 +59,7 @@ namespace Lucy.Editor
                     case "new-game": Lucy.Presentation.GameSession.Instance.StartNewGame(); break;
                     case "story-blockout": Lucy.Presentation.GameSession.Instance.StartStoryBlockout(); break;
                     case "story-check": NightRoundStateChecks.Run(); break;
+                    case "story-art-check": NightRoundArtValidation.RunInEditor(); break;
                     case "story-test-together": NightRoundPlaytest.Run(true); break;
                     case "story-test-alone": NightRoundPlaytest.Run(false); break;
                     case "nurse-flow": LucyRoomChaseProbe.BeginNurseFlow(); break;
