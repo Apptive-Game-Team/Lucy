@@ -11,7 +11,7 @@ public static class NightRoundStateChecks
         Check(state.circuits == 1 && state.finalPower == 0 && state.ending == "", "New game defaults", ref checks);
         Check(!state.CanLeaveWard && !state.CanCrossFinalDoor, "New game doors", ref checks);
         Check(!state.IsActionComplete("flashlight") && state.PoweredCircuitCount == 1, "Fresh pickup and power presentation", ref checks);
-        string[] premature = { "meet", "manifest", "safe", "circuit-light", "circuit-supply", "circuit-door", "fuse", "service-exit", "lock-record", "reunite", "power-together", "power-alone", "manual", "nurse-crossed", "exit", "unknown", null };
+        string[] premature = { "meet", "manifest", "safe", "circuit-light", "circuit-supply", "circuit-door", "fuse", "service-exit", "lock-record", "radio", "recording", "reunite", "power-together", "power-alone", "manual", "nurse-crossed", "nurse-outside", "exit", "unknown", null };
         foreach (string action in premature) RejectUnchanged(state, action, ref checks);
         Accept(state, "flashlight", ref checks);
         Check(state.IsActionComplete("flashlight"), "Collected pickup removed from focus", ref checks);
@@ -55,6 +55,10 @@ public static class NightRoundStateChecks
         Accept(state, "service-exit", ref checks);
         Check(state.CanLeaveService, "Service exit after arrival event", ref checks);
         Accept(state, "lock-record", ref checks);
+        RejectUnchanged(state,"reunite",ref checks);
+        Accept(state,"recording",ref checks);
+        Check(!state.radioAnswered && !state.reunited,"Recording cannot count as a live answer",ref checks);
+        Accept(state,"radio",ref checks);
         Accept(state, "reunite", ref checks);
         Check(state.CanLeaveIsolation, "Isolation exit after reunion", ref checks);
         var checkpoint = JsonUtility.ToJson(state);
@@ -75,6 +79,8 @@ public static class NightRoundStateChecks
         RejectUnchanged(state, "nurse-crossed", ref checks);
         RejectUnchanged(state, "power-alone", ref checks);
         Check(state.CanCrossFinalDoor, "Together requires actual nurse crossing", ref checks);
+        RejectUnchanged(state,"exit",ref checks);
+        Accept(state,"nurse-outside",ref checks);
         Accept(state, "exit", ref checks);
         Check(state.ending == "together", "Together ending", ref checks);
         RejectUnchanged(state, "exit", ref checks);
@@ -83,6 +89,7 @@ public static class NightRoundStateChecks
         Accept(alone, "power-alone", ref checks);
         RejectUnchanged(alone, "manual", ref checks);
         RejectUnchanged(alone, "nurse-crossed", ref checks);
+        RejectUnchanged(alone,"nurse-outside",ref checks);
         Accept(alone, "exit", ref checks);
         Check(alone.ending == "alone" && !alone.nurseCrossed, "Alone ending without false NPC crossing", ref checks);
         RejectUnchanged(alone, "power-together", ref checks);

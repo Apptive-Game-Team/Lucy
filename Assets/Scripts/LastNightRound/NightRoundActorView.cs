@@ -44,7 +44,7 @@ namespace Lucy.LastNightRound
         {
             var delta = transform.position - previous; previous = transform.position;
             bool moving = delta.sqrMagnitude > .000001f && delta.sqrMagnitude < 1;
-            if (NightRoundGame.Instance == null || NightRoundGame.Instance.IsBlocked || Time.timeScale <= 0) moving = false;
+            if (NightRoundGame.Instance == null || (NightRoundGame.Instance.IsBlocked && !NightRoundGame.Instance.IsEpilogueMoving) || Time.timeScale <= 0) moving = false;
             if (moving)
             {
                 bool horizontal = Mathf.Abs(delta.x) > Mathf.Abs(delta.y);

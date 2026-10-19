@@ -8,6 +8,7 @@ namespace Lucy.LastNightRound
     {
         public bool flashlight, bracelet, metNurse, transferMismatch, firstEscape;
         public bool fuse, powerRestored, secondEscape, truth, reunited, nurseCrossed, manualDoor;
+        public bool radioAnswered, recordingHeard, nurseOutside;
         public int circuits = 1; // Light = 1, supply = 2, internal door = 4; two supply slots.
         public string ending = "";
         public int finalPower; // 0 unset, 1 connecting door / manual exit, 2 main exit.
@@ -28,7 +29,9 @@ namespace Lucy.LastNightRound
                 case "service-exit": return secondEscape;
                 case "lock-record": return truth;
                 case "reunite": return reunited;
-                case "manual": return manualDoor;
+                case "radio": return radioAnswered;
+                case "recording": return recordingHeard;
+                case "manual": return nurseCrossed;
                 default: return false;
             }
         }
@@ -63,12 +66,13 @@ namespace Lucy.LastNightRound
                 if (!secondEscape && (circuits & 4) == 0) return "연결 방화문 회로가 꺼져 있습니다. 배전반에서 전원을 다시 공급하세요.";
                 if (!secondEscape) return "열어 둔 유지 보수 통로로 빠져나가세요.";
                 if (!truth) return "폐쇄 병동 제어실에서 101호 잠금 이력을 확인하세요.";
-                if (!reunited) return "무전의 실제 응답을 따라 초록 표시등의 연결문에서 서연을 찾으세요.";
+                if (!radioAnswered) return "방송은 같은 말만 반복합니다. 무전기로 새로운 질문을 해 보세요.";
+                if (!reunited) return "새 질문에 답한 서연을 북쪽 관찰창에서 확인하세요.";
                 if (finalPower == 0) return "제어반에서 연결문 유지 또는 주 출구 우선을 선택하세요.";
                 if (finalPower == 2) return "주 출구에 전원이 공급됩니다. 출구를 넘기 전에는 선택을 바꿀 수 있습니다.";
                 if (!manualDoor) return "서연의 연결문 전력을 유지하며 내부 방화문 수동 손잡이를 조작하세요.";
-                if (!nurseCrossed) return "서연이 연결문과 내부 방화문을 건널 때까지 기다리세요.";
-                return "서연이 반대편 손잡이를 잡았습니다. 열린 출구로 함께 나가세요.";
+                if (!nurseCrossed) return "E를 계속 누르거나 F 유지 토글로 B문을 잡고 서연이 건너기를 기다리세요.";
+                return "서연이 B문의 반대편 손잡이를 잡았습니다. B를 건너 C문 밖으로 함께 나가세요.";
             }
         }
 
@@ -96,17 +100,23 @@ namespace Lucy.LastNightRound
                 case "service-exit":
                     return Mark(ref secondEscape, powerRestored && (circuits & 4) != 0, "유지 보수 통로에 도착했다. 순회자의 발소리가 멀어진다.", "연결 방화문 회로에 전원을 공급한 상태로 통로에 진입하세요.", out text);
                 case "lock-record":
-                    return Mark(ref truth, secondEscape, "02:17 / 101호 / 외부 보호 잠금 / 수동 입력: 서연\n02:18 / 복도 접근 차단\n02:19 / 외부 해제 요청 / 현장 조작 필요\n서연: 제가 잠갔어요. 제가 잘못했습니다.", "유지 보수 통로를 지나 폐쇄 병동에 도착해야 합니다.", out text);
+                    return Mark(ref truth, secondEscape, "02:17 / 101호 / 외부 보호 잠금 / 수동 입력: 서연\n02:18 / 복도 접근 차단   ·   02:19 / 외부 해제 요청\n\n루시: 고장 나서 잠긴 게 아니네요. 왜 저한테는 묻지도 않았어요?\n서연 — 무전: 안에 계시면 안전할 거라고 생각했어요. 금방 돌아올 수 있다고요.\n루시: 저는 여기서 기다리는 것밖에 못 했어요.\n서연: 네. 제가 잠갔어요. 제가 잘못했습니다.", "유지 보수 통로를 지나 폐쇄 병동에 도착해야 합니다.", out text);
+                case "recording":
+                    return Mark(ref recordingHeard, truth, "천장 방송: ‘간호사실에서 설명할게요.’\n루시: 지금 어디에 있어요?\n천장 방송 — 응답 없음: ‘간호사실에서 설명할게요.’\n\n루시: 같은 말만 하고 있어. 새로운 질문에는 대답하지 못해.\n무전기로 직접 물어보자.", "먼저 잠금 이력을 확인하세요.", out text);
+                case "radio":
+                    return Mark(ref radioAnswered, truth, "루시 — 무전: 지금 어디에 있어요? 손잡이를 두드려 줄 수 있어요?\n서연 — 실시간 응답: 초록 표시등이 있는 관찰창 안쪽이에요. 지금 세 번 두드릴게요.\n\n[관찰창 안쪽 손잡이를 세 번 두드린다]\n천장 방송 — 응답 없음: ‘간호사실에서 설명할게요.’\n\n새 질문에 답한 목소리를 따라 북쪽 관찰창으로 가세요.", "먼저 잠금 이력과 서연의 설명을 확인하세요.", out text);
                 case "reunite":
-                    return Mark(ref reunited, truth, "무전의 새 질문에 서연이 답하고 연결문 손잡이를 두드렸다.\n루시: 기록은 제가 갖고 갈게요.", "잠금 이력을 확인하고 실제 서연의 응답을 찾아야 합니다.", out text);
+                    return Mark(ref reunited, truth && radioAnswered, "서연: 서류에는 먼저 완료라고 적었어요. 차에 타실 거라고 생각해서요.\n루시: 확인하지 않았네요.\n서연: 네. 밖에 나가면 제가 바로잡겠습니다.\n루시: 기록은 제가 갖고 갈게요.\n\n다음 방의 A는 서연의 연결문, B는 양쪽에 손잡이가 있는 내부 방화문, C는 바깥 출입문입니다.\nA에 전력을 남기면 B를 잡아 서연을 먼저 보내세요. B에 보내면 루시가 먼저 나갈 수 있습니다.", "무전기로 새 질문을 하고 실제 서연의 응답을 확인하세요.", out text);
                 case "power-together": return SelectFinalPower(1, out text);
                 case "power-alone": return SelectFinalPower(2, out text);
                 case "manual":
                     return Mark(ref manualDoor, reunited && finalPower == 1, "내부 방화문의 수동 손잡이를 작동했다. 서연이 건너올 길이 열렸다.", "서연의 연결문에 전력을 유지해야 수동 탈출을 준비할 수 있습니다.", out text);
                 case "nurse-crossed":
                     return Mark(ref nurseCrossed, reunited && manualDoor && finalPower == 1, "서연이 두 문을 지나 반대편 손잡이를 잡았다. 이제 루시가 건널 수 있다.", "연결문 전력과 수동 해제를 유지한 뒤 서연의 실제 통과를 기다리세요.", out text);
+                case "nurse-outside":
+                    return Mark(ref nurseOutside, nurseCrossed && finalPower == 1, "서연이 외부 출입문 C를 통과했습니다.", "먼저 내부 방화문을 함께 통과하세요.", out text);
                 case "exit":
-                    if (!CanCrossFinalDoor) { text = "출구 전원을 선택하거나, 수동 해제 후 서연이 건너올 때까지 기다리세요."; return false; }
+                    if (!CanCrossFinalDoor || (finalPower == 1 && !nurseOutside)) { text = "외부 출입문 C를 통과하세요. 함께 가는 경우 두 사람 모두 바깥에 도착해야 합니다."; return false; }
                     ending = finalPower == 1 ? "together" : "alone";
                     text = ending == "together" ? "함께 밖으로\n루시: 이번에는 문을 잠그지 마세요.\n서연: 네. 열어 둘게요." : "먼저 밖으로\n루시: 루시. 아직 여기 있어요.\n기록을 주머니에 넣고 아침 도로로 걸어 나왔다.";
                     return true;

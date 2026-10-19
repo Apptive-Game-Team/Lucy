@@ -248,7 +248,7 @@ namespace Lucy.Presentation
         {
             var p = Panel(false);
             Heading(p,"THE LAST NIGHT ROUND", "어둠 속의 약속", "방향키 / WASD  이동     Shift  달리기\nE  조사·대화     I  소지품     J  증거     ESC  메뉴");
-            Label(p,"Tips","Space로 문서를 닫습니다. 조사 중에는 추격도 멈춥니다.\n손전등을 찾고 팔찌와 이송 기록을 대조하세요.\n배전반은 세 회로 중 두 개에만 전원을 공급합니다.\n마지막 손잡이는 E를 2초 누르거나 화면 버튼을 누르세요.\n붙잡히면 R로 사건 체크포인트에서 다시 시작합니다.",24,new Vector2(.08f,.23f),new Vector2(.90f,.46f),Color.white);
+            Label(p,"Tips","Space로 문서를 닫습니다. 조사 중에는 추격도 멈춥니다.\n손전등을 찾고 팔찌와 이송 기록을 대조하세요.\n배전반은 세 회로 중 두 개에만 전원을 공급합니다.\n마지막 손잡이는 서연이 건널 때까지 E 유지 · F/클릭 유지 토글.\n붙잡히면 R로 사건 체크포인트에서 다시 시작합니다.",24,new Vector2(.08f,.23f),new Vector2(.90f,.46f),Color.white);
             Button(p,"돌아가기",.10f,() => { if (paused) { Time.timeScale = previousScale; Pause(); } else ShowTitle(); });
         }
 
