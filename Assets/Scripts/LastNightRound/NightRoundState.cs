@@ -59,16 +59,16 @@ namespace Lucy.LastNightRound
                 if (!flashlight) return "침상 옆 서랍에서 손전등을 챙기세요.";
                 if (!metNurse) return "병실 문에서 서연의 목소리를 확인하세요.";
                 if (!bracelet) return "팔찌의 이름과 병실 번호를 확인하세요.";
-                if (!transferMismatch) return "간호사실에서 101번 이송 명단과 팔찌를 대조하세요.";
+                if (!transferMismatch) return "중앙 복도 북쪽 간호실에서 101번 이송 명단을 대조하세요.";
                 if (!firstEscape) return "호출등이 켜졌습니다. 직원 휴게실로 피하세요.";
-                if (!fuse) return (circuits & 2) == 0 ? "배전반에서 물품실 회로를 켜세요. 공급은 두 회로까지 가능합니다." : "물품실에서 연결문 제어 퓨즈를 확보하세요.";
+                if (!fuse) return (circuits & 2) == 0 ? "중앙 복도 남쪽 설비실에서 물품실 회로를 켜세요. 공급은 두 회로까지 가능합니다." : "물품실에서 연결문 제어 퓨즈를 확보하세요.";
                 if (!powerRestored) return "회로 하나를 끄고 연결 방화문 제어에 전원을 공급하세요.";
                 if (!secondEscape && (circuits & 4) == 0) return "연결 방화문 회로가 꺼져 있습니다. 배전반에서 전원을 다시 공급하세요.";
-                if (!secondEscape) return "열어 둔 유지 보수 통로로 빠져나가세요.";
-                if (!truth) return "폐쇄 병동 제어실에서 101호 잠금 이력을 확인하세요.";
+                if (!secondEscape) return "설비실 북동쪽 출입구로 돌아가 복도의 인터폰을 확인하세요.";
+                if (!truth) return "중앙 복도 북동쪽 기록실에서 101호 잠금 이력을 확인하세요.";
                 if (!radioAnswered) return "방송은 같은 말만 반복합니다. 무전기로 새로운 질문을 해 보세요.";
                 if (!reunited) return "새 질문에 답한 서연을 북쪽 관찰창에서 확인하세요.";
-                if (finalPower == 0) return "제어반에서 연결문 유지 또는 주 출구 우선을 선택하세요.";
+                if (finalPower == 0) return "중앙 복도 동쪽 출구 로비의 제어반에서 전원 배분을 선택하세요.";
                 if (finalPower == 2) return "주 출구에 전원이 공급됩니다. 출구를 넘기 전에는 선택을 바꿀 수 있습니다.";
                 if (!manualDoor) return "서연의 연결문 전력을 유지하며 내부 방화문 수동 손잡이를 조작하세요.";
                 if (!nurseCrossed) return "E를 계속 누르거나 F 유지 토글로 B문을 잡고 서연이 건너기를 기다리세요.";
@@ -98,15 +98,15 @@ namespace Lucy.LastNightRound
                 case "fuse":
                     return Mark(ref fuse, firstEscape && (circuits & 2) != 0, "연결문 제어 퓨즈를 확보해 표시된 소켓에 장착했다.", "첫 추격을 벗어난 뒤 물품실 전원을 켜야 합니다.", out text);
                 case "service-exit":
-                    return Mark(ref secondEscape, powerRestored && (circuits & 4) != 0, "유지 보수 통로에 도착했다. 순회자의 발소리가 멀어진다.", "연결 방화문 회로에 전원을 공급한 상태로 통로에 진입하세요.", out text);
+                    return Mark(ref secondEscape, powerRestored && (circuits & 4) != 0, "설비실 출입구를 지나 복도로 돌아왔다. 인터폰으로 방화문 복구를 확인했다.\n순회자의 발소리가 멀어진다. 북동쪽 기록실 문이 열렸다.", "연결 방화문 회로에 전원을 공급한 뒤 설비실 출입구로 돌아오세요.", out text);
                 case "lock-record":
-                    return Mark(ref truth, secondEscape, "02:17 / 101호 / 외부 보호 잠금 / 수동 입력: 서연\n02:18 / 복도 접근 차단   ·   02:19 / 외부 해제 요청\n\n루시: 고장 나서 잠긴 게 아니네요. 왜 저한테는 묻지도 않았어요?\n서연 — 무전: 안에 계시면 안전할 거라고 생각했어요. 금방 돌아올 수 있다고요.\n루시: 저는 여기서 기다리는 것밖에 못 했어요.\n서연: 네. 제가 잠갔어요. 제가 잘못했습니다.", "유지 보수 통로를 지나 폐쇄 병동에 도착해야 합니다.", out text);
+                    return Mark(ref truth, secondEscape, "02:17 / 101호 / 외부 보호 잠금 / 수동 입력: 서연\n02:18 / 복도 접근 차단   ·   02:19 / 외부 해제 요청\n\n루시: 고장 나서 잠긴 게 아니네요. 왜 저한테는 묻지도 않았어요?\n서연 — 무전: 안에 계시면 안전할 거라고 생각했어요. 금방 돌아올 수 있다고요.\n루시: 저는 여기서 기다리는 것밖에 못 했어요.\n서연: 네. 제가 잠갔어요. 제가 잘못했습니다.", "설비실에서 문 제어를 복구하고 복도로 돌아와야 합니다.", out text);
                 case "recording":
                     return Mark(ref recordingHeard, truth, "천장 방송: ‘간호사실에서 설명할게요.’\n루시: 지금 어디에 있어요?\n천장 방송 — 응답 없음: ‘간호사실에서 설명할게요.’\n\n루시: 같은 말만 하고 있어. 새로운 질문에는 대답하지 못해.\n무전기로 직접 물어보자.", "먼저 잠금 이력을 확인하세요.", out text);
                 case "radio":
                     return Mark(ref radioAnswered, truth, "루시 — 무전: 지금 어디에 있어요? 손잡이를 두드려 줄 수 있어요?\n서연 — 실시간 응답: 초록 표시등이 있는 관찰창 안쪽이에요. 지금 세 번 두드릴게요.\n\n[관찰창 안쪽 손잡이를 세 번 두드린다]\n천장 방송 — 응답 없음: ‘간호사실에서 설명할게요.’\n\n새 질문에 답한 목소리를 따라 북쪽 관찰창으로 가세요.", "먼저 잠금 이력과 서연의 설명을 확인하세요.", out text);
                 case "reunite":
-                    return Mark(ref reunited, truth && radioAnswered, "서연: 서류에는 먼저 완료라고 적었어요. 차에 타실 거라고 생각해서요.\n루시: 확인하지 않았네요.\n서연: 네. 밖에 나가면 제가 바로잡겠습니다.\n루시: 기록은 제가 갖고 갈게요.\n\n다음 방의 A는 서연의 연결문, B는 양쪽에 손잡이가 있는 내부 방화문, C는 바깥 출입문입니다.\nA에 전력을 남기면 B를 잡아 서연을 먼저 보내세요. B에 보내면 루시가 먼저 나갈 수 있습니다.", "무전기로 새 질문을 하고 실제 서연의 응답을 확인하세요.", out text);
+                    return Mark(ref reunited, truth && radioAnswered, "서연: 서류에는 먼저 완료라고 적었어요. 차에 타실 거라고 생각해서요.\n루시: 확인하지 않았네요.\n서연: 네. 밖에 나가면 제가 바로잡겠습니다.\n루시: 기록은 제가 갖고 갈게요.\n\n동쪽 출구 로비의 A는 서연의 연결문, B는 양쪽에 손잡이가 있는 내부 방화문, C는 바깥 출입문입니다.\nA에 전력을 남기면 B를 잡아 서연을 먼저 보내세요. B에 보내면 루시가 먼저 나갈 수 있습니다.", "무전기로 새 질문을 하고 실제 서연의 응답을 확인하세요.", out text);
                 case "power-together": return SelectFinalPower(1, out text);
                 case "power-alone": return SelectFinalPower(2, out text);
                 case "manual":

@@ -64,7 +64,7 @@ namespace Lucy.LastNightRound
         {
             // Character roots are foot positions; align every frame's lower edge.
             visual.transform.localPosition = new Vector3(0, visual.sprite.bounds.extents.y * visual.transform.localScale.y, 0);
-            visual.sortingOrder = 100 - Mathf.RoundToInt(transform.position.y * 10);
+            visual.sortingOrder = NightRoundMap.DepthAt(transform.position);
         }
     }
 }
