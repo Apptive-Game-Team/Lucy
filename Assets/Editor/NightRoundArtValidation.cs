@@ -91,6 +91,7 @@ namespace Lucy.Editor
                     if (NightRoundGame.Instance == null) return;
                     foreach (var canvas in UnityEngine.Object.FindObjectsOfType<Canvas>())
                         if (canvas.name=="Unity Play MCP Keyboard Status Canvas" || canvas.name=="Unity Play MCP Virtual Cursor Canvas") canvas.enabled=false;
+                    if(stage==2) CaptureFloorPlan();
                     NightRoundPlaytest.Run(stage == 2);
                     SessionState.SetInt(Key+"stage",stage+1);
                 }
@@ -98,16 +99,19 @@ namespace Lucy.Editor
                 {
                     var game = NightRoundGame.Instance;
                     if (game == null) throw new Exception("Game disappeared during playtest.");
+                    foreach(var actor in UnityEngine.Object.FindObjectsOfType<NightRoundActorView>())
+                        foreach(var sprite in actor.GetComponentsInChildren<SpriteRenderer>())
+                            if(sprite.sortingOrder<=0) throw new Exception("Actor hidden behind floor: "+actor.name);
                     if (!Application.isBatchMode && stage==3)
                         CaptureOnce("dialog",game.IsBlocked && game.State.truth && !game.State.radioAnswered);
                     if (!Application.isBatchMode && !game.IsBlocked && stage == 3)
                     {
-                        float x=game.PlayerPosition.x;
-                        CaptureOnce("ward",game.State.flashlight && x<5);
-                        CaptureOnce("nursing",game.State.firstEscape && x>14 && x<24);
-                        CaptureOnce("service",game.State.powerRestored && x>30 && x<42);
-                        CaptureOnce("records",game.State.truth && x>48 && x<60);
-                        CaptureOnce("final",game.State.finalPower!=0 && x>68);
+                        int room=game.CurrentRoom;
+                        CaptureOnce("ward",game.State.flashlight && room==0);
+                        CaptureOnce("nursing",game.State.firstEscape && room==1);
+                        CaptureOnce("service",game.State.powerRestored && room==2);
+                        CaptureOnce("records",game.State.truth && room==3);
+                        CaptureOnce("final",game.State.finalPower!=0 && room==4);
                     }
                     string path = "Logs/NightRoundPlaytest-"+(stage == 3 ? "together" : "alone")+".txt";
                     string result = File.ReadAllText(path);
@@ -135,6 +139,29 @@ namespace Lucy.Editor
                 }
             }
             catch (Exception error) { Finish(1,"FAIL " + error); }
+        }
+
+        private static void CaptureFloorPlan()
+        {
+            foreach(var camera in UnityEngine.Object.FindObjectsOfType<Camera>())
+            {
+                if(camera.name!="Blockout Camera") continue;
+                var position=camera.transform.position; float size=camera.orthographicSize;
+                var originalTarget=camera.targetTexture; var active=RenderTexture.active;
+                var target=new RenderTexture(1920,1080,24); var texture=new Texture2D(1920,1080,TextureFormat.RGB24,false);
+                try
+                {
+                    camera.transform.position=new Vector3(29.5f,1.5f,-10); camera.orthographicSize=23;
+                    camera.targetTexture=target; camera.Render(); RenderTexture.active=target;
+                    texture.ReadPixels(new Rect(0,0,1920,1080),0,0); texture.Apply();
+                    File.WriteAllBytes("Logs/NightRound-FloorPlan.png",texture.EncodeToPNG());
+                }
+                finally
+                {
+                    camera.targetTexture=originalTarget; camera.transform.position=position; camera.orthographicSize=size;
+                    RenderTexture.active=active; UnityEngine.Object.Destroy(target); UnityEngine.Object.Destroy(texture);
+                }
+            }
         }
 
         private static void CaptureOnce(string room,bool condition)
