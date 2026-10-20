@@ -61,7 +61,7 @@ namespace Lucy.LastNightRound
             Patch("Paving joint",new Rect(3,0,18,.025f),new Color(.49f,.50f,.46f),-16);
             Patch("Entrance garden",new Rect(3,3,16,3),new Color(.32f,.39f,.33f),-17);
             Patch("Garden border",new Rect(3,2.85f,16,.15f),new Color(.65f,.64f,.55f),-16);
-            var bench=map.Art.Atlas("HospitalWardProps",4,2)[7];
+            var bench=map.Art.Props[7];
             NightRoundArt.Place(exterior,"Morning bench",bench,new Rect(7,3.4f,3.5f,1.5f),40);
             NightRoundArt.Place(exterior,"Morning bench",bench,new Rect(14,3.4f,3.5f,1.5f),40);
             Patch("Morning road",new Rect(21,-8,17,16),new Color(.25f,.29f,.32f),-17);
@@ -72,7 +72,7 @@ namespace Lucy.LastNightRound
                 if (i==0) continue;
                 Patch("Facade window",new Rect(1,i*2,.8f,1),new Color(.34f,.45f,.47f),-15);
             }
-            NightRoundArt.Place(exterior,"C / left open",map.Art.Atlas("WardDoors",2,2)[3],new Rect(2.2f,-1.65f,1.5f,3.3f),120);
+            NightRoundArt.Place(exterior,"C / left open",map.Art.Doors[3],new Rect(2.2f,-1.65f,1.5f,3.3f),120);
             var plant=Resources.Load<Sprite>("Image_BSY/plantpot1");
             if (plant != null)
                 for (int i=0;i<4;i++) NightRoundArt.Place(exterior,"Entrance planter",plant,new Rect(5+i*4,-4.2f,1.3f,1.5f),145);

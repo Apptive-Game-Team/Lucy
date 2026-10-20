@@ -63,6 +63,8 @@ namespace Lucy.Editor
                              "\nDuration: " + report.summary.totalTime + "\nOutput: " + output;
             File.WriteAllText(Path.Combine(ProjectRoot, "Logs", "LucyBuild.txt"), summary);
             if (report.summary.result != BuildResult.Succeeded) throw new BuildFailedException(summary);
+            File.Copy(Path.Combine(Application.dataPath,"Resources","Presentation","NotoSansKR-OFL.txt"),
+                Path.Combine(Path.GetDirectoryName(output),"NotoSansKR-OFL.txt"),true);
             Debug.Log(summary);
         }
 

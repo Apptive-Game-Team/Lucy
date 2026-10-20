@@ -45,10 +45,16 @@ namespace Lucy.Editor
         {
             using (var art = new NightRoundArt())
             {
-                art.Atlas("HospitalSurfaces",2,2,false); art.Atlas("HospitalFurnitureV2",2,2);
-                art.Atlas("HospitalStorage",2,2); art.Atlas("HospitalWardProps",4,2);
-                art.Atlas("WardDoors",2,2); art.Atlas("NurseRun",4,2); art.Atlas("WardOrderlyWalk",4,3);
-                if (Resources.Load<Sprite>("Presentation/NurseWorld") == null) throw new Exception("Nurse world sprite missing.");
+                if (art.Props.Length!=16 || art.Actors.Length!=24 || art.Doors.Length!=4)
+                    throw new Exception("Cohesive art sheet slices missing.");
+                foreach (var frame in art.Actors)
+                    if (frame.bounds.size.y<1 || frame.bounds.size.x<.3f) throw new Exception("Clipped actor frame: "+frame.name);
+                foreach (var weight in new[]{"Regular","Bold"})
+                {
+                    var font=Resources.Load<Font>("Presentation/NotoSansKR-"+weight);
+                    if (font==null) throw new Exception("Korean UI font missing: "+weight);
+                    foreach (char glyph in "루시서연목표기록함께밖으로") if (!font.HasCharacter(glyph)) throw new Exception("Korean UI glyph missing: "+glyph);
+                }
             }
         }
 
@@ -57,7 +63,7 @@ namespace Lucy.Editor
             string save = Path.Combine(Application.persistentDataPath,"last-night-round-blockout.json");
             SessionState.SetString(Key+"save",File.Exists(save) ? File.ReadAllText(save) : "");
             SessionState.SetInt(Key+"stage",1);
-            SessionState.SetBool(Key+"ward",false); SessionState.SetBool(Key+"service",false);
+            foreach (var room in new[]{"ward","nursing","service","records","final","dialog"}) SessionState.SetBool(Key+room,false);
             SessionState.SetString(Key+"start",DateTime.UtcNow.ToString("o"));
             File.WriteAllText("Logs/NightRoundArtValidation.txt", "START " + DateTime.UtcNow.ToString("o") + "\nProject checks and all atlas slices passed.\n");
             EditorApplication.isPlaying = true;
@@ -83,6 +89,8 @@ namespace Lucy.Editor
                 else if (stage == 2 || stage == 5)
                 {
                     if (NightRoundGame.Instance == null) return;
+                    foreach (var canvas in UnityEngine.Object.FindObjectsOfType<Canvas>())
+                        if (canvas.name=="Unity Play MCP Keyboard Status Canvas" || canvas.name=="Unity Play MCP Virtual Cursor Canvas") canvas.enabled=false;
                     NightRoundPlaytest.Run(stage == 2);
                     SessionState.SetInt(Key+"stage",stage+1);
                 }
@@ -90,14 +98,16 @@ namespace Lucy.Editor
                 {
                     var game = NightRoundGame.Instance;
                     if (game == null) throw new Exception("Game disappeared during playtest.");
+                    if (!Application.isBatchMode && stage==3)
+                        CaptureOnce("dialog",game.IsBlocked && game.State.truth && !game.State.radioAnswered);
                     if (!Application.isBatchMode && !game.IsBlocked && stage == 3)
                     {
-                        string capture = game.PlayerPosition.x > 28 && game.State.firstEscape ? "service" : game.State.flashlight && game.PlayerPosition.x < 5 ? "ward" : null;
-                        if (capture != null && !SessionState.GetBool(Key+capture,false))
-                        {
-                            ScreenCapture.CaptureScreenshot("Logs/NightRoundRefinement-"+capture+".png");
-                            SessionState.SetBool(Key+capture,true);
-                        }
+                        float x=game.PlayerPosition.x;
+                        CaptureOnce("ward",game.State.flashlight && x<5);
+                        CaptureOnce("nursing",game.State.firstEscape && x>14 && x<24);
+                        CaptureOnce("service",game.State.powerRestored && x>30 && x<42);
+                        CaptureOnce("records",game.State.truth && x>48 && x<60);
+                        CaptureOnce("final",game.State.finalPower!=0 && x>68);
                     }
                     string path = "Logs/NightRoundPlaytest-"+(stage == 3 ? "together" : "alone")+".txt";
                     string result = File.ReadAllText(path);
@@ -125,6 +135,13 @@ namespace Lucy.Editor
                 }
             }
             catch (Exception error) { Finish(1,"FAIL " + error); }
+        }
+
+        private static void CaptureOnce(string room,bool condition)
+        {
+            if (!condition || SessionState.GetBool(Key+room,false)) return;
+            ScreenCapture.CaptureScreenshot("Logs/NightRoundRefinement-"+room+".png");
+            SessionState.SetBool(Key+room,true);
         }
 
         private static void Finish(int code, string result)

@@ -17,7 +17,7 @@ namespace Lucy.Presentation
         private float documentOpenedAt;
         private float elapsed, previousScale = 1;
         private GameObject screen, hud;
-        private Font font;
+        private Font font, headingFont;
         private Canvas canvas;
         private string sceneName;
         private string checkpointScene;
@@ -38,7 +38,8 @@ namespace Lucy.Presentation
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            font = Resources.Load<Font>("Presentation/LucyFont");
+            font = Resources.Load<Font>("Presentation/NotoSansKR-Regular");
+            headingFont = Resources.Load<Font>("Presentation/NotoSansKR-Bold");
             AudioListener.volume = PlayerPrefs.GetFloat("Lucy.Volume", .8f);
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
@@ -160,7 +161,7 @@ namespace Lucy.Presentation
         private Text Label(Transform parent, string name, string text, int size, Vector2 min, Vector2 max, Color color)
         {
             var r = Rect(name, parent, min, max, Vector2.zero, Vector2.zero);
-            var t = r.gameObject.AddComponent<Text>(); t.font = font; t.text = text; t.fontSize = size;
+            var t = r.gameObject.AddComponent<Text>(); t.font = size>=32 ? headingFont : font; t.text = text; t.fontSize = size; t.lineSpacing=1.15f;
             t.color = color; t.raycastTarget = false; t.verticalOverflow = VerticalWrapMode.Overflow;
             return t;
         }

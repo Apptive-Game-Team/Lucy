@@ -9,6 +9,12 @@ namespace Lucy.LastNightRound
     {
         private readonly Dictionary<string, Sprite[]> cache = new Dictionary<string, Sprite[]>();
         private Material material;
+        private Sprite[] doors;
+        // Explicit separators follow the delivered sheets' transparent gutters, not assumed equal cells.
+        public Sprite[] Props => Slice("NightRoundProps",new[]{0,370,650,975,1274},new[]{0,370,670,935,1235},true,
+            new[]{new[]{0,367,675,950,1274},new[]{0,350,617,950,1274},new[]{0,350,615,956,1274},new[]{0,350,615,950,1274}});
+        public Sprite[] Actors => Slice("NightRoundActors",new[]{0,270,510,770,1020,1260,1536},new[]{0,275,520,765,1024});
+        public Sprite[] Doors => doors ?? (doors = new[] { Props[12],Props[13],Props[14],Props[15] });
         public Material LitMaterial
         {
             get
@@ -20,17 +26,32 @@ namespace Lucy.LastNightRound
 
         public Sprite[] Atlas(string name, int columns = 1, int rows = 1, bool trim = true)
         {
-            string key = name + columns + ":" + rows + ":" + trim;
-            if (cache.TryGetValue(key, out var existing)) return existing;
             var texture = Resources.Load<Texture2D>("Presentation/" + name);
+            if (texture==null) throw new InvalidOperationException("Missing Night Round art: "+name);
+            var xCuts=new int[columns+1]; var yCuts=new int[rows+1];
+            for (int i=0;i<=columns;i++) xCuts[i]=i*texture.width/columns;
+            for (int i=0;i<=rows;i++) yCuts[i]=i*texture.height/rows;
+            return Slice(name,xCuts,yCuts,trim);
+        }
+
+        private Sprite[] Slice(string name,int[] xCuts,int[] yCuts,bool trim=true,int[][] rowCuts=null)
+        {
+            string key=name+":"+string.Join(",",xCuts)+":"+string.Join(",",yCuts)+":"+trim;
+            if (rowCuts!=null) foreach(var row in rowCuts) key+=":"+string.Join(",",row);
+            if (cache.TryGetValue(key,out var existing)) return existing;
+            var texture=Resources.Load<Texture2D>("Presentation/"+name);
             if (texture == null || (trim && !texture.isReadable))
                 throw new InvalidOperationException("Missing/read-protected Night Round art: " + name);
+            if (xCuts[xCuts.Length-1]!=texture.width || yCuts[yCuts.Length-1]!=texture.height)
+                throw new InvalidOperationException("Art sheet dimensions changed; update slice metadata: "+name);
+            int columns=xCuts.Length-1, rows=yCuts.Length-1;
             var pixels = trim ? texture.GetPixels32() : null;
             var sprites = new Sprite[columns * rows];
             for (int i = 0; i < sprites.Length; i++)
             {
-                int x0 = i % columns * texture.width / columns, x1 = (i % columns + 1) * texture.width / columns;
-                int y0 = (rows - 1 - i / columns) * texture.height / rows, y1 = (rows - i / columns) * texture.height / rows;
+                var cuts=rowCuts==null ? xCuts : rowCuts[i/columns];
+                int x0=cuts[i%columns], x1=cuts[i%columns+1];
+                int y0=texture.height-yCuts[i/columns+1], y1=texture.height-yCuts[i/columns];
                 int left = x1, right = x0 - 1, bottom = y1, top = y0 - 1;
                 if (trim)
                 {
@@ -61,6 +82,7 @@ namespace Lucy.LastNightRound
         {
             foreach (var sprites in cache.Values) foreach (var sprite in sprites) Release(sprite);
             cache.Clear();
+            doors = null;
             if (material != null) Release(material);
             material = null;
         }

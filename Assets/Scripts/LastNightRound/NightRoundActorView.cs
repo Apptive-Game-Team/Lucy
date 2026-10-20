@@ -8,14 +8,13 @@ namespace Lucy.LastNightRound
     {
         private SpriteRenderer visual;
         private Sprite[] frames;
-        private Sprite nurseIdle;
         private Vector3 previous;
         private int kind, row, columns;
         private float clock, scale;
 
         public void Initialize(NightRoundArt art, int actorKind)
         {
-            kind = actorKind; columns = kind == 0 ? 3 : 4;
+            kind = actorKind; columns = 3;
             if (kind == 0)
             {
                 frames = new Sprite[12];
@@ -27,8 +26,12 @@ namespace Lucy.LastNightRound
                     if (frames[r*3+c] == null) throw new InvalidOperationException("Missing Lucy frame: " + path);
                 }
             }
-            else frames = art.Atlas(kind == 1 ? "NurseRun" : "WardOrderlyWalk", 4, kind == 1 ? 2 : 3);
-            if (kind == 1) nurseIdle = Resources.Load<Sprite>("Presentation/NurseWorld");
+            else
+            {
+                var atlas = art.Actors;
+                frames = new Sprite[12];
+                for (int r=0;r<4;r++) for (int c=0;c<3;c++) frames[r*3+c]=atlas[r*6+(kind-1)*3+c];
+            }
             float height = 0;
             foreach (var frame in frames) height = Mathf.Max(height, frame.bounds.size.y);
             scale = (kind == 2 ? 1.8f : 1.45f) / height;
@@ -48,19 +51,12 @@ namespace Lucy.LastNightRound
             if (moving)
             {
                 bool horizontal = Mathf.Abs(delta.x) > Mathf.Abs(delta.y);
-                row = kind == 1 ? (horizontal ? 0 : 1) : horizontal ? (kind == 0 && delta.x < 0 ? 3 : 1) : delta.y > 0 ? 2 : 0;
-                visual.flipX = kind != 0 && horizontal && delta.x < 0;
+                row = horizontal ? (delta.x < 0 ? 3 : 1) : delta.y > 0 ? 2 : 0;
                 clock += Time.deltaTime * (kind == 2 ? 10 : 8);
             }
             else clock = 0;
             visual.sprite = frames[row * columns + (moving ? (int)clock % columns : 0)];
-            if (kind == 1 && (!moving || delta.y < -Mathf.Abs(delta.x)))
-            {
-                visual.sprite = nurseIdle;
-                visual.transform.localScale = Vector3.one * (1.45f / nurseIdle.bounds.size.y);
-                visual.flipX = false;
-            }
-            else visual.transform.localScale = Vector3.one * scale;
+            visual.transform.localScale = Vector3.one * scale;
             Draw();
         }
 
