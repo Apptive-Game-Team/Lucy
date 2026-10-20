@@ -32,7 +32,7 @@ namespace Lucy.Editor
                 {"bracelet",new Vector2(-5,3)}, {"flashlight",new Vector2(-5,-3)}, {"meet",new Vector2(5,0)},
                 {"manifest",new Vector2(15,3)}, {"safe",new Vector2(22,-3)}, {"circuit-supply",new Vector2(34,3)},
                 {"fuse",new Vector2(40,-3)}, {"circuit-light",new Vector2(31,3)}, {"circuit-door",new Vector2(37,3)},
-                {"service-exit",new Vector2(42,0)}, {"lock-record",new Vector2(49,3)}, {"recording",new Vector2(53,-3)}, {"radio",new Vector2(54,3)}, {"reunite",new Vector2(59,4)},
+                {"service-exit",new Vector2(42,0)}, {"lock-record",new Vector2(49,3)}, {"recording",new Vector2(53,-4)}, {"radio",new Vector2(54,3)}, {"reunite",new Vector2(59,4)},
                 {"power-together",new Vector2(68,3)}, {"power-alone",new Vector2(72,3)}, {"manual",new Vector2(75,-2)}, {"cross-b",new Vector2(78.4f,0)}, {"exit",new Vector2(82,0)} };
             var list = new List<string> { "bracelet","flashlight","meet","manifest","safe","circuit-supply","fuse","circuit-light","circuit-door","service-exit","lock-record","recording","radio","reunite","power-together" };
             if (together) list.Add("manual");

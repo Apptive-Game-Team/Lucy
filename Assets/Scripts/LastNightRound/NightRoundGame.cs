@@ -25,7 +25,8 @@ namespace Lucy.LastNightRound
         private NightRoundMap map;
         private Transform player, nurse, pursuer;
         private Camera cameraView;
-        private Font font;
+        private Font font, headingFont;
+        private Vector2 documentScroll;
         private string focus, document, documentTitle, notice = "";
         private float openedAt, noticeUntil, warning, captureAt, hold, tension;
         private bool paused, dead, chasing;
@@ -40,6 +41,8 @@ namespace Lucy.LastNightRound
         private float nextFootstep;
         private float cameraVelocity;
         private int currentRoom;
+        private float roomTitleUntil;
+        private bool objectiveVisible;
         private bool manualHeld, assistedHold;
         private NightRoundEpilogue epilogue;
         private bool FinalDoorOpen => State.reunited && (State.finalPower == 2 || State.nurseCrossed || (State.manualDoor && manualHeld));
@@ -69,9 +72,10 @@ namespace Lucy.LastNightRound
         private void Awake()
         {
             Instance = this; State = new NightRoundState();
-            font = Resources.Load<Font>("Presentation/LucyFont");
+            font = Resources.Load<Font>("Presentation/NotoSansKR-Regular");
+            headingFont = Resources.Load<Font>("Presentation/NotoSansKR-Bold");
             map = new NightRoundMap(); map.Build();
-            doorArt = map.Art.Atlas("WardDoors", 2, 2);
+            doorArt = map.Art.Doors;
             float[] gateX = { 8, 26, 44, 62, 77 };
             for (int i = 0; i < gates.Length; i++)
             {
@@ -98,6 +102,7 @@ namespace Lucy.LastNightRound
             cameraView.transform.position = new Vector3(CameraX(player.position.x), 0, -10);
             Time.timeScale = 1; AudioListener.pause = false;
             SaveCheckpoint(false);
+            roomTitleUntil=Time.unscaledTime+4;
             Tell("마지막 야간 순회", "눈을 뜬 병동에는 아무도 없습니다. 문밖에서 누군가 당신의 이름을 부릅니다.\n\nWASD / 방향키 이동 · Shift 달리기 · E 조사\nSpace 대화 닫기 · I 소지품 · J 증거 · Esc 일시정지\n\n입원 팔찌와 손전등부터 확인하세요.\n무음 상태에서도 모든 정보와 위험 경고를 읽을 수 있습니다.");
         }
 
@@ -140,6 +145,7 @@ namespace Lucy.LastNightRound
             if ((dead && Time.unscaledTime - captureAt > 1 || State.ending != "") && Input.GetKeyDown(KeyCode.R)) { Restore(false); return; }
             if (paused && Input.GetKeyDown(KeyCode.L)) { Restore(true); return; }
             if (IsBlocked || Time.timeScale <= 0) return;
+            if (Input.GetKeyDown(KeyCode.Tab)) objectiveVisible=!objectiveVisible;
             if (Input.GetKeyDown(KeyCode.I)) { Tell("소지품", (State.flashlight ? "손전등 — 장착됨\n" : "손전등 없음\n") + (State.bracelet ? "입원 팔찌 — 101 / 루시\n" : "") + (State.fuse ? "제어 퓨즈 확보" : "")); return; }
             if (Input.GetKeyDown(KeyCode.J)) { Tell("확인한 증거", (State.transferMismatch ? "병동 이송 완료 02:05 / 서연 서명\n차량 실물 인계 확인은 공란.\n\n" : "아직 대조한 기록이 없습니다.\n") + (State.truth ? "02:17 서연이 외부 잠금 조작.\n02:18 복도 차단. 02:19 외부 해제 요청.\n서연: 제가 잠갔어요. 잘못했습니다." : "")); return; }
             var direction = new Vector2((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) ? 1 : 0) - (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) ? 1 : 0),
@@ -174,7 +180,8 @@ namespace Lucy.LastNightRound
             if (IsBlocked) return;
             UpdateNurse(); UpdatePursuer();
             if (State.CanCrossFinalDoor && player.position.x > 80.4f && Mathf.Abs(player.position.y) < 1.3f && (State.finalPower == 2 || State.nurseOutside)) Interact("exit");
-            currentRoom = Mathf.Clamp(Mathf.FloorToInt((player.position.x + 9) / 18), 0, 4);
+            int nextRoom=Mathf.Clamp(Mathf.FloorToInt((player.position.x+9)/18),0,4);
+            if (nextRoom!=currentRoom) { currentRoom=nextRoom; roomTitleUntil=Time.unscaledTime+3; }
         }
 
         private float CameraX(float x)
@@ -335,7 +342,7 @@ namespace Lucy.LastNightRound
         }
 
         private void Notify(string value) { notice = value; noticeUntil = Time.unscaledTime + 5; }
-        private void Tell(string title, string body) { documentTitle = title; document = body; openedAt = Time.unscaledTime; }
+        private void Tell(string title, string body) { documentTitle = title; document = body; documentScroll=Vector2.zero; openedAt = Time.unscaledTime; }
         private void SaveCheckpoint(bool disk = true)
         {
             checkpoint = new SaveData { state = JsonUtility.FromJson<NightRoundState>(JsonUtility.ToJson(State)), player = player.position, nurse = nurse.position };
@@ -394,9 +401,9 @@ namespace Lucy.LastNightRound
             if (State == null) return;
             if (text == null)
             {
-                text = new GUIStyle(GUI.skin.label) { font = font, fontSize = 24, wordWrap = true };
-                heading = new GUIStyle(text) { fontSize = 34 };
-                button = new GUIStyle(GUI.skin.button) { font = font, fontSize = 23, wordWrap = true };
+                text = new GUIStyle(GUI.skin.label) { font = font, fontSize = 22, wordWrap = true };
+                heading = new GUIStyle(text) { font = headingFont, fontSize = 32 };
+                button = new GUIStyle(GUI.skin.button) { font = font, fontSize = 22, wordWrap = true };
             }
             GUI.matrix = Matrix4x4.Scale(new Vector3(Screen.width / 1600f, Screen.height / 900f, 1));
             if (epilogue != null)
@@ -427,17 +434,25 @@ namespace Lucy.LastNightRound
                 GUI.DrawTexture(new Rect(220, 165, 1160, 570), Texture2D.whiteTexture);
                 GUI.color = Color.white;
             }
-            GUI.Box(new Rect(20, 18, 1560, 102), "");
-            GUI.Label(new Rect(40, 25, 650, 36), "마지막 야간 순회", heading);
-            GUI.Label(new Rect(850, 28, 690, 82), State.Objective, text);
-            GUI.Label(new Rect(40, 70, 700, 38), "긴장 " + Mathf.RoundToInt(tension) + "   |   E 조사 · Shift 달리기 · Esc 메뉴", text);
             if (!IsBlocked)
             {
-                GUI.Label(new Rect(40,128,650,42), "0" + (currentRoom+1) + " / " + RoomNames[currentRoom] + "    ·    J 확인한 증거", text);
-                if (State.firstEscape && currentRoom == 2)
+                if (Time.unscaledTime<roomTitleUntil)
                 {
-                    GUI.Box(new Rect(25,178,770,55), "");
-                    GUI.Label(new Rect(40,185,750,42), "전력 " + State.PoweredCircuitCount + "/2    " + ((State.circuits&1)!=0 ? "조명 ON   " : "조명 OFF   ") + ((State.circuits&2)!=0 ? "물품 ON   " : "물품 OFF   ") + ((State.circuits&4)!=0 ? "문 ON" : "문 OFF"), text);
+                    GUI.color=new Color(1,1,1,Mathf.Clamp01(roomTitleUntil-Time.unscaledTime));
+                    GUI.Label(new Rect(40,30,650,50),RoomNames[currentRoom],heading); GUI.color=Color.white;
+                }
+                if (GUI.Button(new Rect(1390,24,175,44),"목표 · Tab",button)) objectiveVisible=!objectiveVisible;
+                if (objectiveVisible)
+                {
+                    GUI.Box(new Rect(870,82,695,135),"");
+                    GUI.Label(new Rect(890,98,650,110),State.Objective,text);
+                }
+                GUI.color=new Color(1,1,1,.6f);
+                GUI.Label(new Rect(35,852,400,36),"I 소지품  ·  J 기록  ·  Esc 메뉴",text); GUI.color=Color.white;
+                if (State.firstEscape && focus!=null && focus.StartsWith("circuit-"))
+                {
+                    GUI.Box(new Rect(410,724,780,54), "");
+                    GUI.Label(new Rect(430,733,750,42), "전력 " + State.PoweredCircuitCount + "/2    " + ((State.circuits&1)!=0 ? "조명 ON   " : "조명 OFF   ") + ((State.circuits&2)!=0 ? "물품 ON   " : "물품 OFF   ") + ((State.circuits&4)!=0 ? "문 ON" : "문 OFF"), text);
                 }
             }
             if (!IsBlocked && focus != null)
@@ -445,7 +460,7 @@ namespace Lucy.LastNightRound
                 GUI.Box(new Rect(350, 790, 900, 80), "");
                 string action = StationLabel(focus);
                 if (focus.StartsWith("circuit-")) action += State.IsCircuitPowered(focus) ? " 끄기" : " 켜기";
-                if (GUI.Button(new Rect(370, 804, 860, 50), "E  " + action + (hold > 0 ? "  " + Mathf.CeilToInt(hold / 2 * 100) + "%" : ""), button)) Interact(focus);
+                if (GUI.Button(new Rect(370, 804, 860, 50), "E  " + action + (focus=="manual" && hold>0 ? "  " + Mathf.CeilToInt(hold / 2 * 100) + "%" : ""), button)) Interact(focus);
             }
             if (Time.unscaledTime < noticeUntil) GUI.Label(new Rect(280, 710, 1100, 70), notice, text);
             if (chasing && !IsBlocked)
@@ -457,7 +472,10 @@ namespace Lucy.LastNightRound
             {
                 GUI.Box(new Rect(230, 175, 1140, 550), "");
                 GUI.Label(new Rect(280, 210, 1040, 70), documentTitle, heading);
-                GUI.Label(new Rect(280, 300, 1040, 300), document, text);
+                float bodyHeight=Mathf.Max(325,text.CalcHeight(new GUIContent(document),1010));
+                documentScroll=GUI.BeginScrollView(new Rect(280,280,1040,325),documentScroll,new Rect(0,0,1010,bodyHeight));
+                GUI.Label(new Rect(0,0,1010,bodyHeight),document,text);
+                GUI.EndScrollView();
                 if (GUI.Button(new Rect(550, 630, 500, 60), "Space · 계속", button)) document = null;
             }
             else if (dead)
